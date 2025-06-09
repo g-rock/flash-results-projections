@@ -1,0 +1,73 @@
+[
+  {
+    "headerName": "School",
+    "field": "school",
+    "pinned": "left",
+    "width": 160
+  },
+  {
+    "field": "100"
+  },
+  {
+    "field": "10000"
+  },
+  {
+    "field": "100H"
+  },
+  {
+    "field": "1500"
+  },
+  {
+    "field": "1600"
+  },
+  {
+    "field": "200"
+  },
+  {
+    "field": "3000"
+  },
+  {
+    "field": "400"
+  },
+  {
+    "field": "4x100"
+  },
+  {
+    "field": "4x100H"
+  },
+  {
+    "field": "5000"
+  },
+  {
+    "field": "800"
+  },
+  {
+    "field": "DT"
+  },
+  {
+    "field": "HT"
+  },
+  {
+    "field": "Hep"
+  },
+  {
+    "field": "JT"
+  },
+  {
+    "field": "LJ"
+  },
+  {
+    "field": "SP"
+  },
+  {
+    "field": "TJ"
+  },
+  {
+    "field": "TOTAL",
+    "pinned": "right",
+    "cellStyle": {
+      "fontWeight": "bold"
+    },
+    "sort": "desc"
+  }
+]
