@@ -75,7 +75,7 @@ const defaultColDef = {
   resizable: false,
   sortable: true,
   filter: false,
-  width: 90,
+  width: 125,
 }
 </script>
 
