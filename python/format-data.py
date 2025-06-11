@@ -53,8 +53,9 @@ print(f"Filtered to only the first Decathlon and Heptathlon events (if present).
 df.loc[df['Event_name'].str.contains(f'Dec .*{DECATHLON_FIRST_EVENT_SUFFIX}', regex=True, na=False), 'Event_name'] = 'Decathlon'
 df.loc[df['Event_name'].str.contains(f'Hept .*{HEPTATHLON_FIRST_EVENT_SUFFIX}', regex=True, na=False), 'Event_name'] = 'Heptathlon'
 
-# --- Create display-friendly Event_name without gender ---
-df['Display_event_name'] = df['Event_name'].str.replace(r'\b(Men|Women)\b\s*', '', regex=True).str.strip()
+# Strip Men/Women from Event_name for consistency
+df['Event_name'] = df['Event_name'].str.replace(r'\b(Men|Women)\b\s*', '', regex=True).str.strip()
+
 # --- Parse seed column ---
 def parse_seed_for_sorting(seed_value, event_name):
     if pd.isna(seed_value) or not isinstance(seed_value, str):
@@ -78,6 +79,7 @@ def parse_seed_for_sorting(seed_value, event_name):
         return None
 
 df['Seed_numeric'] = df['Seed'].apply(lambda x: parse_seed_for_sorting(x, None))
+
 
 # Sorting rules (True = lower is better)
 event_type_sorting_rules = {
@@ -123,7 +125,6 @@ def assign_scores_with_ties(group):
 print("Assigning scores with tie averaging logic...")
 df = df.groupby(['Event_sex', 'Event_name'], group_keys=False).apply(assign_scores_with_ties)
 print("✅ Score assignment with tie handling complete.")
-
 # Build team totals
 pivot_df = (
     df.groupby(['Event_sex', 'Team_name', 'Event_name'])['score']
@@ -157,8 +158,8 @@ with open(os.path.join(output_dir, "menData.json"), "w") as mf:
 print("✅ Exported womenData.json and menData.json.")
 
 # Column definitions for AG Grid
-women_events = sorted(df[df['Event_sex'] == 'Women']['Display_event_name'].unique())
-men_events = sorted(df[df['Event_sex'] == 'Men']['Display_event_name'].unique())
+women_events = sorted(df[df['Event_sex'] == 'Women']['Event_name'].unique())
+men_events = sorted(df[df['Event_sex'] == 'Men']['Event_name'].unique())
 
 def strip_gender(event_name):
     return re.sub(r'\b(Men|Women)\b\s*', '', event_name, flags=re.IGNORECASE).strip()

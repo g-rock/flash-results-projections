@@ -16,107 +16,107 @@
     }
   },
   {
+    "field": "100 M",
+    "headerName": "100 M",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
+    "field": "10000 M",
+    "headerName": "10000 M",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
+    "field": "110 M Hurdles",
+    "headerName": "110 M Hurdles",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
+    "field": "1500 M",
+    "headerName": "1500 M",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
+    "field": "200 M",
+    "headerName": "200 M",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
+    "field": "3000 M Steeple",
+    "headerName": "3000 M Steeple",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
+    "field": "400 M",
+    "headerName": "400 M",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
+    "field": "400 M Hurdles",
+    "headerName": "400 M Hurdles",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
+    "field": "4x100 M Relay",
+    "headerName": "4x100 M Relay",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
+    "field": "4x400 M Relay",
+    "headerName": "4x400 M Relay",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
+    "field": "5000 M",
+    "headerName": "5000 M",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
+    "field": "800 M",
+    "headerName": "800 M",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
     "field": "Decathlon",
     "headerName": "Decathlon",
     "valueFormatter": "x.toFixed(1)"
   },
   {
-    "field": "Men 100 M",
-    "headerName": "100 M",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men 10000 M",
-    "headerName": "10000 M",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men 110 M Hurdles",
-    "headerName": "110 M Hurdles",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men 1500 M",
-    "headerName": "1500 M",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men 200 M",
-    "headerName": "200 M",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men 3000 M Steeple",
-    "headerName": "3000 M Steeple",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men 400 M",
-    "headerName": "400 M",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men 400 M Hurdles",
-    "headerName": "400 M Hurdles",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men 4x100 M Relay",
-    "headerName": "4x100 M Relay",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men 4x400 M Relay",
-    "headerName": "4x400 M Relay",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men 5000 M",
-    "headerName": "5000 M",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men 800 M",
-    "headerName": "800 M",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Men Discus",
+    "field": "Discus",
     "headerName": "Discus",
     "valueFormatter": "x.toFixed(1)"
   },
   {
-    "field": "Men Hammer",
+    "field": "Hammer",
     "headerName": "Hammer",
     "valueFormatter": "x.toFixed(1)"
   },
   {
-    "field": "Men High Jump",
+    "field": "High Jump",
     "headerName": "High Jump",
     "valueFormatter": "x.toFixed(1)"
   },
   {
-    "field": "Men Javelin",
+    "field": "Javelin",
     "headerName": "Javelin",
     "valueFormatter": "x.toFixed(1)"
   },
   {
-    "field": "Men Long Jump",
+    "field": "Long Jump",
     "headerName": "Long Jump",
     "valueFormatter": "x.toFixed(1)"
   },
   {
-    "field": "Men Pole Vault",
+    "field": "Pole Vault",
     "headerName": "Pole Vault",
     "valueFormatter": "x.toFixed(1)"
   },
   {
-    "field": "Men Shot Put",
+    "field": "Shot Put",
     "headerName": "Shot Put",
     "valueFormatter": "x.toFixed(1)"
   },
   {
-    "field": "Men Triple Jump",
+    "field": "Triple Jump",
     "headerName": "Triple Jump",
     "valueFormatter": "x.toFixed(1)"
   },
