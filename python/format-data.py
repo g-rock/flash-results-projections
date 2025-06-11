@@ -29,7 +29,8 @@ df[str_cols] = df[str_cols].apply(lambda x: x.str.strip() if isinstance(x, str) 
 df = df.rename(columns={
     'Gender': 'Event_sex',
     'Team': 'Team_name',
-    'Event Name': 'Event_name'
+    'Event Name': 'Event_name',
+    'Col_11': 'multi_event_points'
 })
 
 # --- Keep only first multi-event subevents ---
@@ -48,9 +49,12 @@ keep_mask = (
 df = df[keep_mask].copy()
 print(f"Filtered to only the first Decathlon and Heptathlon events (if present). Remaining shape: {df.shape}")
 
+# Rename first multi-events to "Heptathlon" and "Decathlon"
+df.loc[df['Event_name'].str.contains(f'Dec .*{DECATHLON_FIRST_EVENT_SUFFIX}', regex=True, na=False), 'Event_name'] = 'Decathlon'
+df.loc[df['Event_name'].str.contains(f'Hept .*{HEPTATHLON_FIRST_EVENT_SUFFIX}', regex=True, na=False), 'Event_name'] = 'Heptathlon'
+
 # --- Create display-friendly Event_name without gender ---
 df['Display_event_name'] = df['Event_name'].str.replace(r'\b(Men|Women)\b\s*', '', regex=True).str.strip()
-
 # --- Parse seed column ---
 def parse_seed_for_sorting(seed_value, event_name):
     if pd.isna(seed_value) or not isinstance(seed_value, str):
@@ -80,7 +84,8 @@ event_type_sorting_rules = {
     '4x100 M Relay': True, '1500 M': True, '110 M Hurdles': True, '100 M': True,
     '400 M': True, '800 M': True, '3000 M Steeple': True, '200 M': True,
     '10000 M': True, '4x400 M Relay': True, '4x100': True, '4x400': True,
-    'Hept Women 800 M': True,
+    'Heptathlon': False,
+    'Decathlon': False,
     'Hammer': False, 'Pole Vault': False, 'Javelin': False, 'Long Jump': False,
     'Shot Put': False, 'Discus': False, 'High Jump': False, 'Triple Jump': False,
 }

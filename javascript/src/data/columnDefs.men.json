@@ -16,8 +16,8 @@
     }
   },
   {
-    "field": "Dec Men 100 M",
-    "headerName": "Dec 100 M",
+    "field": "Decathlon",
+    "headerName": "Decathlon",
     "valueFormatter": "x.toFixed(1)"
   },
   {

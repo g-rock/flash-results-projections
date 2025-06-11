@@ -16,8 +16,8 @@
     }
   },
   {
-    "field": "Hept Women 100 M Hurdles",
-    "headerName": "Hept 100 M Hurdles",
+    "field": "Heptathlon",
+    "headerName": "Heptathlon",
     "valueFormatter": "x.toFixed(1)"
   },
   {
