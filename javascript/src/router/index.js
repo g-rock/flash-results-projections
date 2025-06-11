@@ -9,7 +9,7 @@ const routes = [
   {
     path: '/dashboard',
     component: Dashboard,
-    meta: { requiresAuth: true },
+    // meta: { requiresAuth: true },
   },
   { path: '/', redirect: '/dashboard' },
 ]
@@ -19,17 +19,17 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach(async (to, from, next) => {
-  await waitForAuthReady()
-  const currentUser = auth.currentUser
+// router.beforeEach(async (to, from, next) => {
+//   await waitForAuthReady()
+//   const currentUser = auth.currentUser
 
-  if (to.meta.requiresAuth && !currentUser) {
-    next('/login')
-  } else if (to.path === '/login' && currentUser) {
-    next('/dashboard')
-  } else {
-    next()
-  }
-})
+//   if (to.meta.requiresAuth && !currentUser) {
+//     next('/login')
+//   } else if (to.path === '/login' && currentUser) {
+//     next('/dashboard')
+//   } else {
+//     next()
+//   }
+// })
 
 export default router

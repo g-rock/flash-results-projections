@@ -7,7 +7,7 @@
           <h1>NCAA Championship. Hayward Field Eugene Oregon</h1>
         </div>
       </div>
-      <button @click="logout" class="logout-button">Logout</button>
+      <!-- <button @click="logout" class="logout-button">Logout</button> -->
     </header>
 
     <div class="tabs">
@@ -75,7 +75,6 @@ const defaultColDef = {
   resizable: false,
   sortable: true,
   filter: false,
-  width: 125,
 }
 </script>
 
