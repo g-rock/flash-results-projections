@@ -155,6 +155,9 @@ print("✅ Exported womenData.json and menData.json.")
 women_events = sorted(df[df['Event_sex'] == 'Women']['Display_event_name'].unique())
 men_events = sorted(df[df['Event_sex'] == 'Men']['Display_event_name'].unique())
 
+def strip_gender(event_name):
+    return re.sub(r'\b(Men|Women)\b\s*', '', event_name, flags=re.IGNORECASE).strip()
+    
 def build_column_defs(event_list, raw_event_list):
     defs = [{
         "headerName": "School",
@@ -169,11 +172,12 @@ def build_column_defs(event_list, raw_event_list):
         "sort": "asc",
         "cellStyle": { "fontWeight": "bold" }
     }]
+    
     defs += [{
         "field": raw, 
-        "headerName": display,
+        "headerName": strip_gender(raw),
         "valueFormatter": "x.toFixed(1)"
-    } for raw, display in zip(raw_event_list, event_list)]
+    } for raw in raw_event_list]
     defs.append({
         "field": "TOTAL",
         "headerName": "Total",
