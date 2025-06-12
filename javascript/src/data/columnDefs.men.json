@@ -18,7 +18,7 @@
   {
     "field": "TOTAL",
     "headerName": "Total",
-    "pinned": "right",
+    "pinned": "left",
     "cellStyle": {
       "fontWeight": "bold"
     },

@@ -10,7 +10,7 @@ os.makedirs(output_dir, exist_ok=True)
 os.makedirs(js_dir, exist_ok=True)
 
 # Define input file
-input_file = "outputs/cleaned_track_data.csv"
+input_file = "outputs/clean_start_list.csv"
 
 # Load CSV
 try:
@@ -179,7 +179,7 @@ def build_column_defs(event_list, raw_event_list):
     }, {
         "field": "TOTAL",
         "headerName": "Total",
-        "pinned": "right",
+        "pinned": "left",
         "cellStyle": { "fontWeight": "bold" },
         "sort": "desc",
         "valueFormatter": "x.toFixed(1)"
