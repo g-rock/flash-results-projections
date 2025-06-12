@@ -13,7 +13,7 @@
   },
   {
     "field": "TOTAL",
-    "headerName": "Total",
+    "headerName": "Points",
     "pinned": "left",
     "cellStyle": {
       "fontWeight": "bold"

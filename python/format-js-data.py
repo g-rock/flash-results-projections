@@ -176,7 +176,7 @@ def build_column_defs(event_list, raw_event_list):
         "pinned": "left",
     }, {
         "field": "TOTAL",
-        "headerName": "Total",
+        "headerName": "Points",
         "pinned": "left",
         "cellStyle": { "fontWeight": "bold" },
         "sort": "desc",
