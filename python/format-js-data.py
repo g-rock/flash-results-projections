@@ -168,20 +168,19 @@ def build_column_defs(event_list, raw_event_list):
         "headerName": "School",
         "field": "school",
         "pinned": "left",
-        "width": 160
+        "width": 80
     }, {
         "headerName": "Place",
         "field": "Place",
         "width": 80,
         "pinned": "left",
-        "sort": "asc",
-        "cellStyle": { "fontWeight": "bold" }
     }, {
         "field": "TOTAL",
         "headerName": "Total",
         "pinned": "left",
         "cellStyle": { "fontWeight": "bold" },
         "sort": "desc",
+        "width": 100,
         "valueFormatter": "x.toFixed(1)"
     }]
     
