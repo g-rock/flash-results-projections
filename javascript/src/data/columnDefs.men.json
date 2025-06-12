@@ -16,6 +16,16 @@
     }
   },
   {
+    "field": "TOTAL",
+    "headerName": "Total",
+    "pinned": "right",
+    "cellStyle": {
+      "fontWeight": "bold"
+    },
+    "sort": "desc",
+    "valueFormatter": "x.toFixed(1)"
+  },
+  {
     "field": "100 M",
     "headerName": "100 M",
     "valueFormatter": "x.toFixed(1)"
@@ -118,16 +128,6 @@
   {
     "field": "Triple Jump",
     "headerName": "Triple Jump",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "TOTAL",
-    "headerName": "Total",
-    "pinned": "right",
-    "cellStyle": {
-      "fontWeight": "bold"
-    },
-    "sort": "desc",
     "valueFormatter": "x.toFixed(1)"
   }
 ]

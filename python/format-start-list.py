@@ -203,6 +203,6 @@ def parse_track_event_data(input_dir, input_filename, output_csv_path):
 # Assuming 'mergedStartList.csv' is in the same directory as your Python script.
 input_directory = 'inputs' 
 input_file_name = 'mergedStartList.csv'
-output_file = 'js_data/cleaned_track_data.csv'
+output_file = 'outputs/clean_start_list.csv'
 
 parse_track_event_data(input_directory, input_file_name, output_file)

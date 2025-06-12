@@ -4,11 +4,13 @@ import os
 import re
 
 # Ensure target directory exists
-output_dir = "./js_data"
+output_dir = "./outputs"
+js_dir = '../javascript/src/data'
 os.makedirs(output_dir, exist_ok=True)
+os.makedirs(js_dir, exist_ok=True)
 
 # Define input file
-input_file = "js_data/cleaned_track_data.csv"
+input_file = "outputs/cleaned_track_data.csv"
 
 # Load CSV
 try:
@@ -125,6 +127,11 @@ def assign_scores_with_ties(group):
 print("Assigning scores with tie averaging logic...")
 df = df.groupby(['Event_sex', 'Event_name'], group_keys=False).apply(assign_scores_with_ties)
 print("✅ Score assignment with tie handling complete.")
+
+# Output per-athlete event scores before pivoting
+df.to_csv(os.path.join(output_dir, "per_athlete_event_scores.csv"), index=False)
+print("✅ Exported per_athlete_event_scores.csv for review.")
+
 # Build team totals
 pivot_df = (
     df.groupby(['Event_sex', 'Team_name', 'Event_name'])['score']
@@ -149,14 +156,6 @@ women_df = women_df[core_cols + women_event_cols]
 men_df = pivot_df[pivot_df['Event_sex'] == 'Men'].copy()
 men_df = men_df[core_cols + men_event_cols]
 
-# Export JSON data
-with open(os.path.join(output_dir, "womenData.json"), "w") as wf:
-    json.dump(women_df.to_dict(orient='records'), wf, indent=2)
-with open(os.path.join(output_dir, "menData.json"), "w") as mf:
-    json.dump(men_df.to_dict(orient='records'), mf, indent=2)
-
-print("✅ Exported womenData.json and menData.json.")
-
 # Column definitions for AG Grid
 women_events = sorted(df[df['Event_sex'] == 'Women']['Event_name'].unique())
 men_events = sorted(df[df['Event_sex'] == 'Men']['Event_name'].unique())
@@ -177,6 +176,13 @@ def build_column_defs(event_list, raw_event_list):
         "pinned": "left",
         "sort": "asc",
         "cellStyle": { "fontWeight": "bold" }
+    }, {
+        "field": "TOTAL",
+        "headerName": "Total",
+        "pinned": "right",
+        "cellStyle": { "fontWeight": "bold" },
+        "sort": "desc",
+        "valueFormatter": "x.toFixed(1)"
     }]
     
     defs += [{
@@ -184,14 +190,7 @@ def build_column_defs(event_list, raw_event_list):
         "headerName": strip_gender(raw),
         "valueFormatter": "x.toFixed(1)"
     } for raw in raw_event_list]
-    defs.append({
-        "field": "TOTAL",
-        "headerName": "Total",
-        "pinned": "right",
-        "cellStyle": { "fontWeight": "bold" },
-        "sort": "desc",
-        "valueFormatter": "x.toFixed(1)"
-    })
+
     return defs
 
 # Match display names to raw event columns
@@ -201,9 +200,13 @@ raw_men_events = sorted(df[df['Event_sex'] == 'Men']['Event_name'].unique())
 column_defs_women = build_column_defs(women_events, raw_women_events)
 column_defs_men = build_column_defs(men_events, raw_men_events)
 
-with open(os.path.join(output_dir, "columnDefs.women.json"), "w") as f:
-    json.dump(column_defs_women, f, indent=2)
-with open(os.path.join(output_dir, "columnDefs.men.json"), "w") as f:
-    json.dump(column_defs_men, f, indent=2)
 
-print("✅ Exported columnDefs.women.json and columnDefs.men.json.")
+# Export JSON data
+with open(os.path.join(js_dir, "womenData.json"), "w") as wf:
+    json.dump(women_df.to_dict(orient='records'), wf, indent=2)
+with open(os.path.join(js_dir, "menData.json"), "w") as mf:
+    json.dump(men_df.to_dict(orient='records'), mf, indent=2)
+with open(os.path.join(js_dir, "columnDefs.women.json"), "w") as f:
+    json.dump(column_defs_women, f, indent=2)
+with open(os.path.join(js_dir, "columnDefs.men.json"), "w") as f:
+    json.dump(column_defs_men, f, indent=2)
