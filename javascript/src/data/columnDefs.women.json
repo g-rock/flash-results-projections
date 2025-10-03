@@ -19,112 +19,66 @@
       "fontWeight": "bold"
     },
     "sort": "desc",
-    "width": 100,
-    "valueFormatter": "x.toFixed(1)"
+    "width": 100
   },
   {
     "field": "100 M",
-    "headerName": "100 M",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "100 M"
   },
   {
     "field": "100 M Hurdles",
-    "headerName": "100 M Hurdles",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "100 M Hurdles"
   },
   {
-    "field": "10000 M",
-    "headerName": "10000 M",
-    "valueFormatter": "x.toFixed(1)"
+    "field": "100 M Para WC",
+    "headerName": "100 M Para WC"
   },
   {
     "field": "1500 M",
-    "headerName": "1500 M",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "1500 M"
   },
   {
     "field": "200 M",
-    "headerName": "200 M",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "200 M"
   },
   {
     "field": "3000 M Steeple",
-    "headerName": "3000 M Steeple",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "3000 M Steeple"
   },
   {
     "field": "400 M",
-    "headerName": "400 M",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "400 M"
   },
   {
     "field": "400 M Hurdles",
-    "headerName": "400 M Hurdles",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "400 M Hurdles"
   },
   {
     "field": "4x100 M Relay",
-    "headerName": "4x100 M Relay",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "4x100 M Relay"
   },
   {
     "field": "4x400 M Relay",
-    "headerName": "4x400 M Relay",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "4x400 M Relay"
   },
   {
     "field": "5000 M",
-    "headerName": "5000 M",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "5000 M"
   },
   {
     "field": "800 M",
-    "headerName": "800 M",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "800 M"
   },
   {
     "field": "Discus",
-    "headerName": "Discus",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Hammer",
-    "headerName": "Hammer",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Heptathlon",
-    "headerName": "Heptathlon",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "Discus"
   },
   {
     "field": "High Jump",
-    "headerName": "High Jump",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Javelin",
-    "headerName": "Javelin",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Long Jump",
-    "headerName": "Long Jump",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Pole Vault",
-    "headerName": "Pole Vault",
-    "valueFormatter": "x.toFixed(1)"
-  },
-  {
-    "field": "Shot Put",
-    "headerName": "Shot Put",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "High Jump"
   },
   {
     "field": "Triple Jump",
-    "headerName": "Triple Jump",
-    "valueFormatter": "x.toFixed(1)"
+    "headerName": "Triple Jump"
   }
 ]

@@ -1,14 +1,7 @@
 [
   {
+    "Event_sex": "Women",
     "school": "ARIZ",
-    "Place": {
-      "projected": 11.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 18.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -68,18 +61,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 18.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 11.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "ARK",
-    "Place": {
-      "projected": 12.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 16.5,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -139,18 +133,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 16.5,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 12.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "AUB",
-    "Place": {
-      "projected": 27.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 8.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -210,373 +205,379 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "AZST",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
     },
     "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
-    }
-  },
-  {
-    "school": "BAMA",
-    "Place": {
-      "projected": 20.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 10.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 10.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
-    }
-  },
-  {
-    "school": "BOSU",
-    "Place": {
-      "projected": 50.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 1.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 1.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
-    }
-  },
-  {
-    "school": "BRWN",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
-    }
-  },
-  {
-    "school": "BUFF",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
-    }
-  },
-  {
-    "school": "BYU",
-    "Place": {
       "projected": 8.0,
       "actual": 0
     },
-    "TOTAL": {
-      "projected": 22.5,
+    "Place": {
+      "projected": 27.0,
+      "actual": 0
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "AZST",
+    "100 M": {
+      "projected": 0.0,
       "actual": 0
     },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "BAMA",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 10.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 10.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 20.0,
+      "actual": 0
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "BOSU",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 1.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 1.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 50.0,
+      "actual": 0
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "BRWN",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "BUFF",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "BYU",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -636,18 +637,91 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 22.5,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 8.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "CAL",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 3.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 3.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 42.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 3.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "CINC",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -697,7 +771,7 @@
       "actual": 0
     },
     "Discus": {
-      "projected": 3.0,
+      "projected": 1.0,
       "actual": 0
     },
     "High Jump": {
@@ -707,89 +781,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "CINC",
+    },
+    "TOTAL": {
+      "projected": 1.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 50.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 1.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 1.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "CLEM",
-    "Place": {
-      "projected": 25.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 8.5,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -849,18 +853,19 @@
     "Triple Jump": {
       "projected": 8.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 8.5,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 25.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "CMU",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -920,18 +925,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "COST",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -991,18 +997,91 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "DUKE",
-    "Place": {
-      "projected": 29.0,
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 2.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 5.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
       "actual": 0
     },
     "TOTAL": {
       "projected": 7.0,
       "actual": 0
     },
+    "Place": {
+      "projected": 29.0,
+      "actual": 0
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "EKU",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -1040,7 +1119,7 @@
       "actual": 0
     },
     "4x400 M Relay": {
-      "projected": 2.0,
+      "projected": 0.0,
       "actual": 0
     },
     "5000 M": {
@@ -1048,7 +1127,7 @@
       "actual": 0
     },
     "800 M": {
-      "projected": 5.0,
+      "projected": 0.0,
       "actual": 0
     },
     "Discus": {
@@ -1062,18 +1141,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "EKU",
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 55.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "FIU",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -1123,7 +1203,7 @@
       "actual": 0
     },
     "Discus": {
-      "projected": 0.0,
+      "projected": 5.0,
       "actual": 0
     },
     "High Jump": {
@@ -1133,18 +1213,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "FIU",
+    },
+    "TOTAL": {
+      "projected": 5.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 37.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 5.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "FRES",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -1194,7 +1275,7 @@
       "actual": 0
     },
     "Discus": {
-      "projected": 5.0,
+      "projected": 6.0,
       "actual": 0
     },
     "High Jump": {
@@ -1204,20 +1285,21 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "FRES",
+    },
+    "TOTAL": {
+      "projected": 6.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 31.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 6.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "FSU",
     "100 M": {
-      "projected": 0.0,
+      "projected": 2.0,
       "actual": 0
     },
     "100 M Hurdles": {
@@ -1245,11 +1327,11 @@
       "actual": 0
     },
     "400 M Hurdles": {
-      "projected": 0.0,
+      "projected": 4.0,
       "actual": 0
     },
     "4x100 M Relay": {
-      "projected": 0.0,
+      "projected": 6.0,
       "actual": 0
     },
     "4x400 M Relay": {
@@ -1265,7 +1347,7 @@
       "actual": 0
     },
     "Discus": {
-      "projected": 6.0,
+      "projected": 0.0,
       "actual": 0
     },
     "High Jump": {
@@ -1274,21 +1356,22 @@
     },
     "Triple Jump": {
       "projected": 0.0,
-      "actual": 0
-    }
-  },
-  {
-    "school": "FSU",
-    "Place": {
-      "projected": 16.0,
       "actual": 0
     },
     "TOTAL": {
       "projected": 12.0,
       "actual": 0
     },
+    "Place": {
+      "projected": 16.0,
+      "actual": 0
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "GT",
     "100 M": {
-      "projected": 2.0,
+      "projected": 0.0,
       "actual": 0
     },
     "100 M Hurdles": {
@@ -1316,11 +1399,11 @@
       "actual": 0
     },
     "400 M Hurdles": {
-      "projected": 4.0,
+      "projected": 0.0,
       "actual": 0
     },
     "4x100 M Relay": {
-      "projected": 6.0,
+      "projected": 0.0,
       "actual": 0
     },
     "4x400 M Relay": {
@@ -1346,89 +1429,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "GT",
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 55.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "GTWN",
-    "Place": {
-      "projected": 31.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 6.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -1488,18 +1501,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "HARV",
-    "Place": {
-      "projected": 31.0,
-      "actual": 0
     },
     "TOTAL": {
       "projected": 6.0,
       "actual": 0
     },
+    "Place": {
+      "projected": 31.0,
+      "actual": 0
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "HARV",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -1559,24 +1573,97 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 6.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 31.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "HOW",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 4.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 4.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 39.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 4.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "IAST",
     "100 M": {
       "projected": 0.0,
       "actual": 0
     },
     "100 M Hurdles": {
-      "projected": 4.0,
+      "projected": 0.0,
       "actual": 0
     },
     "100 M Para WC": {
@@ -1596,7 +1683,7 @@
       "actual": 0
     },
     "400 M": {
-      "projected": 0.0,
+      "projected": 1.0,
       "actual": 0
     },
     "400 M Hurdles": {
@@ -1630,89 +1717,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "IAST",
+    },
+    "TOTAL": {
+      "projected": 1.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 50.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 1.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 1.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "ILL",
-    "Place": {
-      "projected": 5.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 26.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -1772,18 +1789,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 26.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 5.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "IOWA",
-    "Place": {
-      "projected": 17.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 11.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -1843,18 +1861,91 @@
     "Triple Jump": {
       "projected": 3.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 11.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 17.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "IU",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 1.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 1.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 50.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 1.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "KENT",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -1900,7 +1991,7 @@
       "actual": 0
     },
     "800 M": {
-      "projected": 1.0,
+      "projected": 0.0,
       "actual": 0
     },
     "Discus": {
@@ -1914,18 +2005,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "KENT",
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 55.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "KSST",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -1979,24 +2071,25 @@
       "actual": 0
     },
     "High Jump": {
-      "projected": 0.0,
+      "projected": 3.0,
       "actual": 0
     },
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "KSST",
+    },
+    "TOTAL": {
+      "projected": 3.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 42.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 3.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "KU",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -2046,28 +2139,29 @@
       "actual": 0
     },
     "Discus": {
-      "projected": 0.0,
+      "projected": 2.0,
       "actual": 0
     },
     "High Jump": {
-      "projected": 3.0,
+      "projected": 0.0,
       "actual": 0
     },
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "KU",
+    },
+    "TOTAL": {
+      "projected": 2.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 48.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 2.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "LOU",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -2117,7 +2211,7 @@
       "actual": 0
     },
     "Discus": {
-      "projected": 2.0,
+      "projected": 10.0,
       "actual": 0
     },
     "High Jump": {
@@ -2127,89 +2221,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "LOU",
+    },
+    "TOTAL": {
+      "projected": 10.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 20.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 10.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 10.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "LSU",
-    "Place": {
-      "projected": 7.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 25.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 5.5,
       "actual": 0
@@ -2269,18 +2293,91 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 25.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 7.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "MIAF",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 5.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 5.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 37.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 5.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "MICH",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -2310,7 +2407,7 @@
       "actual": 0
     },
     "400 M Hurdles": {
-      "projected": 5.0,
+      "projected": 10.0,
       "actual": 0
     },
     "4x100 M Relay": {
@@ -2340,18 +2437,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "MICH",
+    },
+    "TOTAL": {
+      "projected": 10.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 20.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 10.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "MIST",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -2373,7 +2471,7 @@
       "actual": 0
     },
     "3000 M Steeple": {
-      "projected": 0.0,
+      "projected": 3.0,
       "actual": 0
     },
     "400 M": {
@@ -2381,7 +2479,7 @@
       "actual": 0
     },
     "400 M Hurdles": {
-      "projected": 10.0,
+      "projected": 0.0,
       "actual": 0
     },
     "4x100 M Relay": {
@@ -2411,18 +2509,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "MIST",
+    },
+    "TOTAL": {
+      "projected": 3.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 42.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 3.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "MIZZ",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -2444,7 +2543,7 @@
       "actual": 0
     },
     "3000 M Steeple": {
-      "projected": 3.0,
+      "projected": 0.0,
       "actual": 0
     },
     "400 M": {
@@ -2476,24 +2575,25 @@
       "actual": 0
     },
     "High Jump": {
-      "projected": 0.0,
+      "projected": 6.0,
       "actual": 0
     },
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "MIZZ",
+    },
+    "TOTAL": {
+      "projected": 6.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 31.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 6.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "MURR",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -2547,24 +2647,25 @@
       "actual": 0
     },
     "High Jump": {
-      "projected": 6.0,
+      "projected": 0.0,
       "actual": 0
     },
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "MURR",
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 55.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "NAU",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -2578,7 +2679,7 @@
       "actual": 0
     },
     "1500 M": {
-      "projected": 0.0,
+      "projected": 8.0,
       "actual": 0
     },
     "200 M": {
@@ -2624,18 +2725,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "NAU",
+    },
+    "TOTAL": {
+      "projected": 8.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 27.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 8.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "NCAT",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -2649,7 +2751,7 @@
       "actual": 0
     },
     "1500 M": {
-      "projected": 8.0,
+      "projected": 0.0,
       "actual": 0
     },
     "200 M": {
@@ -2695,18 +2797,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "NCAT",
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 55.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "NCSU",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -2728,7 +2831,7 @@
       "actual": 0
     },
     "3000 M Steeple": {
-      "projected": 0.0,
+      "projected": 6.0,
       "actual": 0
     },
     "400 M": {
@@ -2748,7 +2851,7 @@
       "actual": 0
     },
     "5000 M": {
-      "projected": 0.0,
+      "projected": 8.0,
       "actual": 0
     },
     "800 M": {
@@ -2765,19 +2868,20 @@
     },
     "Triple Jump": {
       "projected": 0.0,
-      "actual": 0
-    }
-  },
-  {
-    "school": "NCSU",
-    "Place": {
-      "projected": 13.0,
       "actual": 0
     },
     "TOTAL": {
       "projected": 14.0,
       "actual": 0
     },
+    "Place": {
+      "projected": 13.0,
+      "actual": 0
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "NEB",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -2799,7 +2903,7 @@
       "actual": 0
     },
     "3000 M Steeple": {
-      "projected": 6.0,
+      "projected": 0.0,
       "actual": 0
     },
     "400 M": {
@@ -2819,7 +2923,7 @@
       "actual": 0
     },
     "5000 M": {
-      "projected": 8.0,
+      "projected": 0.0,
       "actual": 0
     },
     "800 M": {
@@ -2831,24 +2935,25 @@
       "actual": 0
     },
     "High Jump": {
-      "projected": 0.0,
+      "projected": 3.0,
       "actual": 0
     },
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "NEB",
+    },
+    "TOTAL": {
+      "projected": 3.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 42.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 3.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "NOVA",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -2902,95 +3007,25 @@
       "actual": 0
     },
     "High Jump": {
-      "projected": 3.0,
+      "projected": 0.0,
       "actual": 0
     },
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "NOVA",
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 55.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "OHST",
-    "Place": {
-      "projected": 25.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 8.5,
-      "actual": 0
-    },
     "100 M": {
       "projected": 5.5,
       "actual": 0
@@ -3050,18 +3085,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 8.5,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 25.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "OKST",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -3121,18 +3157,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "OU",
-    "Place": {
-      "projected": 14.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 13.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -3192,18 +3229,19 @@
     "Triple Jump": {
       "projected": 8.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 13.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 14.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "PENN",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -3263,18 +3301,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "PITT",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -3334,18 +3373,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "PORT",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -3405,18 +3445,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "PRIN",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -3476,89 +3517,91 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "PROV",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 4.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 4.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 39.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 4.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 4.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "PSU",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -3618,18 +3661,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "RICE",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -3689,18 +3733,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "SCAR",
-    "Place": {
-      "projected": 1.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 43.5,
-      "actual": 0
-    },
     "100 M": {
       "projected": 9.0,
       "actual": 0
@@ -3760,18 +3805,91 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 43.5,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 1.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "SJON",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 55.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "SJSU",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -3829,91 +3947,21 @@
       "actual": 0
     },
     "Triple Jump": {
-      "projected": 0.0,
+      "projected": 5.5,
       "actual": 0
-    }
-  },
-  {
-    "school": "SJSU",
+    },
+    "TOTAL": {
+      "projected": 5.5,
+      "actual": 0
+    },
     "Place": {
       "projected": 36.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 5.5,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 5.5,
-      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "STAN",
-    "Place": {
-      "projected": 23.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 9.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -3973,18 +4021,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 9.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 23.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "SUU",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4044,18 +4093,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "TAMU",
-    "Place": {
-      "projected": 5.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 26.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4115,18 +4165,19 @@
     "Triple Jump": {
       "projected": 8.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 26.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 5.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "TARL",
-    "Place": {
-      "projected": 54.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.5,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.5,
       "actual": 0
@@ -4186,18 +4237,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.5,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 54.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "TCU",
-    "Place": {
-      "projected": 39.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 4.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4257,18 +4309,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 4.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 39.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "TENN",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4328,18 +4381,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "TEX",
-    "Place": {
-      "projected": 9.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 21.5,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4399,18 +4453,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 21.5,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 9.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "TTU",
-    "Place": {
-      "projected": 10.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 20.5,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4470,18 +4525,19 @@
     "Triple Jump": {
       "projected": 6.5,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 20.5,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 10.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "UCI",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4541,18 +4597,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "UCLA",
-    "Place": {
-      "projected": 23.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 9.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4612,18 +4669,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 9.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 23.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "UF",
-    "Place": {
-      "projected": 4.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 28.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 9.0,
       "actual": 0
@@ -4683,18 +4741,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 28.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 4.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "UGA",
-    "Place": {
-      "projected": 3.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 35.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4754,18 +4813,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 35.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 3.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "UK",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4825,18 +4885,91 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "UNC",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 3.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 3.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 42.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 3.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "UNF",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4882,7 +5015,7 @@
       "actual": 0
     },
     "800 M": {
-      "projected": 3.0,
+      "projected": 6.0,
       "actual": 0
     },
     "Discus": {
@@ -4896,18 +5029,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "UNF",
+    },
+    "TOTAL": {
+      "projected": 6.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 31.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 6.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "UNLV",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -4953,7 +5087,7 @@
       "actual": 0
     },
     "800 M": {
-      "projected": 6.0,
+      "projected": 0.0,
       "actual": 0
     },
     "Discus": {
@@ -4967,18 +5101,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "UNLV",
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 55.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "UNM",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -5020,7 +5155,7 @@
       "actual": 0
     },
     "5000 M": {
-      "projected": 0.0,
+      "projected": 13.0,
       "actual": 0
     },
     "800 M": {
@@ -5038,89 +5173,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "UNM",
+    },
+    "TOTAL": {
+      "projected": 13.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 14.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 13.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 13.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "UO",
-    "Place": {
-      "projected": 17.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 11.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -5180,18 +5245,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 11.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 17.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "USC",
-    "Place": {
-      "projected": 2.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 35.5,
-      "actual": 0
-    },
     "100 M": {
       "projected": 7.5,
       "actual": 0
@@ -5251,18 +5317,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 35.5,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 2.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "UTSA",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -5322,18 +5389,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "UTST",
-    "Place": {
-      "projected": 55.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -5393,18 +5461,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 55.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "UVA",
-    "Place": {
-      "projected": 17.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 11.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -5464,18 +5533,91 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 11.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 17.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "VAND",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 3.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 3.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 42.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 3.0,
-      "actual": 0
-    },
+    }
+  },
+  {
+    "Event_sex": "Women",
+    "school": "VT",
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -5505,7 +5647,7 @@
       "actual": 0
     },
     "400 M Hurdles": {
-      "projected": 3.0,
+      "projected": 0.0,
       "actual": 0
     },
     "4x100 M Relay": {
@@ -5535,89 +5677,19 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
-    }
-  },
-  {
-    "school": "VT",
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 55.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "WASH",
-    "Place": {
-      "projected": 29.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 7.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -5677,89 +5749,91 @@
     "Triple Jump": {
       "projected": 0.0,
       "actual": 0
+    },
+    "TOTAL": {
+      "projected": 7.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 29.0,
+      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "WISC",
+    "100 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "100 M Para WC": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "1500 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "200 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "3000 M Steeple": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "400 M Hurdles": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x100 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "4x400 M Relay": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "5000 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "800 M": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Discus": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "High Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "Triple Jump": {
+      "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 0.0,
+      "actual": 0
+    },
     "Place": {
       "projected": 55.0,
       "actual": 0
-    },
-    "TOTAL": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "100 M Para WC": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "1500 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "200 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "3000 M Steeple": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "400 M Hurdles": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x100 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "4x400 M Relay": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "5000 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "800 M": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Discus": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "High Jump": {
-      "projected": 0.0,
-      "actual": 0
-    },
-    "Triple Jump": {
-      "projected": 0.0,
-      "actual": 0
     }
   },
   {
+    "Event_sex": "Women",
     "school": "WVU",
-    "Place": {
-      "projected": 48.0,
-      "actual": 0
-    },
-    "TOTAL": {
-      "projected": 2.0,
-      "actual": 0
-    },
     "100 M": {
       "projected": 0.0,
       "actual": 0
@@ -5818,6 +5892,14 @@
     },
     "Triple Jump": {
       "projected": 0.0,
+      "actual": 0
+    },
+    "TOTAL": {
+      "projected": 2.0,
+      "actual": 0
+    },
+    "Place": {
+      "projected": 48.0,
       "actual": 0
     }
   }

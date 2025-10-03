@@ -7,7 +7,6 @@
           <h1>NCAA Championship. Hayward Field Eugene Oregon</h1>
         </div>
       </div>
-      <!-- <button @click="logout" class="logout-button">Logout</button> -->
     </header>
 
     <div class="tabs">
@@ -25,129 +24,93 @@
       </button>
     </div>
 
-    <ProjectionsTable
-      v-if="selectedTab === 'Women'"
-      title="Women"
-      :rowData="womenData"
-      :columnDefs="columnDefsWomen"
-      :defaultColDef="defaultColDef"
-    />
+    <div class="score-toggle">
+      <label>
+        <input type="radio" value="projected" v-model="config.viewMode" />
+        Projected
+      </label>
+      <label>
+        <input type="radio" value="actual" v-model="config.viewMode" />
+        Actual
+      </label>
+    </div>
+
+    <!-- Loading / Error states -->
+    <div v-if="loading">Loading meet data...</div>
+    <div v-if="error" style="color: red;">Error loading data: {{ error }}</div>
 
     <ProjectionsTable
-      v-if="selectedTab === 'Men'"
-      title="Men"
-      :rowData="menData"
-      :columnDefs="columnDefsMen"
+      v-if="!loading && !error"
+      :title="selectedTab"
+      :rowData="selectedTab === 'Women' ? womenData : menData"
+      :columnDefs="selectedTab === 'Women' ? columnDefsWomen : columnDefsMen"
       :defaultColDef="defaultColDef"
+      :viewMode="config.viewMode"
     />
-
-
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useConfigStore } from '@/stores/config.store'
 import ProjectionsTable from '@/components/ProjectionsTable.vue'
-import { useRouter } from 'vue-router'
-import { signOut } from 'firebase/auth'
-import { auth } from '@/firebase'
-import { ref } from 'vue'
-
-// 📥 Load JSON data
-import columnDefsWomen from '@/data/columnDefs.women.json'
-import columnDefsMen from '@/data/columnDefs.men.json'
-import womenData from '@/data/womenData.json'
-import menData from '@/data/menData.json'
 
 const selectedTab = ref('Women')
+const config = useConfigStore()
 
-const router = useRouter()
+// Get meetName from route params
+const route = useRoute()
+const meetName = ref(route.params.meetName || '')
 
-const logout = async () => {
-  try {
-    await signOut(auth)
-    router.push('/login')
-  } catch (err) {
-    console.error('Logout failed:', err)
-  }
-}
+// Reactive state for JSON data
+const womenData = ref([])
+const menData = ref([])
+const columnDefsWomen = ref([])
+const columnDefsMen = ref([])
+const loading = ref(true)
+const error = ref(null)
 
 const defaultColDef = {
   resizable: false,
   sortable: true,
   filter: false,
 }
+
+// Helper to fetch JSON from FastAPI
+const fetchJSON = async (url) => {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
+  return await res.json()
+}
+
+const fetchMeetData = async () => {
+  if (!meetName.value) return
+  loading.value = true
+  error.value = null
+  try {
+    const [wData, mData, colW, colM] = await Promise.all([
+      fetchJSON(`http://127.0.0.1:8000/get_meet_data/${meetName.value}/womenData`),
+      fetchJSON(`http://127.0.0.1:8000/get_meet_data/${meetName.value}/menData`),
+      fetchJSON(`http://127.0.0.1:8000/get_meet_data/${meetName.value}/columnDefs.women`),
+      fetchJSON(`http://127.0.0.1:8000/get_meet_data/${meetName.value}/columnDefs.men`)
+    ])
+    womenData.value = wData
+    menData.value = mData
+    columnDefsWomen.value = colW
+    columnDefsMen.value = colM
+  } catch (err) {
+    error.value = err.message
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Fetch when component mounts and if route param changes
+onMounted(fetchMeetData)
+watch(() => route.params.meetName, (newVal) => {
+  meetName.value = newVal
+  fetchMeetData()
+})
 </script>
-
-
-<style scoped>
-.dashboard {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
-.acc-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #0f2c52;
-  color: white;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-}
-
-.acc-logo {
-  width: 80px;
-  height: auto;
-  margin-right: 20px;
-}
-
-.header-text h1 {
-  margin: 0;
-  font-size: 24px;
-}
-
-.header-text p {
-  margin: 5px 0 0;
-  font-size: 16px;
-}
-
-.logout-button {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  font-size: 14px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.logout-button:hover {
-  background-color: #c0392b;
-}
-
-.tabs {
-  margin-bottom: 20px;
-}
-
-.tabs button {
-  background: #ddd;
-  border: none;
-  padding: 10px 20px;
-  margin-right: 10px;
-  font-size: 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.tabs button.active {
-  background: #0f2c52;
-  color: white;
-}
-
-</style>

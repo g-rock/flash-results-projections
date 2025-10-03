@@ -1,18 +1,22 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '@/views/Login.vue'
+import Home from '@/views/Home.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import { auth } from '@/firebase'
 import { waitForAuthReady } from '@/auth'
 
 const routes = [
+  { path: '/', component: Home },
   { path: '/login', component: Login },
   {
-    path: '/dashboard',
+    path: '/dashboard/:meetName',
+    name: 'Dashboard',
     component: Dashboard,
+    props: true,
     // meta: { requiresAuth: true },
   },
-  { path: '/', redirect: '/dashboard' },
 ]
+
 
 const router = createRouter({
   history: createWebHistory(),
