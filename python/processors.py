@@ -3,10 +3,28 @@ import re
 import json
 import pandas as pd
 from google.cloud import storage
+from google.cloud import firestore
+from google.oauth2 import service_account
+from tempfile import NamedTemporaryFile
 
 # -----------------------------
 # GCS functions
 # -----------------------------
+
+def get_firestore_client(service_account_path):
+    """
+    Returns a Firestore client. 
+    
+    If service_account_path is provided, uses that key.
+    Otherwise, uses default credentials (e.g., Cloud Run / GCP environment).
+    """
+    if service_account_path and os.path.isfile(service_account_path):
+        creds = service_account.Credentials.from_service_account_file(service_account_path)
+        return firestore.Client(credentials=creds, project=creds.project_id)
+    else:
+        # Use default credentials (works on GCP)
+        return firestore.Client()
+
 def upload_file_to_gcs(client, bucket_name, local_file_path, blob_name):
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
@@ -34,6 +52,21 @@ def get_blob_json(client, bucket_name, blob_name):
 # -----------------------------
 # Track meet functions
 # -----------------------------
+
+def process_merged_start_list(file_path: str):
+    """
+    Processes a local CSV file directly (no GCS download).
+    
+    Args:
+        file_path: Path to the local CSV file.
+    """
+    print(f"Processing file: {file_path}")
+
+    df_parsed = parse_track_event_data(os.path.dirname(file_path), os.path.basename(file_path))
+    df_cleaned = clean_and_score(df_parsed)
+
+    return df_cleaned
+
 def parse_track_event_data(input_dir, input_filename):
     input_csv_path = os.path.join(input_dir, input_filename)
     cleaned_rows = []
@@ -223,17 +256,17 @@ def clean_and_score(df):
     all_event_cols = [col for col in pivot_df.columns if col not in ['Event_sex', 'school', 'TOTAL', 'Place']]
 
     # Wrap projected/actual
-    def wrap_with_projected(df, event_cols):
-        for col in event_cols:
-            df[col] = df[col].apply(lambda x: {"projected": float(x) if pd.notna(x) else 0, "actual": 0})
-        for col in ["TOTAL", "Place"]:
-            df[col] = df[col].apply(lambda x: {"projected": float(x) if pd.notna(x) else 0, "actual": 0})
-        return df
+    # def wrap_with_projected(df, event_cols):
+    #     for col in event_cols:
+    #         df[col] = df[col].apply(lambda x: {"projected": float(x) if pd.notna(x) else 0, "actual": 0})
+    #     for col in ["TOTAL", "Place"]:
+    #         df[col] = df[col].apply(lambda x: {"projected": float(x) if pd.notna(x) else 0, "actual": 0})
+    #     return df
 
-    women_df = wrap_with_projected(pivot_df[pivot_df['Event_sex'] == 'Women'].copy(), [c for c in all_event_cols if c in df[df['Event_sex']=='Women']['Event_name'].unique()])
-    men_df = wrap_with_projected(pivot_df[pivot_df['Event_sex'] == 'Men'].copy(), [c for c in all_event_cols if c in df[df['Event_sex']=='Men']['Event_name'].unique()])
+    # women_df = wrap_with_projected(pivot_df[pivot_df['Event_sex'] == 'Women'].copy(), [c for c in all_event_cols if c in df[df['Event_sex']=='Women']['Event_name'].unique()])
+    # men_df = wrap_with_projected(pivot_df[pivot_df['Event_sex'] == 'Men'].copy(), [c for c in all_event_cols if c in df[df['Event_sex']=='Men']['Event_name'].unique()])
 
-    return df, women_df, men_df
+    return df
 
 def build_column_defs(df, gender):
     events = sorted(df[df['Event_sex'] == gender]['Event_name'].unique())
