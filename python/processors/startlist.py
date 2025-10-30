@@ -1,7 +1,8 @@
 import os
 import re
 import pandas as pd
-from processors.gcs import get_firestore_client
+from processors.gcs import get_firestore_client, slugify
+from .constants import EVENT_TYPE_SORTING_RULES, POINTS_SYSTEM
 
 def process_merged_start_list(file_path: str, meet_year: str, meet_id: str, meet_name: str):
     """
@@ -16,7 +17,7 @@ def process_merged_start_list(file_path: str, meet_year: str, meet_id: str, meet
     print(f"Processing file: {file_path}")
 
     df_parsed = parse_start_list(os.path.dirname(file_path), os.path.basename(file_path))
-    nested_data_by_gender = clean_and_score_start_list(df_parsed)
+    scored_data_by_gender = clean_and_score_start_list(df_parsed)
     db = get_firestore_client()
     meet_ref = db.collection("meets").document(meet_id)
     meet_ref.set({
@@ -25,12 +26,13 @@ def process_merged_start_list(file_path: str, meet_year: str, meet_id: str, meet
         "year": meet_year
     })
 
-    for gender, events in nested_data_by_gender.items():
+    for gender, events in scored_data_by_gender.items():
         # Create a sub-collection per gender
-        gender_collection_ref = meet_ref.collection(gender)
-        
+        gender_key = slugify(gender)
+        gender_collection_ref = meet_ref.collection(gender_key)
         for event_name, records in events.items():
-            event_doc_ref = gender_collection_ref.document(event_name)
+            event_name_key = slugify(event_name)
+            event_doc_ref = gender_collection_ref.document(event_name_key)
             event_doc_ref.set({
                 "gender": gender,
                 "event_name": event_name,
@@ -192,44 +194,40 @@ def clean_and_score_start_list(df):
     df['seed_numeric'] = df['Seed'].apply(parse_seed)
 
     # Sorting rules
-    event_type_sorting_rules = {
-        '4x100 M Relay': True, '1500 M': True, '110 M Hurdles': True, '100 M': True,
-        '400 M': True, '800 M': True, '3000 M Steeple': True, '200 M': True,
-        '10000 M': True, '4x400 M Relay': True, '4x100': True, '4x400': True,
-        'Heptathlon': False, 'Decathlon': False,
-        'Hammer': False, 'Pole Vault': False, 'Javelin': False, 'Long Jump': False,
-        'Shot Put': False, 'Discus': False, 'High Jump': False, 'Triple Jump': False,
-    }
-    df['is_lower_better'] = df['event_name'].apply(lambda x: event_type_sorting_rules.get(x, True))
+    df['is_lower_better'] = df['event_name'].apply(lambda x: EVENT_TYPE_SORTING_RULES.get(x, True))
 
     # Assign rank and score
-    POINTS_SYSTEM = {1: 10, 2: 8, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1}
     def assign_scores(group):
-        ascending = group['is_lower_better'].iloc[0]
-        group = group.sort_values(by='seed_numeric', ascending=ascending).copy()
-        group['Place'] = group['seed_numeric'].rank(method='min', ascending=ascending, na_option='bottom').astype(int)
-        scores = []
-        grouped_by_place = group.groupby('Place')
-        for place, tied_rows in grouped_by_place:
-            if place > 8:
-                score = 0
-            else:
-                num_tied = len(tied_rows)
-                ranks_involved = list(range(place, place + num_tied))
-                total_points = sum(POINTS_SYSTEM.get(r, 0) for r in ranks_involved)
-                score = total_points / num_tied
-            scores.extend([score] * len(tied_rows))
-        group['Score'] = scores
-        group['Athlete'] = group['first_name'] + ' ' + group['last_name']
-        group['Name'] = group['team_abbr']  # or use 'team_name' if preferred
-        return group[['Name', 'Score', 'Place', 'Athlete']]
+      ascending = group['is_lower_better'].iloc[0]
+      group = group.sort_values(by='seed_numeric', ascending=ascending).copy()
+      
+      # Drop exact duplicate athlete rows
+      group = group.drop_duplicates(subset=['first_name', 'last_name', 'team_abbr'])
+      
+      group['place'] = group['seed_numeric'].rank(method='min', ascending=ascending, na_option='bottom').astype(int)
+      scores = []
+      grouped_by_place = group.groupby('place')
+      for place, tied_rows in grouped_by_place:
+          if place > 8:
+              score = 0
+          else:
+              num_tied = len(tied_rows)
+              ranks_involved = list(range(place, place + num_tied))
+              total_points = sum(POINTS_SYSTEM.get(r, 0) for r in ranks_involved)
+              score = total_points / num_tied
+          scores.extend([score] * len(tied_rows))
+      group['score'] = scores
+      group['athlete'] = group['first_name'] + ' ' + group['last_name']
+      
+      return group[['team_abbr', 'score', 'place', 'athlete']]
 
     nested_data = {}
     for gender in df['event_gender'].unique():
         nested_data[gender] = {}
         events = df[df['event_gender'] == gender]['event_name'].unique()
         for event in events:
-            event_df = df[df['event_name'] == event]
+            # Filter by both gender and event name
+            event_df = df[(df['event_gender'] == gender) & (df['event_name'] == event)]
             scored_df = assign_scores(event_df)
             nested_data[gender][event] = scored_df.to_dict(orient='records')
 

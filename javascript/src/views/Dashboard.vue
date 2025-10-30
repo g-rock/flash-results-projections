@@ -1,49 +1,46 @@
 <template>
   <div class="dashboard">
-    <header class="acc-header">
-      <div class="header-left">
-        <img src="@/assets/ncaa.svg" alt="ACC Logo" class="acc-logo" />
-        <div class="header-text">
-          <h1>NCAA Championship. Hayward Field Eugene Oregon</h1>
-        </div>
-      </div>
-    </header>
+    <div class="header-text">
+      <h1>{{ currentMeet?.name || 'Loading...' }}</h1>
+      <span>Meet ID: {{ currentMeet?.id }}</span>
+    </div>
 
+    <div class="status">
+      <h3>Score Status</h3>
+      <span>🔵 | Startlist Projection</span><br>
+      <span>🟣 | Prelim Projection</span><br>
+      <span>🟡 | Semis Projection</span><br>
+      <span>🟢 | Scored</span><br>
+    </div>
+
+    <!-- Gender Tabs -->
     <div class="tabs">
       <button
-        :class="{ active: selectedTab === 'Women' }"
-        @click="selectedTab = 'Women'"
+        :class="{ active: config.selectedGender === 'women' }"
+        @click="config.setSelectedGender('women')"
       >
         Women
       </button>
       <button
-        :class="{ active: selectedTab === 'Men' }"
-        @click="selectedTab = 'Men'"
+        :class="{ active: config.selectedGender === 'men' }"
+        @click="config.setSelectedGender('men')"
       >
         Men
       </button>
     </div>
 
-    <div class="score-toggle">
-      <label>
-        <input type="radio" value="projected" v-model="config.viewMode" />
-        Projected
-      </label>
-      <label>
-        <input type="radio" value="actual" v-model="config.viewMode" />
-        Actual
-      </label>
+    <!-- Loading / Error -->
+    <div v-if="config.loadingEvents">Loading events...</div>
+    <div v-if="config.eventsError" style="color: red;">
+      Error loading events: {{ config.eventsError }}
     </div>
 
-    <!-- Loading / Error states -->
-    <div v-if="loading">Loading meet data...</div>
-    <div v-if="error" style="color: red;">Error loading data: {{ error }}</div>
-
+    <!-- AG Grid Table -->
     <ProjectionsTable
-      v-if="!loading && !error"
-      :title="selectedTab"
-      :rowData="selectedTab === 'Women' ? womenData : menData"
-      :columnDefs="selectedTab === 'Women' ? columnDefsWomen : columnDefsMen"
+      v-if="!config.loadingEvents && !config.eventsError"
+      :title="config.selectedGender"
+      :rowData="config.gridRowData"
+      :columnDefs="config.columnDefs"
       :defaultColDef="defaultColDef"
       :viewMode="config.viewMode"
     />
@@ -51,66 +48,82 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useConfigStore } from '@/stores/config.store'
 import ProjectionsTable from '@/components/ProjectionsTable.vue'
 
-const selectedTab = ref('Women')
 const config = useConfigStore()
-
-// Get meetName from route params
 const route = useRoute()
-const meetName = ref(route.params.meetName || '')
 
-// Reactive state for JSON data
-const womenData = ref([])
-const menData = ref([])
-const columnDefsWomen = ref([])
-const columnDefsMen = ref([])
-const loading = ref(true)
-const error = ref(null)
+// Current meet based on route param
+const currentMeet = computed(() =>
+  config.meets.find(meet => meet.id === route.params.meetId)
+)
+
+// Load events for the current meet
+const loadEvents = () => {
+  const meetId = route.params.meetId
+  if (meetId) config.fetchEvents(meetId)
+}
+
+// Watch for gender change or route change
+watch(
+  [() => config.selectedGender, () => route.params.meetId],
+  () => loadEvents()
+)
+
+onMounted(() => {
+  if (!config.meets.length) {
+    config.fetchMeets().then(loadEvents)
+  } else {
+    loadEvents()
+  }
+})
 
 const defaultColDef = {
-  resizable: false,
+  resizable: true,
   sortable: true,
   filter: false,
 }
-
-// Helper to fetch JSON from FastAPI
-const fetchJSON = async (url) => {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-  return await res.json()
-}
-
-const fetchMeetData = async () => {
-  if (!meetName.value) return
-  loading.value = true
-  error.value = null
-  try {
-    const [wData, mData, colW, colM] = await Promise.all([
-      fetchJSON(`http://127.0.0.1:8000/get_meet_data/${meetName.value}/womenData`),
-      fetchJSON(`http://127.0.0.1:8000/get_meet_data/${meetName.value}/menData`),
-      fetchJSON(`http://127.0.0.1:8000/get_meet_data/${meetName.value}/columnDefs.women`),
-      fetchJSON(`http://127.0.0.1:8000/get_meet_data/${meetName.value}/columnDefs.men`)
-    ])
-    womenData.value = wData
-    menData.value = mData
-    columnDefsWomen.value = colW
-    columnDefsMen.value = colM
-  } catch (err) {
-    error.value = err.message
-    console.error(err)
-  } finally {
-    loading.value = false
-  }
-}
-
-// Fetch when component mounts and if route param changes
-onMounted(fetchMeetData)
-watch(() => route.params.meetName, (newVal) => {
-  meetName.value = newVal
-  fetchMeetData()
-})
 </script>
+<style scoped>
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+  gap: 10px;
+}
+
+.tabs button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: #666;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.tabs button:hover {
+  color: #000;
+}
+
+.tabs button.active {
+  color: #000;
+  font-weight: 600;
+}
+
+.tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 3px;
+  width: 60%;
+  background-color: #007bff; /* or your theme color */
+  border-radius: 2px;
+}
+</style>

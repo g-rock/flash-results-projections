@@ -2,13 +2,13 @@ import os
 import re
 import pandas as pd
 import csv
-from processors.gcs import get_firestore_client
-from processors.gcs import slugify
-
+from processors.gcs import get_firestore_client, slugify
+from .constants import POINTS_SYSTEM
 def process_event(file_path: str, meet_year: str):
 
   print(f"Processing file: {file_path}")
   df, meet_id, gender, event_name, round_name = parse_event(os.path.dirname(file_path), os.path.basename(file_path))
+  scored_data = score_ordered_df(df)
   db = get_firestore_client()
 
   meets_ref = db.collection("meets")
@@ -19,12 +19,11 @@ def process_event(file_path: str, meet_year: str):
       raise ValueError(f"Meet not found for meet_id='{meet_id}' and meet_year='{meet_year}'")
 
   meet_doc_ref = results[0].reference
-  gender_ref = meet_doc_ref.collection("events").document(gender)
-  event_ref = gender_ref.collection("events").document(event_name)
-
+  event_ref = meet_doc_ref.collection(slugify(gender)).document(slugify(event_name))
   event_ref.set({
-      "round_name": round_name,
+      f"{slugify(round_name)}": scored_data.get(gender).get(event_name),
   }, merge=True)
+
   return meet_id, event_name, gender, round_name
 
 def parse_event(input_dir, input_filename):
@@ -95,3 +94,40 @@ def parse_event(input_dir, input_filename):
 
     meet_id = slugify(metadata["meet_name"])
     return df, meet_id, gender, event_name, metadata["round_name"]
+
+
+def score_ordered_df(df):
+    """
+    Score a DataFrame that is already ordered by place.
+    """
+    df['place'] = df['Place'].astype(int)
+    
+    scored_rows = []
+    grouped = df.groupby('place')
+    for place, group in grouped:
+        if place > 8:
+            score = 0
+        else:
+            # Average points if tie
+            num_tied = len(group)
+            ranks_involved = list(range(place, place + num_tied))
+            total_points = sum(POINTS_SYSTEM.get(r, 0) for r in ranks_involved)
+            score = total_points / num_tied
+        group = group.copy()
+        group['score'] = score
+        group['athlete'] = group['Col_3'] + ' ' + group['Col_4']
+        group['team_abbr'] = group['Team_abbr']
+        scored_rows.append(group)
+
+    scored_df = pd.concat(scored_rows)
+
+    # Nest by gender and event
+    nested_data = {}
+    for gender in scored_df['Gender'].unique():
+        nested_data[gender] = {}
+        events = scored_df[scored_df['Gender'] == gender]['Event Name'].unique()
+        for event in events:
+            event_df = scored_df[(scored_df['Gender'] == gender) & (scored_df['Event Name'] == event)]
+            nested_data[gender][event] = event_df[['team_abbr', 'score', 'place', 'athlete']].to_dict(orient='records')
+
+    return nested_data

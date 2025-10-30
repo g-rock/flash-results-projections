@@ -2,17 +2,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from '@/views/Login.vue'
 import Home from '@/views/Home.vue'
 import Dashboard from '@/views/Dashboard.vue'
-import { auth } from '@/firebase'
-import { waitForAuthReady } from '@/auth'
 
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
   {
-    path: '/dashboard/:meetName',
+    path: '/dashboard/:meetId',
     name: 'Dashboard',
     component: Dashboard,
-    props: true,
     // meta: { requiresAuth: true },
   },
 ]
@@ -22,18 +19,4 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 })
-
-// router.beforeEach(async (to, from, next) => {
-//   await waitForAuthReady()
-//   const currentUser = auth.currentUser
-
-//   if (to.meta.requiresAuth && !currentUser) {
-//     next('/login')
-//   } else if (to.path === '/login' && currentUser) {
-//     next('/dashboard')
-//   } else {
-//     next()
-//   }
-// })
-
 export default router

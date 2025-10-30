@@ -85,6 +85,10 @@ async def upload_event(
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="file must be a CSV")
     
+    # Check for forbidden substring in filename
+    if "splits" in file.filename.lower():
+        raise HTTPException(status_code=400, detail='filename cannot contain "splits"')
+    
     meet_year = datetime.now().year
     # meet_id = slugify(meet_name)
     # meet_gender = ...
@@ -113,4 +117,76 @@ async def upload_event(
             "round_name": round_name
         }
     )
-    
+
+
+
+from fastapi import HTTPException
+from fastapi.responses import JSONResponse
+from google.api_core.exceptions import NotFound
+from processors.gcs import get_gcs_client, get_firestore_client
+
+@app.delete("/delete_meet/{meet_id}")
+async def delete_meet(meet_id: str):
+    """
+    Delete all files in GCS and Firestore for a given meet_id.
+    """
+    meet_id = meet_id.strip()
+    if not meet_id:
+        raise HTTPException(status_code=400, detail="meet_id must not be empty")
+
+    gcs_client = get_gcs_client()
+    firestore_client = get_firestore_client()
+    bucket = gcs_client.bucket(BUCKET_NAME)
+
+    deleted_files = []
+    deleted_firestore_docs = []
+
+    # Try to find meet_year dynamically from Firestore (fallback to current year)
+    try:
+        meet_doc = firestore_client.collection("meets").document(meet_id).get()
+        meet_data = meet_doc.to_dict() if meet_doc.exists else {}
+        meet_year = meet_data.get("year") or datetime.now().year
+    except Exception:
+        meet_year = datetime.now().year
+
+    # -----------------------------
+    # 1️⃣ Delete all related GCS files
+    # -----------------------------
+    prefixes = [
+        f"merged-start-lists/{meet_year}/{meet_id}",
+        f"events/{meet_year}/{meet_id}/",
+    ]
+
+    for prefix in prefixes:
+        blobs = bucket.list_blobs(prefix=prefix)
+        for blob in blobs:
+            try:
+                blob.delete()
+                deleted_files.append(blob.name)
+            except NotFound:
+                continue
+
+    def delete_subcollections(doc_ref):
+        collections = doc_ref.collections()
+        for coll in collections:
+            for doc in coll.stream():
+                delete_subcollections(doc.reference)
+                doc.reference.delete()
+                deleted_firestore_docs.append(doc.reference.path)
+
+    meet_ref = firestore_client.collection("meets").document(meet_id)
+    delete_subcollections(meet_ref)
+    meet_ref.delete()
+    deleted_firestore_docs.append(meet_ref.path)
+
+    return JSONResponse(
+        content={
+            "message": f"Meet '{meet_id}' deleted successfully.",
+            "meet_year": meet_year,
+            "deleted_files_count": len(deleted_files),
+            "deleted_firestore_docs_count": len(deleted_firestore_docs),
+            "deleted_files": deleted_files,
+            "deleted_firestore_docs": deleted_firestore_docs,
+        }
+    )
+ 
