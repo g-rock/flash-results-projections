@@ -17,6 +17,7 @@ def process_event(file_path: str, meet_year: str):
         os.path.basename(file_path)
     )
 
+    db = get_firestore_client()
     meet_doc_ref = db.collection("years").document(str(meet_year)) \
                       .collection("meets").document(meet_id)
 
@@ -106,7 +107,7 @@ def parse_event(input_dir, input_filename):
     df["Meet"] = metadata["meet_name"]
     df["Date"] = metadata["meet_dates"]
     df["Location"] = metadata["location"]
-    df["Status"] = metadata["status"]
+    df["Status"] = metadata["raw_status"]
 
     # Rename key columns to align with clean_and_score expectations
     df = df.rename(columns={
