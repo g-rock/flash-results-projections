@@ -2,41 +2,64 @@ import os
 import re
 import pandas as pd
 from processors.gcs import get_firestore_client, slugify
-from .constants import EVENT_TYPE_SORTING_RULES, POINTS_SYSTEM
+from .constants import HIGHER_MARK_BETTER_LIST, POINTS_SYSTEM
 
-def process_merged_start_list(file_path: str, meet_year: str, meet_id: str, meet_name: str):
+def process_merged_start_list(
+    file_path: str,
+    meet_year: str,
+    meet_id: str,
+    meet_name: str,
+    meet_season: str = None,
+    meet_date: str = None,
+    meet_location: str = None
+):
     """
-    Processes a local CSV file directly and uploads result to Firestore.
-    
+    Processes a local CSV start list file, scores it, and uploads results to Firestore.
+
     Args:
         file_path: Path to the local CSV file.
         meet_year: Year of meet.
         meet_id: Slug of meet.
         meet_name: Name of meet.
+        meet_season: 'indoor' or 'outdoor'
+        meet_date: Full meet date string (optional).
+        meet_location: Location of meet (optional).
     """
     print(f"Processing file: {file_path}")
 
+    # --- Parse CSV and score ---
     df_parsed = parse_start_list(os.path.dirname(file_path), os.path.basename(file_path))
     scored_data_by_gender = clean_and_score_start_list(df_parsed)
+
+    # --- Firestore reference ---
     db = get_firestore_client()
-    meet_ref = db.collection("meets").document(meet_id)
+    meet_year = str(meet_year)
+    meet_ref = db.collection("years").document(meet_year).collection("meets").document(meet_id)
+
+    # --- Set basic meet info ---
     meet_ref.set({
         "name": meet_name,
         "id": meet_id,
-        "year": meet_year
+        "year": meet_year,
+        "date": meet_date,
+        "location": meet_location,
+        "season": meet_season
     })
 
+    # --- Upload scored data per gender and event ---
     for gender, events in scored_data_by_gender.items():
-        # Create a sub-collection per gender
         gender_key = slugify(gender)
         gender_collection_ref = meet_ref.collection(gender_key)
-        for event_name, records in events.items():
+        for event_name, event_data in events.items():
             event_name_key = slugify(event_name)
             event_doc_ref = gender_collection_ref.document(event_name_key)
             event_doc_ref.set({
                 "gender": gender,
                 "event_name": event_name,
-                "projections": records
+                "projections": {
+                    "round_results": event_data,
+                    "round_status": 'official'
+                }
             })
 
     return "Upload complete"
@@ -128,6 +151,8 @@ def parse_start_list(input_dir, input_filename):
 
     # Column names
     data_column_names = [f"Col_{idx+1}" for idx in range(max_data_cols_found)]
+    if max_data_cols_found >= 5:
+        data_column_names[4] = 'Team_name'
     if max_data_cols_found >= 8:
         data_column_names[7] = 'Team_abbr'
     if max_data_cols_found >= 9:
@@ -136,7 +161,10 @@ def parse_start_list(input_dir, input_filename):
     final_columns = data_column_names + ['Gender', 'Event Name']
     df = pd.DataFrame(final_cleaned_rows_padded, columns=final_columns)
     if 'Team_abbr' in df.columns:
-        df['Team_abbr'] = df['Team_abbr'].apply(lambda x: str(x).split(' ')[0] if pd.notna(x) and str(x).strip() else '')
+      df['Team_abbr'] = df['Team_abbr'].apply(lambda x: str(x) if pd.notna(x) and str(x).strip() else '')
+    if 'Team_name' in df.columns:
+      df['Team_name'] = df['Team_name'].apply(lambda x: str(x).upper() if pd.notna(x) and str(x).strip() else '')
+    df = df[df['Col_1'] != 'N']
     return df
 
 def clean_and_score_start_list(df):
@@ -144,6 +172,7 @@ def clean_and_score_start_list(df):
     df = df.rename(columns={
         'Gender': 'event_gender',
         'Team_abbr': 'team_abbr',
+        'Team_name': 'team_name',
         'Event Name': 'event_name',
         'Col_3': 'first_name',
         'Col_4': 'last_name',
@@ -151,22 +180,36 @@ def clean_and_score_start_list(df):
         'Col_11': 'multi_event_points',
     })
 
-    # Filter and rename decathlon/heptathlon
-    DECATHLON_FIRST_EVENT_SUFFIX = '100 M'
-    HEPTATHLON_FIRST_EVENT_SUFFIX = '100 M Hurdles'
+    is_pentathlon = df['event_name'].str.startswith('Pen', na=False)
+    is_decathlon = df['event_name'].str.startswith('Dec', na=False)
+    is_heptathlon = df['event_name'].str.startswith('Hept', na=False)
 
-    is_decathlon = df['event_name'].str.contains(r'^Dec ', na=False)
-    is_heptathlon = df['event_name'].str.contains(r'^Hept ', na=False)
+    def get_first_event(df, mask):
+        if not mask.any():
+            return None
+        # Get the first row where the mask is True
+        first_idx = df.index[mask].min()
+        return df.loc[first_idx, 'event_name']
 
+    first_pentathlon_event = get_first_event(df, is_pentathlon)
+    first_decathlon_event = get_first_event(df, is_decathlon)
+    first_heptathlon_event = get_first_event(df, is_heptathlon)
+
+    # Keep only the first event for combined events, or all other events
     keep_mask = (
-        (~is_decathlon & ~is_heptathlon) |
-        (is_decathlon & df['event_name'].str.contains(f'Dec .*{DECATHLON_FIRST_EVENT_SUFFIX}', regex=True, na=False)) |
-        (is_heptathlon & df['event_name'].str.contains(f'Hept .*{HEPTATHLON_FIRST_EVENT_SUFFIX}', regex=True, na=False))
+        (~is_decathlon & ~is_heptathlon & ~is_pentathlon) |
+        (is_decathlon & (df['event_name'] == first_decathlon_event)) |
+        (is_heptathlon & (df['event_name'] == first_heptathlon_event)) |
+        (is_pentathlon & (df['event_name'] == first_pentathlon_event))
     )
+
     df = df[keep_mask].copy()
 
-    df.loc[df['event_name'].str.contains(f'Dec .*{DECATHLON_FIRST_EVENT_SUFFIX}', regex=True, na=False), 'event_name'] = 'Decathlon'
-    df.loc[df['event_name'].str.contains(f'Hept .*{HEPTATHLON_FIRST_EVENT_SUFFIX}', regex=True, na=False), 'event_name'] = 'Heptathlon'
+    # Rename the first events of combined events to the general event name
+    df.loc[df['event_name'] == first_decathlon_event, 'event_name'] = 'Decathlon'
+    df.loc[df['event_name'] == first_heptathlon_event, 'event_name'] = 'Heptathlon'
+    df.loc[df['event_name'] == first_pentathlon_event, 'event_name'] = 'Pentathlon'
+    
     df['event_name'] = df['event_name'].str.replace(r'\b(Men|Women)\b\s*', '', regex=True).str.strip()
 
     # Parse Seed
@@ -194,17 +237,21 @@ def clean_and_score_start_list(df):
     df['seed_numeric'] = df['Seed'].apply(parse_seed)
 
     # Sorting rules
-    df['is_lower_better'] = df['event_name'].apply(lambda x: EVENT_TYPE_SORTING_RULES.get(x, True))
-
+    df['is_lower_better'] = df['event_name'].apply(lambda x: False if x in HIGHER_MARK_BETTER_LIST else True)
     # Assign rank and score
     def assign_scores(group):
       ascending = group['is_lower_better'].iloc[0]
       group = group.sort_values(by='seed_numeric', ascending=ascending).copy()
       
       # Drop exact duplicate athlete rows
-      group = group.drop_duplicates(subset=['first_name', 'last_name', 'team_abbr'])
+      group = group.drop_duplicates(subset=['first_name', 'last_name', 'team_name'])
       
-      group['place'] = group['seed_numeric'].rank(method='min', ascending=ascending, na_option='bottom').astype(int)
+      # Assign places
+      group['place'] = group['seed_numeric'].rank(
+          method='min', ascending=ascending, na_option='bottom'
+      ).astype(int)
+      
+      # Assign scores
       scores = []
       grouped_by_place = group.groupby('place')
       for place, tied_rows in grouped_by_place:
@@ -217,30 +264,31 @@ def clean_and_score_start_list(df):
               score = total_points / num_tied
           scores.extend([score] * len(tied_rows))
       group['score'] = scores
+      
+      # Create athlete full name
       group['athlete'] = group['first_name'] + ' ' + group['last_name']
       
-      return group[['team_abbr', 'score', 'place', 'athlete']]
+      return group[['team_name', 'team_abbr', 'score', 'place', 'athlete']]
 
     nested_data = {}
     for gender in df['event_gender'].unique():
         nested_data[gender] = {}
         events = df[df['event_gender'] == gender]['event_name'].unique()
         for event in events:
-            # Filter by both gender and event name
-            event_df = df[(df['event_gender'] == gender) & (df['event_name'] == event)]
-            scored_df = assign_scores(event_df)
-            nested_data[gender][event] = scored_df.to_dict(orient='records')
+          # Filter by both gender and event name
+          event_df = df[(df['event_gender'] == gender) & (df['event_name'] == event)]
+          scored_df = assign_scores(event_df)
 
+          # Convert to list of dicts
+          records = scored_df.to_dict(orient='records')
+
+          for r in records:
+              # If it's a relay, set team_name = athlete
+              if 'relay' in event.lower():
+                  r['team_name'] = r.get('athlete', '').strip()
+              # Always make team_name uppercase
+              if 'team_name' in r and isinstance(r['team_name'], str):
+                  r['team_name'] = r['team_name'].upper().strip()
+
+          nested_data[gender][event] = records
     return nested_data
-
-# def build_column_defs(df, gender):
-#     events = sorted(df[df['Event_gender'] == gender]['event_name'].unique())
-#     def strip_gender(name):
-#         return re.sub(r'\b(Men|Women)\b\s*', '', name, flags=re.IGNORECASE).strip()
-#     defs = [
-#         {"headerName": "School", "field": "school", "pinned": "left", "width": 80},
-#         {"headerName": "Place", "field": "Place", "width": 80, "pinned": "left"},
-#         {"field": "TOTAL", "headerName": "Points", "pinned": "left", "cellStyle": {"fontWeight": "bold"}, "sort": "desc", "width": 100, "valueFormatter": "x.toFixed(1)"}
-#     ]
-#     defs += [{"field": e, "headerName": strip_gender(e), "valueFormatter": "x.toFixed(1)"} for e in events]
-#     return defs

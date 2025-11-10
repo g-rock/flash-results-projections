@@ -5,26 +5,45 @@ import csv
 from processors.gcs import get_firestore_client, slugify
 from .constants import POINTS_SYSTEM
 def process_event(file_path: str, meet_year: str):
+    """
+    Process a single event CSV and upload the scored data to Firestore
+    under years/{meet_year}/meets/{meet_id}/{gender}/{event_name}.
+    """
+    print(f"Processing file: {file_path}")
 
-  print(f"Processing file: {file_path}")
-  df, meet_id, gender, event_name, round_name = parse_event(os.path.dirname(file_path), os.path.basename(file_path))
-  scored_data = score_ordered_df(df)
-  db = get_firestore_client()
+    # Parse the CSV
+    df, meet_id, gender, event_name, round_name, round_status = parse_event(
+        os.path.dirname(file_path),
+        os.path.basename(file_path)
+    )
 
-  meets_ref = db.collection("meets")
-  query = meets_ref.where("id", "==", meet_id).where("year", "==", meet_year)
-  results = list(query.stream())
+    meet_doc_ref = db.collection("years").document(str(meet_year)) \
+                      .collection("meets").document(meet_id)
 
-  if not results:
+    # Check if meet exists
+    if not meet_doc_ref.get().exists:
       raise ValueError(f"Meet not found for meet_id='{meet_id}' and meet_year='{meet_year}'")
 
-  meet_doc_ref = results[0].reference
-  event_ref = meet_doc_ref.collection(slugify(gender)).document(slugify(event_name))
-  event_ref.set({
-      f"{slugify(round_name)}": scored_data.get(gender).get(event_name),
-  }, merge=True)
-
-  return meet_id, event_name, gender, round_name
+    clean_round_status = slugify(round_status)
+    if clean_round_status in ['complete', 'official', 'scored']:
+      # Score the data
+      scored_data = score_ordered_df(df)
+      db = get_firestore_client()
+      event_ref = meet_doc_ref.collection(slugify(gender)).document(slugify(event_name))
+      event_ref.set({
+          slugify(round_name): {
+              'round_results': scored_data.get(gender, {}).get(event_name),
+              'round_status': clean_round_status
+          }
+      }, merge=True)
+    else:
+      raise ValueError(
+          f"Round status '{round_status}' for event_name='{event_name}', "
+          f"meet_id='{meet_id}' and meet_year='{meet_year}' "
+          "will not be processed. Only 'complete', 'official', 'scored' rounds are allowed."
+      )
+        
+    return meet_id, event_name, gender, round_name
 
 def parse_event(input_dir, input_filename):
     input_csv_path = os.path.join(input_dir, input_filename)
@@ -44,8 +63,8 @@ def parse_event(input_dir, input_filename):
         "event_code": meta_row[0],
         "round_num": meta_row[1],
         "event_name": meta_row[2],
-        "round_name": meta_row[3],
-        "status": meta_row[4],
+        "raw_round": meta_row[3],
+        "raw_status": meta_row[4],
         "timing": meta_row[5],
         "day_time": meta_row[6],
         "conditions": meta_row[7],
@@ -55,11 +74,17 @@ def parse_event(input_dir, input_filename):
         "location": meta_row[11] if len(meta_row) > 11 else ""
     }
 
+    # Clean round name for consistency
+    if metadata["raw_round"] and "final" in metadata["raw_round"].lower():
+        round_name = "final"
+    else:
+        round_name = metadata["raw_round"]
+
     data_rows = reader[1:]
 
     # Define headers manually (Flash Results style)
     headers = [
-        "Place", "First", "Last", "Bib", "Yr", "Team_abbr", "Team", 
+        "Place", "First", "Last", "Bib", "Yr", "Team_abbr", "Team_name", 
         "Result", "AltResult", "Q", "Wind", "Heat", "Lane"
     ]
 
@@ -88,12 +113,13 @@ def parse_event(input_dir, input_filename):
         "First": "Col_3",
         "Last": "Col_4",
         "Team_abbr": "Team_abbr",
+        "Team_name": "Team_name",
         "Team": "Col_7",
         "Result": "Seed"
     })
 
     meet_id = slugify(metadata["meet_name"])
-    return df, meet_id, gender, event_name, metadata["round_name"]
+    return df, meet_id, gender, event_name, round_name, metadata["raw_status"]
 
 
 def score_ordered_df(df):
@@ -117,6 +143,7 @@ def score_ordered_df(df):
         group['score'] = score
         group['athlete'] = group['Col_3'] + ' ' + group['Col_4']
         group['team_abbr'] = group['Team_abbr']
+        group['team_name'] = group['Team_name'].str.upper().str.strip()
         scored_rows.append(group)
 
     scored_df = pd.concat(scored_rows)
@@ -128,6 +155,6 @@ def score_ordered_df(df):
         events = scored_df[scored_df['Gender'] == gender]['Event Name'].unique()
         for event in events:
             event_df = scored_df[(scored_df['Gender'] == gender) & (scored_df['Event Name'] == event)]
-            nested_data[gender][event] = event_df[['team_abbr', 'score', 'place', 'athlete']].to_dict(orient='records')
+            nested_data[gender][event] = event_df[['team_name', 'score', 'place', 'athlete']].to_dict(orient='records')
 
     return nested_data
