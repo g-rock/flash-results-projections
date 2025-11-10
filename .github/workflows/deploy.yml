@@ -12,7 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: cd javascript && npm install && npm run build
+      - name: Set up environment and build
+        run: |
+          cd javascript
+          echo "VITE_API_HOST=${{ secrets.VITE_API_HOST }}" > .env
+          npm install
+          npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'

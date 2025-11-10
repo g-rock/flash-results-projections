@@ -29,7 +29,7 @@ const store = useConfigStore();
 
 onMounted(async () => {
   store.fetchMeets();
-  const eventSource = new EventSource("http://127.0.0.1:8000/stream")
+  const eventSource = new EventSource(`${import.meta.env.VITE_API_HOST}/stream`)
 
   eventSource.onmessage = (event) => {
     const data = JSON.parse(event.data)
