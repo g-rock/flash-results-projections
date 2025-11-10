@@ -2,7 +2,10 @@
   <div class="dashboard">
     <div class="header-text">
       <h1>{{ currentMeet?.name || 'Loading...' }}</h1>
-      <span>Meet ID: {{ currentMeet?.id }}</span>
+      <span>Meet ID: {{ currentMeet?.id }}</span><br>
+      <span>Meet Year: {{ currentMeet?.year }}</span><br>
+      <span>Meet Location: {{ currentMeet?.location }}</span><br>
+      <span>Meet Date: {{ currentMeet?.date }}</span>
     </div>
 
     <div class="status">

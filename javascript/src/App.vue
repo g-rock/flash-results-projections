@@ -17,22 +17,30 @@
       </a>
     </header>
 
-    <router-view v-if="ready" :key="$route.params.meetId" />
+    <router-view :key="$route.params.meetId" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { waitForAuthReady } from './auth'
 import { useConfigStore } from '@/stores/config.store';
 
 const store = useConfigStore();
-const ready = ref(false)
 
 onMounted(async () => {
-  await waitForAuthReady()
-  ready.value = true
   store.fetchMeets();
+  const eventSource = new EventSource("http://127.0.0.1:8000/stream")
+
+  eventSource.onmessage = (event) => {
+    const data = JSON.parse(event.data)
+    console.log("SSE message:", data)
+    if (data.type === "event_uploaded") {
+      store.fetchEvents(data.meet_id)
+    }
+  }
+  eventSource.onerror = (error) => {
+    console.error("SSE error:", error)
+  }
 })
 </script>
 
