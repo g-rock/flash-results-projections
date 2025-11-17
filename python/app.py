@@ -18,7 +18,7 @@ BUCKET_NAME = "projections-data"
 # -----------------------------
 # FastAPI app
 # -----------------------------
-origins = ["http://localhost:5173",  "http://localhost:8000"]
+origins = ["http://localhost:5173",  "https://flash-results-projections.web.app"]
 
 app = FastAPI(
     title="Track Meet Processing API",
@@ -43,8 +43,7 @@ async def upload_merged_start_list(
     ini_file: UploadFile = File(...)
 ):
     """
-    Upload a CSV and an INI file, process the CSV, parse the INI, and upload CSV to GCS.
-    Extract meet_name, meet_year, and other info from the INI file.
+    Upload a merged start list CSV and an INI file. This endpoint will process the CSV for initial score projections, parse the INI for meet information (date, year, meet name, location), and upload the CSV to GCS.
     """
 
     # --- Validate file extensions ---
@@ -76,14 +75,14 @@ async def upload_merged_start_list(
             "meet_season": ("switch", "outdoor")
         }
 
-        meet_info = {}
+        metadata = {}
         missing_fields = []
 
         for key, (section, option) in required_fields.items():
             value = config.get(section, option, fallback=None)
             if not value:
                 missing_fields.append(f"'{option}' in [{section}]")
-            meet_info[key] = value
+            metadata[key] = value
 
         if missing_fields:
             raise HTTPException(
@@ -93,51 +92,56 @@ async def upload_merged_start_list(
 
         # --- Extract year from meet_date ---
         try:
-            meet_info["meet_year"] = int(meet_info["meet_date"].split(",")[-1].strip())
+            metadata["meet_year"] = int(metadata["meet_date"].split(",")[-1].strip())
         except ValueError:
             raise HTTPException(
                 status_code=400,
-                detail=f"Cannot extract year from meetdate: {meet_info['meet_date']}"
+                detail=f"Cannot extract year from meetdate: {metadata['meet_date']}"
             )
         
         # --- Map meet_season to indoor/outdoor ---
         season_mapping = {"on": "outdoor", "off": "indoor"}
-        mapped_season = season_mapping.get(meet_info.get("meet_season", "").lower())
+        mapped_season = season_mapping.get(metadata.get("meet_season", "").lower())
 
         if mapped_season is None:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid meet_season value: {meet_info.get('meet_season')}"
+                detail=f"Invalid meet_season value: {metadata.get('meet_season')}"
             )
 
         # Overwrite meet_season with mapped value
-        meet_info["meet_season"] = mapped_season
+        metadata["meet_season"] = mapped_season
 
-        meet_id = slugify(meet_info["meet_name"])
+        metadata["meet_id"] = slugify(metadata["meet_name"])
 
         # --- Process CSV ---
         process_merged_start_list(
             file_path=tmp_csv_path,
-            meet_year=meet_info["meet_year"],
-            meet_id=meet_id,
-            meet_name=meet_info["meet_name"],
-            meet_season=meet_info["meet_season"],
-            meet_date=meet_info["meet_date"],
-            meet_location=meet_info["meet_location"]
+            meet_year=metadata["meet_year"],
+            meet_id=metadata["meet_id"],
+            meet_name=metadata["meet_name"],
+            meet_season=metadata["meet_season"],
+            meet_date=metadata["meet_date"],
+            meet_location=metadata["meet_location"]
         )
 
         # --- Upload CSV to GCS ---
-        raw_blob_name = f"merged-start-lists/{meet_info['meet_year']}/{meet_id}"
         raw_bucket = get_gcs_client().bucket(BUCKET_NAME)
-        raw_bucket.blob(raw_blob_name).upload_from_filename(tmp_csv_path)
-        print(f"✅ Uploaded raw start list file to gs://{BUCKET_NAME}/{raw_blob_name}")
+
+        # CSV blob
+        csv_blob_name = f"merged-start-lists/{metadata['meet_year']}/{metadata['meet_season']}/{metadata['meet_id']}/start_list.csv"
+        raw_bucket.blob(csv_blob_name).upload_from_filename(tmp_csv_path)
+
+        # INI blob
+        ini_blob_name = f"merged-start-lists/{metadata['meet_year']}/{metadata['meet_season']}/{metadata['meet_id']}/config.ini"
+        raw_bucket.blob(ini_blob_name).upload_from_filename(tmp_ini_path)
 
         return JSONResponse(
             content={
                 "message": f"Files '{csv_file.filename}' and '{ini_file.filename}' uploaded and processed successfully.",
-                "merged_start_list_file": f"gs://{BUCKET_NAME}/{raw_blob_name}",
-                **meet_info,
-                "meet_id": meet_id
+                "merged_start_list_file": f"gs://{BUCKET_NAME}/{csv_blob_name}",
+                "ini_file": f"gs://{BUCKET_NAME}/{ini_blob_name}",
+                **metadata,
             }
         )
 
@@ -145,11 +149,13 @@ async def upload_merged_start_list(
         os.remove(tmp_csv_path)
         os.remove(tmp_ini_path)
 
-
 @app.post("/upload_event")
 async def upload_event(
     file: UploadFile = File(...)
 ):
+    """
+    Upload an event file. This endpoint will process the CSV for new score projections.
+    """
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="file must be a CSV")
     
@@ -157,74 +163,70 @@ async def upload_event(
     if "splits" in file.filename.lower():
         raise HTTPException(status_code=400, detail='filename cannot contain "splits"')
     
-    meet_year = datetime.now().year
-
     with NamedTemporaryFile(delete=False, suffix=".csv") as tmp_file:
-      tmp_file.write(await file.read())
-      tmp_file_path = tmp_file.name
+        tmp_file.write(await file.read())
+        tmp_file_path = tmp_file.name
     
     try:
-      meet_id, event_name, gender, round_name = process_event(file_path=tmp_file_path, meet_year=meet_year)
+        # process_event now returns meet_year as well
+        metadata = process_event(file_path=tmp_file_path)
 
-      raw_blob_name = f"events/{meet_year}/{meet_id}/{file.filename}"
-      raw_bucket = get_gcs_client().bucket(BUCKET_NAME)
-      raw_bucket.blob(raw_blob_name).upload_from_filename(tmp_file_path)
-      print(f"✅ Uploaded raw event file to gs://{BUCKET_NAME}/{raw_blob_name}")
+        raw_blob_name = f"events/{metadata.get('meet_year')}/{metadata.get('meet_season')}/{metadata.get('meet_id')}/{file.filename}"
+        raw_bucket = get_gcs_client().bucket(BUCKET_NAME)
+        raw_bucket.blob(raw_blob_name).upload_from_filename(tmp_file_path)
+        print(f"✅ Uploaded raw event file to gs://{BUCKET_NAME}/{raw_blob_name}")
 
     finally:
-      os.remove(tmp_file_path)
+        os.remove(tmp_file_path)
 
     await notify_clients({
-      "type": "event_uploaded",
-      "meet_id": meet_id,
-      "meet_year": meet_year,
-      "event_name": event_name,
-      "gender": gender,
-      "round_name": round_name,
-      "timestamp": datetime.now().isoformat()
+        "type": "event_uploaded",
+        "meet_document_id": f"{metadata.get('meet_year')}/{metadata.get('meet_season')}/{metadata.get('meet_id')}",
+        **metadata,
     })
 
     return JSONResponse(
         content={
             "message": f"File '{file.filename}' uploaded and processed to database successfully.",
             "event_file": f"gs://{BUCKET_NAME}/{raw_blob_name}",
-            "meet_id": meet_id,
-            "meet_year": meet_year,
-            "event_name": event_name,
-            "gender": gender,
-            "round_name": round_name
+            **metadata
         }
     )
 
-@app.delete("/delete_meet/{meet_year}/{meet_id}")
-async def delete_meet(meet_year: str, meet_id: str):
+@app.delete("/delete_meet")
+async def delete_meet(database_id: str):
     """
-    Delete all files in GCS and Firestore for a given meet_id under a specific year.
-    Returns a simple message if the meet does not exist.
+    Delete all files in GCS and Firestore for a given meet document.
+    The meet document is assumed to be at 'meets/{database_id}'.
     """
-    meet_id = meet_id.strip()
-    meet_year = meet_year.strip()
-    if not meet_id or not meet_year:
-        raise HTTPException(status_code=400, detail="meet_id and meet_year must not be empty")
+    document_id = database_id.strip()
+    if not document_id:
+        raise HTTPException(status_code=400, detail="document_id must not be empty")
 
     gcs_client = get_gcs_client()
     firestore_client = get_firestore_client()
     bucket = gcs_client.bucket(BUCKET_NAME)
 
     # Reference to the meet document
-    meet_ref = firestore_client.collection("years").document(meet_year).collection("meets").document(meet_id)
+    meet_ref = firestore_client.collection("meets").document(document_id)
 
     # Check if meet exists
     if not meet_ref.get().exists:
         return JSONResponse(
             status_code=404,
-            content={"message": f"Meet '{meet_id}' for year '{meet_year}' does not exist."}
+            content={"message": f"Meet '{document_id}' does not exist."}
         )
+
+    # Fetch the meet data for year (used in GCS paths)
+    meet_doc = meet_ref.get().to_dict()
+    meet_year = meet_doc.get("year", "unknown")
+    meet_season = meet_doc.get("season", "unknown")
+    meet_id = meet_doc.get("id", "unknown")
 
     # Delete GCS files
     prefixes = [
-        f"merged-start-lists/{meet_year}/{meet_id}",
-        f"events/{meet_year}/{meet_id}/",
+        f"merged-start-lists/{meet_year}/{meet_season}/{meet_id}",
+        f"events/{meet_year}/{meet_season}/{meet_id}/",
     ]
     for prefix in prefixes:
         blobs = bucket.list_blobs(prefix=prefix)
@@ -245,7 +247,7 @@ async def delete_meet(meet_year: str, meet_id: str):
     meet_ref.delete()
 
     return JSONResponse(
-        content={"message": f"Meet '{meet_id}' ({meet_year}) deleted successfully."}
+        content={"message": f"Meet '{document_id}' deleted successfully."}
     )
 
 subscribers = []

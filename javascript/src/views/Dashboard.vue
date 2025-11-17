@@ -2,17 +2,15 @@
   <div class="dashboard">
     <div class="header-text">
       <h1>{{ currentMeet?.name || 'Loading...' }}</h1>
-      <span>Meet ID: {{ currentMeet?.id }}</span><br>
-      <span>Meet Year: {{ currentMeet?.year }}</span><br>
+      <span>Meet Database ID: {{ meetDocumentId }}</span><br>
       <span>Meet Location: {{ currentMeet?.location }}</span><br>
       <span>Meet Date: {{ currentMeet?.date }}</span>
     </div>
 
     <div class="status">
       <h3>Score Status</h3>
-      <span>🔵 | Startlist Projection</span><br>
-      <span>🟣 | Prelim Projection</span><br>
-      <span>🟡 | Semis Projection</span><br>
+      <span>🔵 | Projection</span><br>
+      <span>🔴 | In-progress</span><br>
       <span>🟢 | Scored</span><br>
     </div>
 
@@ -58,31 +56,20 @@ import ProjectionsTable from '@/components/ProjectionsTable.vue'
 
 const config = useConfigStore()
 const route = useRoute()
+const { meetYear, meetSeason, meetId } = route.params
 
 // Current meet based on route param
 const currentMeet = computed(() =>
   config.meets.find(meet => meet.id === route.params.meetId)
 )
 
-// Load events for the current meet
-const loadEvents = () => {
-  const meetId = route.params.meetId
-  if (meetId) config.fetchEvents(meetId)
-}
+const meetDocumentId = computed(() => `${meetYear}/${meetSeason}/${meetId}`)
 
-// Watch for gender change or route change
 watch(
-  [() => config.selectedGender, () => route.params.meetId],
-  () => loadEvents()
+  [() => config.selectedGender, () => meetDocumentId],
+  () => config.fetchEvents(meetDocumentId.value),
+  { immediate: true } // calls the watcher once immediately
 )
-
-onMounted(() => {
-  if (!config.meets.length) {
-    config.fetchMeets().then(loadEvents)
-  } else {
-    loadEvents()
-  }
-})
 
 const defaultColDef = {
   resizable: true,

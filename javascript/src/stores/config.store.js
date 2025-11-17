@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { collection, doc, getDocs } from 'firebase/firestore'
+import { collection, doc, getDocs, collectionGroup } from 'firebase/firestore'
 import { db } from '../firebase'
 
 export const useConfigStore = defineStore('config', {
@@ -13,6 +13,7 @@ export const useConfigStore = defineStore('config', {
     loadingEvents: false,
     eventsError: null,
     selectedYear: new Date().getFullYear().toString(),
+    eventStatusKeys: ['scored', 'official', 'in-progress', 'projection']
   }),
 
   actions: {
@@ -24,33 +25,57 @@ export const useConfigStore = defineStore('config', {
       this.selectedYear = year.toString()
     },
     async fetchMeets() {
-      this.loadingMeets = true
-      this.meetsError = null
+      this.loadingMeets = true;
+      this.meetsError = null;
+      this.meets = [];
 
       try {
-        const yearPath = `years/${this.selectedYear}/meets`
-        const meetsCollection = collection(db, yearPath)
-        const snapshot = await getDocs(meetsCollection)
+        const seasons = ["indoor", "outdoor"];
 
-        this.meets = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
+        // Run both queries in parallel
+        const snapshots = await Promise.all(
+          seasons.map(season => getDocs(collectionGroup(db, season)))
+        );
+
+        // Flatten results
+        const allMeets = [];
+        snapshots.forEach((snapshot, index) => {
+          const season = seasons[index];
+          snapshot.docs.forEach(doc => {
+            const pathParts = doc.ref.path.split("/"); // e.g. meets/2024/indoor/meet-id
+            const year = pathParts[1];
+            allMeets.push({
+              id: doc.id,
+              year,
+              season,
+              path: doc.ref.path,
+              ...doc.data(),
+            });
+          });
+        });
+
+        this.meets = allMeets;
       } catch (error) {
-        console.error('Failed to fetch meets from Firestore:', error)
-        this.meetsError = error
+        console.error("Failed to fetch meets from Firestore:", error);
+        this.meetsError = error;
       } finally {
-        this.loadingMeets = false
+        this.loadingMeets = false;
       }
     },
-
     // ---------------------------
     // Fetch events for meet + gender
     // ---------------------------
-    async fetchEvents(meetId) {
-      console.log('fetching events')
-      if (!meetId || !this.selectedGender || !this.selectedYear) return
+    async fetchEvents(meetDocumentId) {
+      if (!this.selectedGender) return
 
+      console.log('Fetching events')
+      const meet = this.meets.find(m => m.path === `meets/${meetDocumentId}`);
+      if (!meet) {
+        console.warn('Meet not found for documentId:', meetDocumentId)
+        return
+      }
+
+      const { year, season, id } = meet
       this.loadingEvents = true
       this.eventsError = null
       this.eventsData = []
@@ -58,7 +83,7 @@ export const useConfigStore = defineStore('config', {
 
       try {
         const genderCollectionRef = collection(
-          doc(db, 'years', this.selectedYear, 'meets', meetId),
+          doc(db, 'meets', year, season, id),
           this.selectedGender
         )
 
@@ -99,15 +124,14 @@ export const useConfigStore = defineStore('config', {
         ]
 
         const eventIndicator = {
-          'projections': '🔵',
-          'prelims': '🟣',
-          'semis': '🟡',
-          'final': '🟢'
+          'projection': '🔵',
+          'in-progress': '🔴',
+          'official': '🟢',
+          'scored': '🟢'
         }
 
         const eventColumns = this.eventsData.map(event => {
-          const eventStatusKeys = ['final', 'semis', 'prelims', 'projections']
-          const statusKey = eventStatusKeys.find(key => key in event)
+          const statusKey = this.eventStatusKeys.find(key => key in event)
 
           return {
             headerName: `${event.event_name} ${eventIndicator[statusKey] || ''}`,
@@ -133,14 +157,13 @@ export const useConfigStore = defineStore('config', {
     gridRowData: (state) => {
       const teamMap = {}
       const allEventIds = state.eventsData.map(e => e.id)
-      const eventStatusKeys = ['final', 'semis', 'prelims', 'projections']
 
       state.eventsData.forEach(event => {
         const eventId = event.id
-        const statusKey = eventStatusKeys.find(key => key in event)
+        const statusKey = state.eventStatusKeys.find(key => key in event)
         if (!statusKey) return
         
-        event[statusKey]['round_results'].forEach(p => {
+        event[statusKey]['event_results'].forEach(p => {
           const team = p.team_name
           const score = p.score || 0
           if (!teamMap[team]) teamMap[team] = { team: team }

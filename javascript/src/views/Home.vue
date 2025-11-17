@@ -8,18 +8,22 @@
     </div>
 
     <div v-else-if="meets.length > 0">
-      <!-- Group meets by year -->
-      <div v-for="(yearMeets, year) in meetsByYear" :key="year">
+      <div v-for="(seasonMeets, year) in meetsByYearAndSeason" :key="year">
         <h3>{{ year }}</h3>
-        <ul>
-          <li v-for="meet in yearMeets" :key="meet.id">
-            <router-link :to="{ name: 'Dashboard', params: { meetId: meet.id } }">
-              {{ meet.name }}
-            </router-link>
-          </li>
-        </ul>
+
+        <div v-for="(meetsList, season) in seasonMeets" :key="season" style="margin-left: 20px;">
+          <h4>{{ season.charAt(0).toUpperCase() + season.slice(1) }}</h4>
+          <ul>
+            <li v-for="meet in meetsList" :key="meet.id">
+              <router-link :to="{ name: 'Dashboard', params: { meetYear: year, meetSeason: season, meetId: meet.id } }">
+                {{ meet.name }}
+              </router-link>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
+
 
     <div v-else>No meets available</div>
   </div>
@@ -33,19 +37,31 @@ import { useConfigStore } from '@/stores/config.store';
 const store = useConfigStore();
 const { meets, loadingMeets, meetsError } = storeToRefs(store);
 
-// Compute meets grouped by year
-const meetsByYear = computed(() => {
+const meetsByYearAndSeason = computed(() => {
   const groups = {};
+
   meets.value.forEach(meet => {
     const year = meet.year || 'Unknown';
-    if (!groups[year]) groups[year] = [];
-    groups[year].push(meet);
+    const season = meet.season || 'Unknown';
+
+    if (!groups[year]) groups[year] = {};
+    if (!groups[year][season]) groups[year][season] = [];
+
+    groups[year][season].push(meet);
   });
 
-  // Optional: sort years descending
-  return Object.fromEntries(
-    Object.entries(groups).sort((a, b) => b[0] - a[0])
-  );
+  // Optional: sort years descending and seasons
+  const sortedYears = Object.keys(groups).sort((a, b) => b - a);
+  const result = {};
+  sortedYears.forEach(year => {
+    result[year] = {};
+    Object.keys(groups[year]).forEach(season => {
+      result[year][season] = groups[year][season];
+    });
+  });
+
+  return result;
 });
+
 </script>
 
