@@ -1,5 +1,6 @@
 import os
 import re
+import pandas as pd
 from google.cloud import storage
 from google.cloud import firestore
 from google.oauth2 import service_account
@@ -48,3 +49,24 @@ def upload_file_to_gcs(client, bucket_name, local_file_path, blob_name):
     blob = bucket.blob(blob_name)
     blob.upload_from_filename(local_file_path)
     print(f"Uploaded '{blob_name}' to bucket '{bucket_name}'.")
+
+def parse_time_or_distance(seed_value):
+    if pd.isna(seed_value) or not isinstance(seed_value, str):
+        return None
+    seed_str = seed_value.strip().lower()
+    if ':' in seed_str:
+        parts = seed_str.split(':')
+        try:
+            return float(parts[0]) * 60 + float(parts[1])
+        except ValueError:
+            return None
+    if 'm' in seed_str or 'ft' in seed_str or '&frac' in seed_str:
+        numeric_str = re.sub(r'[^\d\.\-]', '', seed_str)
+        try:
+            return float(numeric_str)
+        except ValueError:
+            return None
+    try:
+        return float(seed_str)
+    except ValueError:
+        return None

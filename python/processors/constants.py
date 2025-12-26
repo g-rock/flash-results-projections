@@ -1,17 +1,28 @@
-# Dict defining whether higher mark is better for each event
-HIGHER_MARK_BETTER_LIST = [
-    'Weight',
-    'Heptathlon',
-    'Decathlon',
-    'Pentathlon',
-    'Hammer',
-    'Pole Vault',
-    'Javelin',
-    'Long Jump',
-    'Shot Put',
-    'Discus',
-    'High Jump',
-    'Triple Jump'
+MULTI_EVENT_LIST = [
+  'Heptathlon',
+  'Pentathlon',
+  'Decathlon'
+]
+
+# The relay event names are not standardized
+# so we don't really use this list
+RELAY_EVENT_LIST = [
+  'Distance Medley',
+  '4x400 Meter Relay',
+  '4x100 Meter Relay'
+]
+
+FIELD_EVENT_LIST = [
+  'Weight', # Sometimes it's called just weight
+  'Weight Throw',
+  'Hammer',
+  'Pole Vault',
+  'Javelin',
+  'Long Jump',
+  'Shot Put',
+  'Discus',
+  'High Jump',
+  'Triple Jump'
 ]
 
 # Points system for places 1–8

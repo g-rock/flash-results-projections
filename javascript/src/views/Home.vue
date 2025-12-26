@@ -15,7 +15,7 @@
           <h4>{{ season.charAt(0).toUpperCase() + season.slice(1) }}</h4>
           <ul>
             <li v-for="meet in meetsList" :key="meet.id">
-              <router-link :to="{ name: 'Dashboard', params: { meetYear: year, meetSeason: season, meetId: meet.id } }">
+              <router-link :to="{ name: 'MeetTableHolder', params: { meetYear: year, meetSeason: season, meetId: meet.id } }">
                 {{ meet.name }}
               </router-link>
             </li>

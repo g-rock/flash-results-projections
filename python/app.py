@@ -3,8 +3,9 @@ import asyncio
 import json
 import configparser
 from tempfile import NamedTemporaryFile
-from datetime import datetime
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from pydantic import BaseModel
+from typing import Dict, Any
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.exceptions import NotFound
@@ -193,6 +194,38 @@ async def upload_event(
         }
     )
 
+class UpdateEventRequest(BaseModel):
+    meetDocumentId: str
+    gender: str
+    eventId: str
+    updates: Dict[str, Any]
+
+@app.post("/update_event")
+async def update_event(req: UpdateEventRequest):
+    """
+    Update any fields on a specific event document within a meet and gender.
+    """
+    db = get_firestore_client()
+    try:
+        doc_ref = (
+            db.collection("meets")
+            .document(req.meetDocumentId)
+            .collection(req.gender)
+            .document(req.eventId)
+        )
+
+        doc_ref.update(req.updates)
+
+        await notify_clients({
+          "type": "event_updated",
+          "meet_document_id": req.meetDocumentId
+        })
+
+        return {"success": True, "updatedFields": req.updates}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.delete("/delete_meet")
 async def delete_meet(database_id: str):
     """
@@ -204,11 +237,11 @@ async def delete_meet(database_id: str):
         raise HTTPException(status_code=400, detail="document_id must not be empty")
 
     gcs_client = get_gcs_client()
-    firestore_client = get_firestore_client()
+    db = get_firestore_client()
     bucket = gcs_client.bucket(BUCKET_NAME)
 
     # Reference to the meet document
-    meet_ref = firestore_client.collection("meets").document(document_id)
+    meet_ref = db.collection("meets").document(document_id)
 
     # Check if meet exists
     if not meet_ref.get().exists:

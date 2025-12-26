@@ -2,8 +2,8 @@ import os
 import re
 import pandas as pd
 import csv
-from processors.gcs import get_firestore_client, slugify
-from .constants import POINTS_SYSTEM
+from processors.gcs import get_firestore_client, slugify, parse_time_or_distance
+from .constants import RELAY_EVENT_LIST
 def process_event(file_path: str):
     """
     Process a single event CSV and upload the scored data to Firestore
@@ -41,14 +41,14 @@ def process_event(file_path: str):
       f"meet_year='{metadata.get('meet_year')}' will not be processed. "
     )
 
-    if metadata.get('event_status') in ['complete', 'official', 'scored', 'in-progress']:
+    if metadata.get('event_status') in ['complete', 'official', 'scored']:
       # Score the data
-      scored_data = score_event(df)
       db = get_firestore_client()
       event_ref = meet_doc_ref.collection(metadata.get('event_gender')).document(metadata.get('event_num'))
+      cleaned_data = clean_event(df, event_ref)
       event_ref.set({
           metadata.get('event_status'): {
-              'event_results': scored_data.get(metadata.get('event_gender')).get(metadata.get('event_num')),
+              'event_results': cleaned_data.get(metadata.get('event_gender')).get(metadata.get('event_num')),
               'event_round': metadata.get('event_round')
           }
       }, merge=True)
@@ -57,7 +57,7 @@ def process_event(file_path: str):
         f"Round status '{metadata.get('event_status')}' for event_name='{metadata.get('event_name')}', "
         f"meet_id='{metadata.get('meet_id')}', meet_season='{metadata.get('meet_season')}', "
         f"meet_year='{metadata.get('meet_year')}' will not be processed. "
-        "Only 'complete', 'official', 'scored', and 'in-progress' statuses are allowed."
+        "Only 'complete', 'official', 'scored' statuses are allowed."
       )
 
         
@@ -147,9 +147,6 @@ def parse_multi_event_metadata(meta_row):
       metadata["event_status"]
     )
 
-    print(event_round)
-    print(event_status)
-    
     metadata["event_gender"] = slugify(event_gender)
     metadata["event_round"] = slugify(event_round)
     metadata["event_status"] = slugify(event_status)
@@ -162,7 +159,7 @@ def parse_standard_event_results(metadata: dict, data_rows: list):
     Build results DataFrame for standard events.
     """
     headers = [
-        "Place", "First", "Last", "Bib", "Yr", "Team_abbr", "Team_name",
+        "Place", "First", "Last", "ID", "Yr", "Team_abbr", "Team_name",
         "Result", "AltResult", "Q", "Wind", "Heat", "Lane"
     ]
 
@@ -192,7 +189,7 @@ def parse_multi_event_results(metadata: dict, data_rows: list):
     Each event contributes 4 columns: time, distance, event_points, total_points
     """
     # Base metadata columns
-    base_headers = ["Place", "First", "Last", "Team_abbr", "Team_name", "Total_points", "Trailing_points", "Bib", "Class", "Blank"]
+    base_headers = ["Place", "First", "Last", "Team_abbr", "Team_name", "Result", "Trailing_points", "ID", "Class", "Blank"]
 
     # Extract event names from first row, skipping base columns
     raw_event_headers = data_rows[0]
@@ -264,51 +261,79 @@ def infer_gender(event_name: str, meet_season: str) -> str:
         if "pentathlon" in name:
             return "Women"
     
-
-def score_event(df):
+def clean_event(df, event_ref):
     """
-    Score a DataFrame that is already ordered by place.
+    Processes an event DataFrame into the same nested structure as score_event(),
+    but without assigning scores. Also enriches each athlete with sb_numeric
+    from the 'projection' event document if available.
     """
-    df['place'] = df['Place'].astype(int)
-    scored_rows = []
-    grouped = df.groupby('place')
-    for place, group in grouped:
-        if place > 8:
-            score = 0
-        else:
-            # Average points if tie
-            num_tied = len(group)
-            ranks_involved = list(range(place, place + num_tied))
-            total_points = sum(POINTS_SYSTEM.get(r, 0) for r in ranks_involved)
-            score = total_points / num_tied
-        group = group.copy()
-        group['score'] = score
-        group['athlete'] = group['First'] + ' ' + group['Last']
-        group['team_abbr'] = group['Team_abbr']
-        group['team_name'] = group['Team_name'].str.upper().str.strip()
-        scored_rows.append(group)
 
-    scored_df = pd.concat(scored_rows)
-
-    # Nest by gender and event
     nested_data = {}
-    for gender in scored_df['Event Gender'].unique():
-        nested_data[gender] = {}
-        events = scored_df[scored_df['Event Gender'] == gender]['Event Num'].unique()
-        for event in events:
-            event_df = scored_df[(scored_df['Event Gender'] == gender) & (scored_df['Event Num'] == event)]
-            event_name = event_df['Event Name'].iloc[0]
-            event_lower = event_name.lower()
-            records = event_df[['team_name', 'team_abbr', 'score', 'place', 'athlete']].to_dict(orient='records')
-            for r in records:
-              if 'relay' in event_lower or 'medley' in event_lower:
-                  # team_name comes from athlete name for relays
-                  if isinstance(r.get("athlete"), str):
-                      r['team_name'] = r['athlete'].strip()
+    genders = df['Event Gender'].unique()
 
-              # normalize the name always
-              if isinstance(r.get('team_name'), str):
-                  r['team_name'] = r['team_name'].upper().strip()
-            nested_data[gender][event] = records
-            
+    # Fetch the event document once
+    event_doc = event_ref.get()
+    event_data = event_ref.get().to_dict() if event_doc.exists else {}
+    event_sort_ascending = event_data["sort_ascending"] 
+
+    for gender in genders:
+        nested_data[gender] = {}
+        events = df[df['Event Gender'] == gender]['Event Num'].unique()
+
+        for event in events:
+            event_df = df[(df['Event Gender'] == gender) & (df['Event Num'] == event)]
+
+            # --- Build sb_lookup by athlete_id ---
+            sb_lookup = {}
+            if event_doc.exists and "projection" in event_data:
+                proj = event_data["projection"]
+                event_results = proj.get("event_results", [])
+                for r in event_results:
+                    athlete_id = r.get("athlete_id")
+                    sb_val = r.get("sb_numeric")
+                    if athlete_id is not None:
+                        sb_lookup[athlete_id] = sb_val
+
+            event_type = None
+            if event_doc.exists and "event_type" in event_data:
+                event_type = event_data["event_type"]
+
+            event_records = []
+            for _, row in event_df.iterrows():
+              raw_id = str(row["ID"]).strip()
+              athlete_id = int(raw_id) if raw_id.isdigit() else None
+              athlete_name = f"{row['First']} {row['Last']}".strip()
+
+              seed_val = parse_time_or_distance(row["Result"])
+              sb_val = sb_lookup.get(athlete_id)
+
+              # Update sb_numeric if seed is better than current sb
+              if seed_val is not None:
+                  if sb_val is None:
+                    sb_val = seed_val
+                  else:
+                      # Running / relay events: lower is better (sort_ascending=True)
+                      if event_sort_ascending and seed_val < sb_val:
+                          sb_val = seed_val
+                      # Field / multi events: higher is better (sort_ascending=False)
+                      elif not event_sort_ascending and seed_val > sb_val:
+                          sb_val = seed_val
+              rec = {
+                  "team_name": row["Team_name"].strip() if isinstance(row["Team_name"], str) else None,
+                  "team_abbr": row["Team_abbr"],
+                  "athlete_id": athlete_id,
+                  "athlete_name": athlete_name,
+                  "seed_numeric": seed_val,
+                  "sb_numeric": sb_val
+              }
+
+              # Relay fix
+              if event_type == 'relay':
+                  rec["team_name"] = athlete_name
+
+              rec["team_name"] = rec["team_name"].strip().upper() if isinstance(rec["team_name"], str) and rec["team_name"].strip() else ""
+              event_records.append(rec)
+
+            nested_data[gender][event] = event_records
+
     return nested_data

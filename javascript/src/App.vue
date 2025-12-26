@@ -50,6 +50,9 @@ onMounted(async () => {
     console.log("💬 SSE message:", data)
     if (data.type === "event_uploaded") {
       config.fetchEvents(data.meet_document_id)
+    } else if (data.type === "event_updated") {
+      console.log("event updated", event)
+      config.fetchEvents(data.meet_document_id)
     }
   }
   eventSource.onerror = (error) => {
