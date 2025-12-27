@@ -176,6 +176,7 @@ thead th {
 .sticky {
   position: sticky;
   z-index: 3;
+  background: #f8f8f8; /* keep header-like background for sticky cells */
 }
 
 .sticky-rank {
