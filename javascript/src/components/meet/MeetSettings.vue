@@ -212,7 +212,7 @@ function parseValue(str, type) {
 
 /* ---------------- ACTIONS ---------------- */
 function commitSB(index) {
-  const type = activeEvent?.event_type || 'running'
+  const type = activeEvent.value?.event_type || 'running'
   const raw = editableSBs[index].sb_display
   let parsed = null
 
