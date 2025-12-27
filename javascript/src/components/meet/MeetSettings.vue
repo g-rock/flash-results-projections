@@ -15,11 +15,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="event in config.selectedGenderEventData" :key="event.id">
+          <tr
+            v-for="event in config.selectedGenderEventData"
+            :key="event.id"
+          >
             <td>{{ event.id }}</td>
             <td>{{ event.event_name }}</td>
             <td>
-              <select v-model="event.project_points_by_sb" @change="updateProjectPoints(event)">
+              <select
+                v-model="event.project_points_by_sb"
+                @change="updateProjectPoints(event)"
+              >
                 <option :value="true">Yes</option>
                 <option :value="false">No</option>
               </select>
@@ -36,7 +42,8 @@
       <!-- Season Best Panel -->
       <div class="season-best-container" v-if="activeEvent">
         <h4>
-          Update Season Best for {{ config.selectedGender === 'men' ? 'Men' : 'Women' }} 
+          Update Season Best for
+          {{ config.selectedGender === 'men' ? 'Men' : 'Women' }}
           {{ activeEvent.event_name }}
         </h4>
 
@@ -45,18 +52,24 @@
             <tr>
               <th>Athlete Name</th>
               <th>Team</th>
-              <th>Season Best</th>
+              <th>Season Best (mm:ss.ss)</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(result, index) in editableSBs" :key="result.athlete_id">
-              <td>{{ result.athlete_name }}</td>
-              <td>{{ result.team_name }}</td>
+            <tr
+              v-for="(row, index) in editableSBs"
+              :key="row.athlete_id"
+            >
+              <td>{{ row.athlete_name }}</td>
+              <td>{{ row.team_name }}</td>
               <td>
                 <input
                   type="text"
-                  v-model="editableSBs[index].sb_numeric"
-                  placeholder="Enter SB time"
+                  class="sb-input"
+                  placeholder="mm:ss.ss"
+                  v-model="row.sb_display"
+                  @blur="commitSB(index)"
+                  @keydown.enter.prevent="commitSB(index)"
                 />
               </td>
             </tr>
@@ -64,8 +77,12 @@
         </table>
 
         <div class="action-buttons">
-          <button class="btn save-btn" @click="saveSeasonBest(activeEvent)">Save</button>
-          <button class="btn cancel-btn" @click="cancelSeasonBest()">Cancel</button>
+          <button class="btn save-btn" @click="saveSeasonBest(activeEvent)">
+            Save
+          </button>
+          <button class="btn cancel-btn" @click="cancelSeasonBest">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -82,11 +99,15 @@ import { useConfigStore } from '@/stores/config.store'
 import GenderTabs from '@/components/GenderTabs.vue'
 
 const config = useConfigStore()
+
+/* ---------------- STATE ---------------- */
+
 const showSavedBanner = ref(false)
 let bannerTimeout = null
 
 config.selectedGenderEventData.forEach(event => {
-  if (event.project_points_by_sb === undefined) event.project_points_by_sb = false
+  if (event.project_points_by_sb === undefined)
+    event.project_points_by_sb = false
   if (!event.projection) event.projection = { event_results: [] }
 })
 
@@ -98,36 +119,81 @@ const activeEvent = computed(() =>
 
 const editableSBs = reactive([])
 
+/* ---------------- WATCH ACTIVE EVENT ---------------- */
+
 watch(
   () => activeEvent.value,
-  (newEvent) => {
+  newEvent => {
     editableSBs.splice(0)
-    if (newEvent?.projection?.event_results) {
-      const mappedSBs = newEvent.projection.event_results.map(r => ({
-        athlete_id: r.athlete_id,
-        athlete_name: r.athlete_name,
-        team_name: r.team_name,
-        sb_numeric: r.sb_numeric !== null && r.sb_numeric !== undefined
-          ? parseFloat(r.sb_numeric).toFixed(2)
-          : ''
-      }))
-      mappedSBs.sort((a, b) => {
-        const aVal = parseFloat(a.sb_numeric) || 0
-        const bVal = parseFloat(b.sb_numeric) || 0
-        return newEvent.sort_ascending ? aVal - bVal : bVal - aVal
-      })
-      editableSBs.push(...mappedSBs)
-    }
+    if (!newEvent?.projection?.event_results) return
+
+    const mapped = newEvent.projection.event_results.map(r => ({
+      athlete_id: r.athlete_id,
+      athlete_name: r.athlete_name,
+      team_name: r.team_name,
+      sb_seconds: r.sb_numeric ?? null,
+      sb_display: secondsToMMSS(r.sb_numeric)
+    }))
+
+    mapped.sort((a, b) => {
+      const aVal = Number.isNaN(a.sb_seconds) ? Infinity : a.sb_seconds ?? 0
+      const bVal = Number.isNaN(b.sb_seconds) ? Infinity : b.sb_seconds ?? 0
+      return newEvent.sort_ascending ? aVal - bVal : bVal - aVal
+    })
+
+    editableSBs.push(...mapped)
   },
   { immediate: true }
 )
 
+/* ---------------- TIME HELPERS ---------------- */
+
+function secondsToMMSS(seconds) {
+  if (Number.isNaN(seconds)) return 'NaN'
+  if (seconds === null || seconds === undefined) return ''
+
+  const total = Number(seconds)
+  const minutes = Math.floor(total / 60)
+  const remaining = total - minutes * 60
+
+  return `${minutes}:${remaining.toFixed(2).padStart(5, '0')}`
+}
+
+function mmssToSeconds(value) {
+  if (value === 'NaN') return NaN
+  if (!value) return null
+
+  const match = value.match(/^(\d+):(\d{1,2})(?:\.(\d{1,2}))?$/)
+  if (!match) return NaN
+
+  const minutes = parseInt(match[1], 10)
+  const seconds = parseInt(match[2], 10)
+  const hundredths = match[3]
+    ? parseInt(match[3].padEnd(2, '0'), 10)
+    : 0
+
+  if (seconds > 59) return NaN
+
+  return minutes * 60 + seconds + hundredths / 100
+}
+
+function commitSB(index) {
+  const parsed = mmssToSeconds(editableSBs[index].sb_display)
+  editableSBs[index].sb_seconds = parsed
+  editableSBs[index].sb_display = secondsToMMSS(parsed)
+}
+
+/* ---------------- ACTIONS ---------------- */
+
 function toggleSeasonBest(eventId) {
-  state.activeEventId = state.activeEventId === eventId ? null : eventId
+  state.activeEventId =
+    state.activeEventId === eventId ? null : eventId
 }
 
 function updateProjectPoints(event) {
-  config.updateEventDoc(event.id, { project_points_by_sb: event.project_points_by_sb })
+  config.updateEventDoc(event.id, {
+    project_points_by_sb: event.project_points_by_sb
+  })
 }
 
 function saveSeasonBest(event) {
@@ -135,9 +201,9 @@ function saveSeasonBest(event) {
     const original = event.projection.event_results.find(
       r => r.athlete_id === edited.athlete_id
     )
+
     if (original) {
-      original.sb_numeric =
-        edited.sb_numeric !== '' ? parseFloat(edited.sb_numeric) : null
+      original.sb_numeric = edited.sb_seconds
     }
   })
 
@@ -162,7 +228,6 @@ function cancelSeasonBest() {
   align-items: flex-start;
 }
 
-/* Event table */
 .event-table {
   border-collapse: collapse;
   width: 50%;
@@ -172,10 +237,8 @@ function cancelSeasonBest() {
 .event-table td {
   border: 1px solid #ccc;
   padding: 6px 8px;
-  text-align: left;
 }
 
-/* Season best panel */
 .season-best-container {
   flex: 1;
   border: 1px solid #ccc;
@@ -191,11 +254,11 @@ function cancelSeasonBest() {
 .sb-table td {
   border: 1px solid #ccc;
   padding: 6px 8px;
-  text-align: left;
 }
 
 .sb-input {
-  width: 80px;
+  width: 95px;
+  text-align: center;
 }
 
 .action-buttons {
@@ -229,11 +292,10 @@ function cancelSeasonBest() {
   text-align: center;
   padding: 12px 0;
   font-weight: 600;
-  letter-spacing: 0.5px;
   z-index: 1000;
 }
 
-/* ---------------- MOBILE RESPONSIVE ---------------- */
+/* Mobile */
 @media (max-width: 768px) {
   .events-container {
     flex-direction: column;
@@ -242,14 +304,6 @@ function cancelSeasonBest() {
   .event-table,
   .season-best-container {
     width: 100%;
-  }
-
-  .event-table th,
-  .event-table td,
-  .sb-table th,
-  .sb-table td {
-    font-size: 0.85rem;
-    padding: 4px 6px;
   }
 }
 </style>

@@ -5,21 +5,46 @@
 
       <div class="table-scroll">
         <table class="results-table">
+          <!-- COLGROUP DEFINES WIDTHS -->
+          <colgroup>
+            <col
+              v-for="col in columnDefs"
+              :key="col.field"
+              :style="getColStyle(col)"
+            />
+          </colgroup>
+
           <thead>
             <tr>
-              <th v-for="col in columnDefs" :key="col.field"
-                  @click="onSort(col)"
-                  :class="{ sortable: col.sortable !== false, active: sortField === col.field, 'team-column': col.field === 'team' }">
-                {{ col.headerName || col.field }}
-                <span v-if="sortField === col.field">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+              <th
+                v-for="col in columnDefs"
+                :key="col.field"
+                @click="onSort(col)"
+                :class="[
+                  { sortable: col.sortable !== false, active: sortField === col.field },
+                  stickyClass(col.field)
+                ]"
+              >
+                <div class="cell-inner">
+                  {{ col.headerName || col.field }}
+                  <span v-if="sortField === col.field">
+                    {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                  </span>
+                </div>
               </th>
             </tr>
           </thead>
 
           <tbody>
             <tr v-for="row in sortedRows" :key="row._id">
-              <td v-for="col in columnDefs" :key="col.field" :class="{ 'team-column': col.field === 'team' }">
-                {{ formatNumber(row[col.field]) }}
+              <td
+                v-for="col in columnDefs"
+                :key="col.field"
+                :class="stickyClass(col.field)"
+              >
+                <div class="cell-inner">
+                  {{ formatNumber(row[col.field]) }}
+                </div>
               </td>
             </tr>
           </tbody>
@@ -33,21 +58,21 @@
 import { ref, computed } from 'vue'
 
 const props = defineProps({
-  title: { type: String, default: '' },
+  title: String,
   rowData: { type: Array, default: () => [] },
   columnDefs: { type: Array, default: () => [] }
 })
 
-// --- Sorting state ---
+// ----------------------
+// Sorting
+// ----------------------
 const sortField = ref(null)
 const sortDirection = ref('desc')
 
-// --- Sort handler ---
 function onSort(col) {
   if (col.sortable === false) return
 
   if (sortField.value === col.field) {
-    // cycle: desc -> asc -> original
     if (sortDirection.value === 'desc') sortDirection.value = 'asc'
     else if (sortDirection.value === 'asc') {
       sortDirection.value = null
@@ -59,7 +84,6 @@ function onSort(col) {
   }
 }
 
-// --- Sorted rows ---
 const sortedRows = computed(() => {
   if (!props.rowData.length) return []
 
@@ -67,17 +91,13 @@ const sortedRows = computed(() => {
     return [...props.rowData].sort((a, b) => (a.rank || 0) - (b.rank || 0))
   }
 
-  const rows = [...props.rowData]
-
-  return rows.sort((a, b) => {
-    let aVal = a[sortField.value]
-    let bVal = b[sortField.value]
-
-    if (aVal == null) return 1
-    if (bVal == null) return -1
+  return [...props.rowData].sort((a, b) => {
+    const aVal = a[sortField.value]
+    const bVal = b[sortField.value]
 
     const aNum = parseFloat(aVal)
     const bNum = parseFloat(bVal)
+
     if (!isNaN(aNum) && !isNaN(bNum)) {
       return sortDirection.value === 'asc' ? aNum - bNum : bNum - aNum
     }
@@ -88,7 +108,27 @@ const sortedRows = computed(() => {
   })
 })
 
-// --- Number formatting ---
+// ----------------------
+// Sticky helpers
+// ----------------------
+function stickyClass(field) {
+  if (field === 'rank') return 'sticky sticky-rank'
+  if (field === 'team') return 'sticky sticky-team'
+  if (field === 'points') return 'sticky sticky-points'
+  return ''
+}
+
+// Column widths driven by header intent
+function getColStyle(col) {
+  if (col.field === 'rank') return { width: '60px' }
+  if (col.field === 'team') return { width: '220px' }
+  if (col.field === 'points') return { width: '100px' }
+  return { width: '120px' } // default for events
+}
+
+// ----------------------
+// Formatting
+// ----------------------
 function formatNumber(value) {
   const num = parseFloat(value)
   if (isNaN(num)) return value
@@ -98,67 +138,73 @@ function formatNumber(value) {
 
 <style scoped>
 .results-table-wrapper {
-  width: 100vw; /* full width of viewport */
+  width: 100vw;
 }
 
 .table-scroll {
   width: 100%;
-  overflow-x: auto; /* allow horizontal scroll */
+  overflow-x: auto;
 }
 
 .results-table {
-  width: 100%; /* table takes full width inside scroll */
-  min-width: 800px; /* optional: force min width for readability */
   border-collapse: collapse;
+  table-layout: fixed; /* REQUIRED for colgroup */
+  min-width: max-content;
   font-size: 0.95rem;
 }
 
-.results-table thead th {
-  background: #f8f8f8;
-  color: #222;
-  text-align: left;
+/* Remove padding from sticky container */
+th, td {
+  padding: 0;
+  background: white;
+}
+
+.cell-inner {
   padding: 8px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Headers */
+thead th {
+  background: #f8f8f8;
   border-bottom: 2px solid #ccc;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 600;
 }
 
-.results-table thead th.sortable {
-  cursor: pointer;
-  user-select: none;
+/* Sticky columns */
+.sticky {
+  position: sticky;
+  z-index: 3;
+  background: white;
 }
 
-.results-table thead th.sortable:hover {
-  background: #eee;
+.sticky-rank {
+  left: 0;
+  z-index: 6;
 }
 
-.results-table thead th.active {
-  background: #e6f2ff;
+.sticky-team {
+  left: 60px;
+  z-index: 5;
 }
 
-/* Make team column never wrap */
-.results-table td.team-column,
-.results-table th.team-column {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.sticky-points {
+  left: 280px;
+  z-index: 4;
 }
 
-.results-table tbody tr {
-  border-bottom: 1px solid #e0e0e0;
+thead .sticky {
+  z-index: 10;
 }
 
-.results-table tbody tr:nth-child(even) {
+/* Rows */
+tbody tr:nth-child(even) {
   background: #fafafa;
 }
 
-.results-table tbody tr:hover {
+tbody tr:hover {
   background: #eef6fc;
-}
-
-.results-table td {
-  padding: 8px 10px;
-  color: #333;
 }
 </style>
