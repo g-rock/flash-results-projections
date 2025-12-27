@@ -1,66 +1,127 @@
 <template>
-  <div class="header-text">
-    <h1>{{ currentMeet?.name || 'Loading...' }}</h1>
-    <span>Meet Database ID: {{ config.meetDocumentId }}</span><br>
-    <span>Meet Location: {{ currentMeet?.location }}</span><br>
-    <span>Meet Date: {{ currentMeet?.date }}</span><br>
-
-    <!-- Admin link: conditionally show -->
-    <div v-if="auth.isAdmin" class="admin-link">
-      <router-link
-        v-if="isOnTable"
-        :to="settingsLink"
-      >
-        ⚙️ Meet Settings
+  <header class="header-text">
+    <!-- Left side: logo + meet info -->
+    <div class="header-left">
+      <router-link to="/">
+        <img src="/logo.png" alt="FR Logo" class="fr-logo" />
       </router-link>
 
-      <router-link
-        v-else
-        :to="tableLink"
-      >
-        📊 Back to Table
-      </router-link>
+      <div class="meet-info">
+        <h1 class="meet-name">{{ meet?.name || 'Loading meet...' }}</h1>
+        <div class="meet-details">
+          <span>{{ meet?.location || '' }} | {{ meet?.date || '' }}</span>
+        </div>
+      </div>
     </div>
-  </div>
+
+    <!-- Right side: user controls -->
+    <div class="user-controls">
+      <router-link to="/admin" class="admin-link">
+        <span class="icon">⚙️</span> Admin
+      </router-link>
+      <a v-if="auth.user" @click="handleLogout" class="logout-link">Logout</a>
+      <div v-if="auth.user" class="meet-db-id">
+        Meet Database ID: {{ config?.meetDocumentId || '' }}
+      </div>
+    </div>
+  </header>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 import { useConfigStore } from '@/stores/config.store'
 import { useAuthStore } from '@/stores/auth.store'
 
-const route = useRoute()
+const props = defineProps({
+  meetId: { type: String, required: true }
+})
+
 const config = useConfigStore()
 const auth = useAuthStore()
 
-const { meetYear, meetSeason, meetId } = route.params
+const meet = computed(() => {
+  if (!props.meetId || !config.meets.length) return null
+  return config.meets.find(m => m.id === props.meetId) || null
+})
 
-const currentMeet = computed(() =>
-  config.meets.find(meet => meet.id === meetId)
-)
-
-// Links
-const settingsLink = computed(() => ({
-  name: 'MeetSettings',
-  params: { meetYear, meetSeason, meetId }
-}))
-
-const tableLink = computed(() => ({
-  name: 'MeetTableHolder',
-  params: { meetYear, meetSeason, meetId }
-}))
-
-// Detect current view
-const isOnTable = computed(() => route.name === 'MeetTableHolder')
+function handleLogout() {
+  auth.logout?.()
+}
 </script>
 
 <style scoped>
 .header-text {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* left group + right group */
+  gap: 15px;
   margin-bottom: 20px;
+  background-color: #062134;
+  padding: 1em;
+  color: white;
+}
+
+/* left group: logo + meet info */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fr-logo {
+  height: 40px;
+}
+
+.meet-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+.meet-name {
+  margin: 0;
+}
+
+.meet-details {
+  font-size: 0.9rem;
+}
+
+.user-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  align-items: flex-end;
 }
 
 .admin-link {
-  margin-top: 10px;
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon {
+  font-size: 0.9rem;
+}
+
+.logout-link {
+  cursor: pointer;
+  text-decoration: none;
+  color: white;
+  font-size: 0.95rem;
+}
+
+.logout-link:hover,
+.admin-link:hover {
+  text-decoration: underline;
+}
+
+.meet-db-id {
+  font-size: 0.85rem;
+  color: #ccc;
+  text-align: right;
 }
 </style>

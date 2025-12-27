@@ -1,9 +1,27 @@
 <template>
   <div class="dashboard">
-    <h3>Meet Settings</h3>
+    <!-- Header with back link -->
+    <div class="settings-header">
+      <h3>Meet Settings</h3>
+    </div>
+
     <GenderTabs />
 
-    <div class="events-container">
+    <router-link
+      class="back-link"
+      :to="{ name: 'MeetTableHolder', params: { meetYear: $route.params.meetYear, meetSeason: $route.params.meetSeason, meetId: $route.params.meetId } }"
+    >
+      Back to Table
+    </router-link>
+
+    <!-- Loading / Error -->
+    <div v-if="config.loadingEvents">Loading events...</div>
+    <div v-if="config.eventsError" style="color: red;">
+      Error loading events: {{ config.eventsError }}
+    </div>
+
+    <!-- Events Table and SB Panel -->
+    <div class="events-container" v-if="!config.loadingEvents && !config.eventsError">
       <!-- Event Table -->
       <table class="event-table">
         <thead>
@@ -15,25 +33,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="event in config.selectedGenderEventData"
-            :key="event.id"
-          >
+          <tr v-for="event in config.selectedGenderEventData" :key="event.id">
             <td>{{ event.id }}</td>
             <td>{{ event.event_name }}</td>
             <td>
-              <select
-                v-model="event.project_points_by_sb"
-                @change="updateProjectPoints(event)"
-              >
+              <select v-model="event.project_points_by_sb" @change="updateProjectPoints(event)">
                 <option :value="true">Yes</option>
                 <option :value="false">No</option>
               </select>
             </td>
             <td>
-              <button class="btn" @click="toggleSeasonBest(event.id)">
-                Update Season Best
-              </button>
+              <button class="btn" @click="toggleSeasonBest(event.id)">Update Season Best</button>
             </td>
           </tr>
         </tbody>
@@ -50,23 +60,27 @@
         <table class="sb-table">
           <thead>
             <tr>
+              <th>ID</th>
               <th>Athlete Name</th>
               <th>Team</th>
-              <th>Season Best (mm:ss.ss)</th>
+              <th>
+                Season Best
+                <span v-if="['running','relay'].includes(activeEvent.event_type)">(mm:ss.tt)</span>
+                <span v-else-if="activeEvent.event_type === 'field'">(xx.xx)</span>
+                <span v-else-if="activeEvent.event_type === 'multi'">(xxxx)</span>
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(row, index) in editableSBs"
-              :key="row.athlete_id"
-            >
+            <tr v-for="(row, index) in editableSBs" :key="row.athlete_id">
+              <td>{{ row.athlete_id }}</td>
               <td>{{ row.athlete_name }}</td>
               <td>{{ row.team_name }}</td>
               <td>
                 <input
                   type="text"
                   class="sb-input"
-                  placeholder="mm:ss.ss"
+                  :placeholder="getFormatPlaceholder(activeEvent.event_type || 'running')"
                   v-model="row.sb_display"
                   @blur="commitSB(index)"
                   @keydown.enter.prevent="commitSB(index)"
@@ -77,19 +91,14 @@
         </table>
 
         <div class="action-buttons">
-          <button class="btn save-btn" @click="saveSeasonBest(activeEvent)">
-            Save
-          </button>
-          <button class="btn cancel-btn" @click="cancelSeasonBest">
-            Cancel
-          </button>
+          <button class="btn save-btn" @click="saveSeasonBest(activeEvent)">Save</button>
+          <button class="btn cancel-btn" @click="cancelSeasonBest">Cancel</button>
         </div>
       </div>
     </div>
 
-    <div v-if="showSavedBanner" class="saved-banner">
-      Saved
-    </div>
+    <!-- Saved Banner -->
+    <div v-if="showSavedBanner" class="saved-banner">Saved</div>
   </div>
 </template>
 
@@ -101,13 +110,11 @@ import GenderTabs from '@/components/GenderTabs.vue'
 const config = useConfigStore()
 
 /* ---------------- STATE ---------------- */
-
 const showSavedBanner = ref(false)
 let bannerTimeout = null
 
 config.selectedGenderEventData.forEach(event => {
-  if (event.project_points_by_sb === undefined)
-    event.project_points_by_sb = false
+  if (event.project_points_by_sb === undefined) event.project_points_by_sb = false
   if (!event.projection) event.projection = { event_results: [] }
 })
 
@@ -120,7 +127,6 @@ const activeEvent = computed(() =>
 const editableSBs = reactive([])
 
 /* ---------------- WATCH ACTIVE EVENT ---------------- */
-
 watch(
   () => activeEvent.value,
   newEvent => {
@@ -132,7 +138,7 @@ watch(
       athlete_name: r.athlete_name,
       team_name: r.team_name,
       sb_seconds: r.sb_numeric ?? null,
-      sb_display: secondsToMMSS(r.sb_numeric)
+      sb_display: formatValue(r.sb_numeric, newEvent.event_type)
     }))
 
     mapped.sort((a, b) => {
@@ -146,74 +152,109 @@ watch(
   { immediate: true }
 )
 
-/* ---------------- TIME HELPERS ---------------- */
+/* ---------------- FORMAT HELPERS ---------------- */
+function formatValue(value, type) {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    // always return the placeholder for invalid/empty values
+    return getFormatPlaceholder(type)
+  }
 
-function secondsToMMSS(seconds) {
-  if (Number.isNaN(seconds)) return 'NaN'
-  if (seconds === null || seconds === undefined) return ''
-
-  const total = Number(seconds)
-  const minutes = Math.floor(total / 60)
-  const remaining = total - minutes * 60
-
-  return `${minutes}:${remaining.toFixed(2).padStart(5, '0')}`
+  switch(type) {
+    case 'running': // mm:ss.tt
+    case 'relay':
+      const minutes = Math.floor(value / 60)
+      const seconds = value - minutes * 60
+      return `${minutes}:${seconds.toFixed(2).padStart(5,'0')}`
+    case 'field': // xx.xx
+      return Number(value).toFixed(2)
+    case 'multi': // xxxx
+      return Math.round(value)
+    default:
+      return value
+  }
 }
 
-function mmssToSeconds(value) {
-  if (value === 'NaN') return NaN
-  if (!value) return null
-
-  const match = value.match(/^(\d+):(\d{1,2})(?:\.(\d{1,2}))?$/)
-  if (!match) return NaN
-
-  const minutes = parseInt(match[1], 10)
-  const seconds = parseInt(match[2], 10)
-  const hundredths = match[3]
-    ? parseInt(match[3].padEnd(2, '0'), 10)
-    : 0
-
-  if (seconds > 59) return NaN
-
-  return minutes * 60 + seconds + hundredths / 100
+function getFormatPlaceholder(type) {
+  switch(type) {
+    case 'running':
+    case 'relay':
+      return 'mm:ss.tt'
+    case 'field':
+      return 'xx.xx'
+    case 'multi':
+      return 'xxxx'
+    default:
+      return ''
+  }
 }
 
-function commitSB(index) {
-  const parsed = mmssToSeconds(editableSBs[index].sb_display)
-  editableSBs[index].sb_seconds = parsed
-  editableSBs[index].sb_display = secondsToMMSS(parsed)
+function parseValue(str, type) {
+  if (!str) return null
+  switch(type) {
+    case 'running':
+    case 'relay':
+      const match = str.match(/^(\d+):(\d{1,2})(?:\.(\d{1,2}))?$/)
+      if (!match) return NaN
+      const minutes = parseInt(match[1], 10)
+      const seconds = parseInt(match[2], 10)
+      const hundredths = match[3] ? parseInt(match[3].padEnd(2,'0'),10) : 0
+      if (seconds > 59) return NaN
+      return minutes*60 + seconds + hundredths/100
+    case 'field':
+      return parseFloat(str)
+    case 'multi':
+      const cleaned = str.replace(/\D/g,'')
+      return cleaned ? parseInt(cleaned, 10) : NaN
+    default:
+      return str
+  }
 }
 
 /* ---------------- ACTIONS ---------------- */
+function commitSB(index) {
+  const type = activeEvent?.event_type || 'running'
+  const raw = editableSBs[index].sb_display
+  let parsed = null
+
+  if (type === 'multi') {
+    const cleaned = raw.replace(/\D/g, '')
+    parsed = cleaned ? parseInt(cleaned, 10) : null
+  } else if (['running','relay'].includes(type)) {
+    const match = raw.match(/^(\d+):(\d{1,2})(?:\.(\d{1,2}))?$/)
+    parsed = match ? parseInt(match[1],10)*60 + parseInt(match[2],10) + (match[3]?parseInt(match[3].padEnd(2,'0'),10)/100:0) : null
+  } else if (type === 'field') {
+    parsed = parseFloat(raw)
+  }
+
+  editableSBs[index].sb_seconds = parsed
+
+  // Only format if parsed is valid, otherwise show the correct placeholder format
+  if (parsed != null && !Number.isNaN(parsed)) {
+    editableSBs[index].sb_display = formatValue(parsed, type)
+  } else {
+    editableSBs[index].sb_display = getFormatPlaceholder(type)
+  }
+}
 
 function toggleSeasonBest(eventId) {
-  state.activeEventId =
-    state.activeEventId === eventId ? null : eventId
+  state.activeEventId = state.activeEventId === eventId ? null : eventId
 }
 
 function updateProjectPoints(event) {
-  config.updateEventDoc(event.id, {
-    project_points_by_sb: event.project_points_by_sb
-  })
+  config.updateEventDoc(event.id, { project_points_by_sb: event.project_points_by_sb })
 }
 
 function saveSeasonBest(event) {
   editableSBs.forEach(edited => {
-    const original = event.projection.event_results.find(
-      r => r.athlete_id === edited.athlete_id
-    )
-
-    if (original) {
-      original.sb_numeric = edited.sb_seconds
-    }
+    const original = event.projection.event_results.find(r => r.athlete_id === edited.athlete_id)
+    if (original) original.sb_numeric = edited.sb_seconds
   })
 
   config.updateEventDoc(event.id, { projection: event.projection })
 
   showSavedBanner.value = true
   clearTimeout(bannerTimeout)
-  bannerTimeout = setTimeout(() => {
-    showSavedBanner.value = false
-  }, 2000)
+  bannerTimeout = setTimeout(() => (showSavedBanner.value = false), 2000)
 }
 
 function cancelSeasonBest() {
@@ -222,6 +263,61 @@ function cancelSeasonBest() {
 </script>
 
 <style scoped>
+.settings-header {
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.back-link {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+  gap: 10px;
+}
+
+.tabs button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: #666;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.tabs button:hover {
+  color: #000;
+}
+
+.tabs button.active {
+  color: #000;
+  font-weight: 600;
+}
+
+.tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 3px;
+  width: 60%;
+  background-color: #007bff;
+  border-radius: 2px;
+}
+
 .events-container {
   display: flex;
   gap: 20px;
@@ -237,6 +333,19 @@ function cancelSeasonBest() {
 .event-table td {
   border: 1px solid #ccc;
   padding: 6px 8px;
+}
+
+tbody tr:nth-of-type(odd) {
+  background-color: #ffffff;
+}
+
+tbody tr:nth-of-type(even) {
+  background-color: rgba(0,0,0,.05);
+}
+
+tbody tr:hover,
+tbody tr.active {
+  background-color: rgba(0,0,0,.05) !important;
 }
 
 .season-best-container {
@@ -295,7 +404,6 @@ function cancelSeasonBest() {
   z-index: 1000;
 }
 
-/* Mobile */
 @media (max-width: 768px) {
   .events-container {
     flex-direction: column;

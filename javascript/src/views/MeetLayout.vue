@@ -1,12 +1,10 @@
 <template>
   <div class="dashboard">
-    <MeetHeader />
     <router-view />
   </div>
 </template>
 
 <script setup>
-import MeetHeader from '@/components/meet/MeetHeader.vue'
 import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useConfigStore } from '@/stores/config.store'

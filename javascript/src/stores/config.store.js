@@ -208,6 +208,10 @@ export const useConfigStore = defineStore('config', {
     getMeetById: (state) => (id) => {
       return state.meets.find(meet => meet.id === id)
     },
+    currentMeet: (state, getters) => {
+      console.log(state)
+      return getters.getMeetById(state.meetDocumentId)
+    },
     selectedGenderTableData: (state) => {
       const teamMap = {}
       const eventsForGender = state.eventsData[state.selectedGender] || []
@@ -248,7 +252,6 @@ export const useConfigStore = defineStore('config', {
         team.rank = idx + 1
       })
 
-      console.log(teamsArray)
       return teamsArray
     },
     selectedGenderEventData: (state) => {

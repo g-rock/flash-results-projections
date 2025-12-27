@@ -1,8 +1,6 @@
 <template>
   <div class="projections-table">
     <div class="results-table-wrapper">
-      <h3>{{ title }}</h3>
-
       <div class="table-scroll">
         <table class="results-table">
           <!-- COLGROUP DEFINES WIDTHS -->
@@ -156,7 +154,8 @@ function formatNumber(value) {
 /* Remove padding from sticky container */
 th, td {
   padding: 0;
-  background: white;
+  /* remove background here so tr backgrounds show */
+  background: inherit;
 }
 
 .cell-inner {
@@ -177,7 +176,6 @@ thead th {
 .sticky {
   position: sticky;
   z-index: 3;
-  background: white;
 }
 
 .sticky-rank {
@@ -199,12 +197,19 @@ thead .sticky {
   z-index: 10;
 }
 
-/* Rows */
-tbody tr:nth-child(even) {
-  background: #fafafa;
+/* Rows - alternating background */
+tbody tr:nth-of-type(odd) {
+  background-color: #ffffff;
 }
 
-tbody tr:hover {
-  background: #eef6fc;
+tbody tr:nth-of-type(even) {
+  background-color: rgba(0,0,0,.05);
 }
+
+/* Hover and active row */
+tbody tr:hover,
+tbody tr.active {
+  background-color: rgba(0,0,0,.05) !important;
+}
+
 </style>
