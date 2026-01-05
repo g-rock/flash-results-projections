@@ -269,7 +269,6 @@ def clean_start_list(df):
             # Raw rows output (no ranks, no scores)
             for _, row in event_df.iterrows():
               athlete_name = f"{row['first_name']} {row['last_name']}".strip()
-              print(athlete_name)
               rec = {
                   "team_name": row["team_name"].upper().strip() if isinstance(row["team_name"], str) else None,
                   "team_abbr": row["team_abbr"],

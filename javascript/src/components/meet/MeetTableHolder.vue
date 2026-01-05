@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard">
     <div class="status">
-      <h3>Score Status</h3>
+      <h3>Event Status ({{ config.selectedGenderEventStats.numEventsScored }} / {{ config.selectedGenderEventStats.numEvents }} events scored)</h3>
       <span>🔵 | Projection</span><br>
       <span>🔴 | In-progress</span><br>
       <span>🟢 | Scored</span><br>

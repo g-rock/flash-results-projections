@@ -29,12 +29,36 @@ const isMeetRoute = computed(() => route.name === 'MeetTableHolder' || route.nam
 // Current meet ID from route
 const currentMeetId = computed(() => route.params.meetId)
 
-// Fetch all meets once
 onMounted(async () => {
   if (!config.meets.length) {
     await config.fetchMeets()
   }
+
+  const eventSource = new EventSource(`${import.meta.env.VITE_API_HOST}/stream`)
+
+  eventSource.onopen = () => {
+    console.log("✅ Connected to SSE stream");
+  };
+
+  eventSource.onclose = () => {
+    console.warn("⚠️ SSE connection closed, attempting to reconnect...");
+  };
+
+  eventSource.onmessage = (event) => {
+    const data = JSON.parse(event.data)
+    console.log("💬 SSE message:", data)
+    if (data.type === "event_uploaded") {
+      config.fetchEvents(data.meet_document_id)
+    } else if (data.type === "event_updated") {
+      console.log("event updated", event)
+      config.fetchEvents(data.meet_document_id)
+    }
+  }
+  eventSource.onerror = (error) => {
+    console.error("SSE error:", error)
+  }
 })
+
 </script>
 <style scoped>
 </style>

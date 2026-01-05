@@ -259,6 +259,17 @@ export const useConfigStore = defineStore('config', {
     },
     selectedGenderColumnDefs: (state) => {
       return state.columnDefs[state.selectedGender];
+    },
+    selectedGenderEventStats: (state) => {
+      const events = state.eventsData[state.selectedGender] || []
+
+      const numEvents = events.length
+      const numEventsScored = events.filter(event => 'scored' in event).length
+
+      return {
+        numEvents,
+        numEventsScored
+      }
     }
   }
 })
