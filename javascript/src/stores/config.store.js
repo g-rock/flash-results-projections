@@ -87,7 +87,7 @@ export const useConfigStore = defineStore('config', {
         const defaultColumns = [
           { headerName: 'Rank', field: 'rank' },
           { headerName: 'Team', field: 'team' },
-          { headerName: 'Points', field: 'points' },
+          { headerName: 'Pts', field: 'points' },
         ];
 
         const eventIndicator = {

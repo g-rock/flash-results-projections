@@ -119,8 +119,8 @@ function stickyClass(field) {
 // Column widths driven by header intent
 function getColStyle(col) {
   if (col.field === 'rank') return { width: '60px' }
-  if (col.field === 'team') return { width: '220px' }
-  if (col.field === 'points') return { width: '100px' }
+  if (col.field === 'team') return { width: '160px' }
+  if (col.field === 'points') return { width: '80px' }
   return { width: '120px' } // default for events
 }
 
@@ -170,6 +170,7 @@ thead th {
   background: #f8f8f8;
   border-bottom: 2px solid #ccc;
   font-weight: 600;
+  text-align: left;
 }
 
 /* Sticky columns */
@@ -190,7 +191,7 @@ thead th {
 }
 
 .sticky-points {
-  left: 280px;
+  left: 226px;
   z-index: 4;
 }
 
@@ -212,5 +213,20 @@ tbody tr:hover,
 tbody tr.active {
   background-color: rgba(0,0,0,.05) !important;
 }
+
+@media (max-width: 768px) {
+  .sticky-points {
+    position: static;
+    left: auto;
+    z-index: auto;
+    background: inherit;
+  }
+
+  .cell-inner {
+    padding: 6px 8px;
+    font-size: 0.9rem;
+  }
+}
+
 
 </style>
