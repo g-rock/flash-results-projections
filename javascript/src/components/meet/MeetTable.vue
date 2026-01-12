@@ -3,7 +3,6 @@
     <div class="results-table-wrapper">
       <div class="table-scroll">
         <table class="results-table">
-          <!-- COLGROUP DEFINES WIDTHS -->
           <colgroup>
             <col
               v-for="col in columnDefs"
@@ -20,11 +19,12 @@
                 @click="onSort(col)"
                 :class="[
                   { sortable: col.sortable !== false, active: sortField === col.field },
-                  stickyClass(col.field)
+                  stickyClass(col)
                 ]"
+                :style="stickyStyle(col)"
               >
                 <div class="cell-inner">
-                  {{ col.headerName || col.field }}
+                  {{ col.headerName }}
                   <span v-if="sortField === col.field">
                     {{ sortDirection === 'asc' ? '▲' : '▼' }}
                   </span>
@@ -38,10 +38,24 @@
               <td
                 v-for="col in columnDefs"
                 :key="col.field"
-                :class="stickyClass(col.field)"
+                :class="stickyClass(col)"
+                :style="stickyStyle(col)"
               >
                 <div class="cell-inner">
-                  {{ formatNumber(row[col.field]) }}
+                  <template v-if="col.field === 'logo'">
+                    <img
+                      v-if="row.team_abbr"
+                      :src="getLogoUrl(row)"
+                      :alt="row.team + ' logo'"
+                      class="team-logo"
+                      loading="lazy"
+                      @error="e => e.target.style.display = 'none'"
+                    />
+                  </template>
+
+                  <template v-else>
+                    {{ formatNumber(row[col.field]) }}
+                  </template>
                 </div>
               </td>
             </tr>
@@ -54,6 +68,13 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+
+const LOGO_BASE_URL = 'https://storage.googleapis.com/projections-data/logos/NCAA'
+
+function getLogoUrl(row) {
+  if (!row.team_abbr) return null
+  return `${LOGO_BASE_URL}/${row.team_abbr}.png`
+}
 
 const props = defineProps({
   title: String,
@@ -107,21 +128,50 @@ const sortedRows = computed(() => {
 })
 
 // ----------------------
-// Sticky helpers
+// Column sizing
 // ----------------------
-function stickyClass(field) {
-  if (field === 'rank') return 'sticky sticky-rank'
-  if (field === 'team') return 'sticky sticky-team'
-  if (field === 'points') return 'sticky sticky-points'
-  return ''
+function getColStyle(col) {
+  if (col.field === 'rank') return { width: '24px'}
+  if (col.field === 'logo') return { width: '24px' }
+  if (col.field === 'team') return { width: '170px'}
+  if (col.field === 'points') return { width: '40px' }
+  return { width: '120px' }
 }
 
-// Column widths driven by header intent
-function getColStyle(col) {
-  if (col.field === 'rank') return { width: '60px' }
-  if (col.field === 'team') return { width: '160px' }
-  if (col.field === 'points') return { width: '80px' }
-  return { width: '120px' } // default for events
+// ----------------------
+// Sticky helpers
+// ----------------------
+function stickyClass(col) {
+  return col.sticky ? 'sticky' : ''
+}
+
+const CELL_PADDING_LEFT = 8
+const CELL_PADDING_RIGHT = 8
+
+// Dynamically calculate left offset of sticky column
+function stickyStyle(col) {
+  if (!col.sticky) return {}
+
+  let left = 0
+
+  for (const c of props.columnDefs) {
+    if (c === col) break
+
+    if (c.sticky) {
+      const colWidth = getColStyle(c).width
+        ? parseInt(getColStyle(c).width)
+        : 120
+
+      // width + left padding of that column
+      left += colWidth + CELL_PADDING_LEFT + CELL_PADDING_RIGHT
+    }
+  }
+
+  return {
+    position: 'sticky',
+    left: `${left}px`,
+    background: '#f8f8f8',
+  }
 }
 
 // ----------------------
@@ -146,16 +196,30 @@ function formatNumber(value) {
 
 .results-table {
   border-collapse: collapse;
-  table-layout: fixed; /* REQUIRED for colgroup */
+  table-layout: fixed;
   min-width: max-content;
   font-size: 0.95rem;
 }
 
-/* Remove padding from sticky container */
-th, td {
-  padding: 0;
-  /* remove background here so tr backgrounds show */
-  background: inherit;
+/* Base cell stacking */
+th,
+td {
+  position: relative;
+  z-index: 1;
+}
+
+/* Sticky columns */
+th.sticky,
+td.sticky {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: #f8f8f8;
+}
+
+/* Header sticky cells above body sticky cells */
+thead th.sticky {
+  z-index: 4;
 }
 
 .cell-inner {
@@ -165,38 +229,11 @@ th, td {
   text-overflow: ellipsis;
 }
 
-/* Headers */
 thead th {
   background: #f8f8f8;
   border-bottom: 2px solid #ccc;
   font-weight: 600;
   text-align: left;
-}
-
-/* Sticky columns */
-.sticky {
-  position: sticky;
-  z-index: 3;
-  background: #f8f8f8; /* keep header-like background for sticky cells */
-}
-
-.sticky-rank {
-  left: 0;
-  z-index: 6;
-}
-
-.sticky-team {
-  left: 60px;
-  z-index: 5;
-}
-
-.sticky-points {
-  left: 226px;
-  z-index: 4;
-}
-
-thead .sticky {
-  z-index: 10;
 }
 
 /* Rows - alternating background */
@@ -205,28 +242,25 @@ tbody tr:nth-of-type(odd) {
 }
 
 tbody tr:nth-of-type(even) {
-  background-color: rgba(0,0,0,.05);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Hover and active row */
 tbody tr:hover,
 tbody tr.active {
-  background-color: rgba(0,0,0,.05) !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
 @media (max-width: 768px) {
-  .sticky-points {
-    position: static;
-    left: auto;
-    z-index: auto;
-    background: inherit;
-  }
-
   .cell-inner {
     padding: 6px 8px;
     font-size: 0.9rem;
   }
 }
 
-
+.team-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
 </style>

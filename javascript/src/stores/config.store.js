@@ -85,9 +85,10 @@ export const useConfigStore = defineStore('config', {
       try {
         // --- Default columns (common to all genders) ---
         const defaultColumns = [
-          { headerName: 'Rank', field: 'rank' },
-          { headerName: 'Team', field: 'team' },
-          { headerName: 'Pts', field: 'points' },
+          { headerName: 'Rk', field: 'rank', sticky: true },
+          { headerName: '', field: 'logo', sticky: true, sortable: false },
+          { headerName: 'Team', field: 'team', sticky: true },
+          { headerName: 'Pts', field: 'points', sticky: true },
         ];
 
         const eventIndicator = {
@@ -209,7 +210,6 @@ export const useConfigStore = defineStore('config', {
       return state.meets.find(meet => meet.id === id)
     },
     currentMeet: (state, getters) => {
-      console.log(state)
       return getters.getMeetById(state.meetDocumentId)
     },
     selectedGenderTableData: (state) => {
@@ -228,8 +228,9 @@ export const useConfigStore = defineStore('config', {
         
         scoredResults.forEach(p => {
           const team = p.team_name
+          const team_abbr = p.team_abbr
           const score = p.score || 0
-          if (!teamMap[team]) teamMap[team] = { team }
+          if (!teamMap[team]) teamMap[team] = { team, team_abbr }
           teamMap[team][eventId] = (teamMap[team][eventId] || 0) + score
         })
       })
