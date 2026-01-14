@@ -33,8 +33,11 @@
             >
               <div class="cell-inner">
                 {{ col.headerName }}
-                <span v-if="sortField === col.field">
-                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                <!-- Sort triangle for all sortable columns -->
+                <span v-if="col.sortable !== false" class="sort-triangle">
+                  {{ isSortFieldActive(col) 
+                     ? (sortDirection === 'asc' ? '▲' : '▼') 
+                     : '' }}
                 </span>
               </div>
             </th>
@@ -48,8 +51,8 @@
               :key="col.field"
               :class="stickyClass(col)"
               :style="stickyStyle(col)"
+              @click="isEventCell(row, col.field) ? toggleTooltip(row._id, col.field) : null"
             >
-              <!-- MAIN CELL CONTENT -->
               <div class="cell-inner">
                 <template v-if="col.field === 'logo'">
                   <img
@@ -78,7 +81,7 @@
 
               <!-- TOOLTIP -->
               <div
-                v-if="isEventCell(row, col.field) && showHover"
+                v-if="isEventCell(row, col.field) && (showHover || (activeTooltip.rowId === row._id && activeTooltip.field === col.field))"
                 class="event-tooltip"
               >
                 <div class="tooltip-header">
@@ -101,7 +104,6 @@
                   No participating athletes
                 </div>
               </div>
-
             </td>
           </tr>
         </tbody>
@@ -125,6 +127,7 @@ const props = defineProps({
 const sortField = ref(null)
 const sortDirection = ref('desc')
 const showHover = ref(true)
+const activeTooltip = ref({ rowId: null, field: null })
 
 function onSort(col) {
   if (col.sortable === false) return
@@ -140,6 +143,14 @@ function onSort(col) {
   } else {
     sortField.value = sortKey
     sortDirection.value = 'desc'
+  }
+}
+
+function toggleTooltip(rowId, field) {
+  if (activeTooltip.value.rowId === rowId && activeTooltip.value.field === field) {
+    activeTooltip.value = { rowId: null, field: null }
+  } else {
+    activeTooltip.value = { rowId, field }
   }
 }
 
@@ -167,7 +178,6 @@ const sortedRows = computed(() => {
   })
 })
 
-// helper to get value from nested keys like "19.event_pts"
 function getSortValue(row, key) {
   if (!key.includes('.')) return row[key]
   return key.split('.').reduce((obj, k) => (obj ? obj[k] : undefined), row)
@@ -205,7 +215,7 @@ function formatNumber(value) {
 }
 
 // ----------------------
-// Sticky Columns (Dynamic Widths)
+// Sticky Columns
 // ----------------------
 const headerCells = ref([])
 const stickyOffsets = ref({})
@@ -278,7 +288,6 @@ function getColStyle(col) {
   border-radius: 4px;
 }
 
-
 .results-table {
   border-collapse: collapse;
   table-layout: fixed;
@@ -303,7 +312,10 @@ thead th.sticky {
 .cell-inner {
   padding: 8px 10px;
   white-space: nowrap;
-  overflow: hidden;
+  overflow: visible;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 thead th {
@@ -311,12 +323,9 @@ thead th {
   border-bottom: 2px solid #ccc;
   font-weight: 600;
   text-align: left;
-}
-
-thead th {
   position: sticky;
-  top: 0;                   /* stick to top of the scroll container */
-  z-index: 1;               /* higher than other cells to overlap */
+  top: 0;
+  z-index: 1;
 }
 
 th.status-scored, th.status-official {
@@ -327,6 +336,16 @@ th.status-scored, th.status-official {
 th.status-projection {
   background-color: #e5f7ff;
   color: #007ac6;
+}
+
+/* Sort triangle */
+.sort-triangle {
+  font-size: 0.7rem;
+  color: #999;
+}
+
+th.active .sort-triangle {
+  color: #333;
 }
 
 /* Rows */
