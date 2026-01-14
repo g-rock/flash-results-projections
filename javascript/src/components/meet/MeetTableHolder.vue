@@ -1,18 +1,16 @@
 <template>
   <div class="dashboard">
-    <EventStatusChart
-      class="event-status-chart"
-      :numEvents="config.selectedGenderEventStats.numEvents"
-      :numEventsScored="config.selectedGenderEventStats.numEventsScored"
-      :numEventsProjected="config.selectedGenderEventStats.numEventsProjected"
-      :numEventsInProgress="config.selectedGenderEventStats.numEventsInProgress"
-    />
+    <!-- Tabs + Event Status (desktop & mobile) -->
+    <div class="top-row">
+      <GenderTabs />
 
-    <GenderTabs />
-
-    <!-- Meet Settings link (only if logged in) -->
-    <div v-if="auth.user" class="meet-settings-link">
-      <router-link :to="settingsLink">Meet Settings</router-link>
+      <EventStatusChart
+        class="event-status-chart"
+        :numEvents="config.selectedGenderEventStats.numEvents"
+        :numEventsScored="config.selectedGenderEventStats.numEventsScored"
+        :numEventsProjected="config.selectedGenderEventStats.numEventsProjected"
+        :numEventsInProgress="config.selectedGenderEventStats.numEventsInProgress"
+      />
     </div>
 
     <!-- Loading / Error -->
@@ -34,7 +32,6 @@
 <script setup>
 import { useConfigStore } from '@/stores/config.store'
 import { useAuthStore } from '@/stores/auth.store'
-import { useRoute } from 'vue-router'
 
 import MeetTable from '@/components/meet/MeetTable.vue'
 import GenderTabs from '@/components/GenderTabs.vue'
@@ -42,33 +39,62 @@ import EventStatusChart from '@/components/charts/EventStatusChart.vue'
 
 const config = useConfigStore()
 const auth = useAuthStore()
-const route = useRoute()
-
-// Build link to meet settings
-const settingsLink = {
-  name: 'MeetSettings',
-  params: {
-    meetYear: route.params.meetYear,
-    meetSeason: route.params.meetSeason,
-    meetId: route.params.meetId
-  }
-}
 </script>
 
 <style scoped>
-
+/* Active tab underline */
 .tabs button.active::after {
   content: '';
   position: absolute;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;                 /* left-align underline */
+  transform: none;
   height: 3px;
   width: 60%;
   background-color: #007bff;
   border-radius: 2px;
 }
 
+/* ===== Tabs + chart layout (desktop & mobile) ===== */
+.top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+/* Tabs container */
+.top-row :deep(.tabs) {
+  display: flex;
+  justify-content: flex-start;
+  flex: 2;
+}
+
+/* Ensure tab buttons align left */
+.top-row :deep(.tabs button) {
+  text-align: left;
+}
+
+/* Chart on the right */
+.event-status-chart {
+  flex: 1;
+  max-width: 33%;
+}
+
+/* ===== Mobile adjustments ===== */
+@media (max-width: 1000px) {
+  .top-row {
+    gap: 10px;
+    padding: 0;
+  }
+
+  .event-status-chart {
+    min-width: 50%;
+  }
+}
+
+/* Optional existing styles */
 .meet-settings-link {
   margin: 12px 0;
 }
@@ -80,4 +106,5 @@ const settingsLink = {
 .meet-settings-link a:hover {
   text-decoration: underline;
 }
+
 </style>

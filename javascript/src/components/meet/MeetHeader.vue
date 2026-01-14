@@ -16,19 +16,46 @@
 
     <!-- Right side: user controls -->
     <div class="user-controls">
-      <router-link to="/admin" class="admin-link">
-        <span class="icon">⚙️</span> Admin
-      </router-link>
-      <a v-if="auth.user" @click="handleLogout" class="logout-link">Logout</a>
-      <div v-if="auth.user" class="meet-db-id">
-        Meet Database ID: {{ config?.meetDocumentId || '' }}
+      <!-- Hamburger button (mobile) -->
+      <button class="hamburger" @click="menuOpen = !menuOpen">
+        ☰
+      </button>
+
+      <!-- Links (desktop or expanded mobile) -->
+      <div :class="['links', { open: menuOpen }]">
+        <router-link
+          v-if="auth.user"
+          :to="dynamicLink.to"
+          class="admin-link"
+          @click="menuOpen = false"
+        >
+          {{ dynamicLink.text }}
+        </router-link>
+
+        <router-link to="/admin" class="admin-link" @click="menuOpen = false">
+          Admin
+        </router-link>
+
+        <a
+          v-if="auth.user"
+          @click="handleLogout"
+          class="logout-link"
+          @click.prevent="menuOpen = false"
+        >
+          Logout
+        </a>
       </div>
+
+      <!-- <div v-if="auth.user" class="meet-db-id">
+        Meet Database ID: {{ config?.meetDocumentId || '' }}
+      </div> -->
     </div>
   </header>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useConfigStore } from '@/stores/config.store'
 import { useAuthStore } from '@/stores/auth.store'
 
@@ -38,6 +65,38 @@ const props = defineProps({
 
 const config = useConfigStore()
 const auth = useAuthStore()
+const route = useRoute()
+
+const menuOpen = ref(false)
+
+// Dynamic link logic for Meet Settings / Meet Results
+const dynamicLink = computed(() => {
+  if (route.name === 'MeetSettings') {
+    return {
+      text: '📓 Meet Results',
+      to: {
+        name: 'MeetTableHolder',
+        params: {
+          meetYear: route.params.meetYear,
+          meetSeason: route.params.meetSeason,
+          meetId: route.params.meetId
+        }
+      }
+    }
+  } else {
+    return {
+      text: '⚙️ Meet Settings',
+      to: {
+        name: 'MeetSettings',
+        params: {
+          meetYear: route.params.meetYear,
+          meetSeason: route.params.meetSeason,
+          meetId: route.params.meetId
+        }
+      }
+    }
+  }
+})
 
 const meet = computed(() => {
   if (!props.meetId || !config.meets.length) return null
@@ -53,7 +112,7 @@ function handleLogout() {
 .header-text {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* left group + right group */
+  justify-content: space-between;
   gap: 15px;
   background-color: #062134;
   padding: 0 16px;
@@ -61,7 +120,6 @@ function handleLogout() {
   height: 90px;
 }
 
-/* left group: logo + meet info */
 .header-left {
   display: flex;
   align-items: center;
@@ -87,24 +145,51 @@ function handleLogout() {
   font-size: 0.9rem;
 }
 
+/* Right side */
 .user-controls {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  align-items: flex-end;
+  align-items: center;
+  gap: 10px;
+  position: relative;
 }
 
+/* Hamburger button (mobile) */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+}
+
+/* Links row (desktop) */
+.links {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Mobile collapsed menu */
+.links.open {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #062134;
+  padding: 10px;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+/* Links styling */
 .admin-link {
   text-decoration: none;
   color: white;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
-}
-
-.icon {
-  font-size: 0.9rem;
 }
 
 .logout-link {
@@ -123,5 +208,40 @@ function handleLogout() {
   font-size: 0.85rem;
   color: #ccc;
   text-align: right;
+}
+
+@media (max-width: 1000px) {
+  .links {
+    display: none;
+  }
+  .links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #062134;
+    padding: 10px 14px;
+    gap: 10px;
+    border-radius: 4px;
+    z-index: 10;
+    min-width: 120px;
+  }
+  .hamburger {
+    display: block;
+  }
+  .meet-name {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+  .meet-details {
+    font-size: 0.75rem;
+  }
+  .meet-info {
+    gap: 2px;
+  }
+  .header-text {
+    height: 70px;
+  }
 }
 </style>

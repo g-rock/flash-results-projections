@@ -1,6 +1,6 @@
 <template>
   <div>
-    <RestrictOrientation />
+    <!-- <RestrictOrientation /> -->
     <MeetHeader
       v-if="isMeetRoute"
       :meetId="currentMeetId"

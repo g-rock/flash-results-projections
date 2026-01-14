@@ -65,8 +65,9 @@ export default {
         },
         plugins: {
           legend: {
-            position: 'bottom',
+            position: 'right',
             onClick: null,
+            maxWidth: 150
           },
           tooltip: { enabled: true },
         },
@@ -103,7 +104,16 @@ export default {
 
 <style scoped>
 .event-status-chart-wrapper {
-  height: 100px;
-  width: 100%;
+  height: 75px;
+  width: 33%;
+  padding-left: 15px;
+}
+
+@media (max-width: 1000px) {
+  .event-status-chart-wrapper {
+    height: 60px;
+    width: 100%;
+    padding-left: 0;
+  }
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
   <header class="header-text">
+    <!-- Left: logo + title -->
     <div class="header-left">
       <router-link to="/">
         <img src="/logo.png" alt="FR Logo" class="fr-logo" />
@@ -7,19 +8,37 @@
       <h1 class="header-title">Welcome to the FR Projections</h1>
     </div>
 
+    <!-- Right: user controls -->
     <div class="user-controls">
-      <router-link to="/admin" class="admin-link">
-        <span class="icon">⚙️</span> Admin
-      </router-link>
-      <a v-if="auth.user" @click="handleLogout" class="logout-link">Logout</a>
+      <!-- Hamburger (mobile) -->
+      <button class="hamburger" @click="menuOpen = !menuOpen">
+        ☰
+      </button>
+
+      <!-- Links -->
+      <div class="links" :class="{ open: menuOpen }">
+        <router-link to="/admin" class="admin-link" @click="menuOpen = false">
+          Admin
+        </router-link>
+
+        <a
+          v-if="auth.user"
+          @click.prevent="handleLogout"
+          class="logout-link"
+        >
+          Logout
+        </a>
+      </div>
     </div>
   </header>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth.store'
 
 const auth = useAuthStore()
+const menuOpen = ref(false)
 
 function handleLogout() {
   auth.logout?.()
@@ -27,6 +46,7 @@ function handleLogout() {
 </script>
 
 <style scoped>
+/* ===== Header layout ===== */
 .header-text {
   display: flex;
   align-items: center;
@@ -34,7 +54,7 @@ function handleLogout() {
   gap: 15px;
   background-color: #062134;
   color: white;
-  padding: 1em;
+  padding: 0 16px;
 }
 
 .header-left {
@@ -51,29 +71,78 @@ function handleLogout() {
   margin: 0;
 }
 
+/* ===== User controls ===== */
 .user-controls {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  align-items: flex-end;
+  align-items: center;
+  position: relative;
 }
 
-.admin-link {
+/* Desktop links */
+.links {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.admin-link,
+.logout-link {
   color: white;
   text-decoration: none;
   font-weight: 500;
-}
-
-.logout-link:hover,
-.admin-link:hover {
-  text-decoration: underline;
+  cursor: pointer;
 }
 
 .logout-link {
-  cursor: pointer;
-  text-decoration: none;
-  color: white;
   font-size: 0.95rem;
+}
+
+.admin-link:hover,
+.logout-link:hover {
+  text-decoration: underline;
+}
+
+/* ===== Hamburger ===== */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 1000px) {
+  .header-title {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .links {
+    display: none;
+  }
+
+  .links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #062134;
+    padding: 10px 14px;
+    gap: 10px;
+    border-radius: 4px;
+    z-index: 10;
+    min-width: 120px;
+  }
+
+  .header-text {
+    height: 70px;
+  }
 }
 </style>

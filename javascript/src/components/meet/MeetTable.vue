@@ -266,12 +266,13 @@ function getColStyle(col) {
 .results-table-wrapper {
   width: calc(100vw - 16px);
   padding: 0 16px;
+  margin: auto;
   box-sizing: border-box;
 }
 
 .table-scroll {
   width: 100%;
-  max-height: calc(100vh - 90px - 100px - 80px);
+  max-height: calc(100vh - 90px - 100px - 40px);
   overflow: auto;
   border: 1px solid #cccccc;
   border-radius: 4px;
@@ -281,7 +282,7 @@ function getColStyle(col) {
 .results-table {
   border-collapse: collapse;
   table-layout: fixed;
-  min-width: max-content;
+  min-width: 100%;
   font-size: 0.95rem;
 }
 
@@ -418,5 +419,16 @@ td:hover .event-tooltip {
   width: 18px;
   height: 18px;
   object-fit: contain;
+}
+
+@media (max-width: 1000px) {
+  .results-table-wrapper {
+    width: 100vw;
+    padding: 0;
+  }
+
+  .table-scroll {
+    max-height: calc(100vh - 150px);
+  }
 }
 </style>

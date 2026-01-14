@@ -7,13 +7,6 @@
 
     <GenderTabs />
 
-    <router-link
-      class="back-link"
-      :to="{ name: 'MeetTableHolder', params: { meetYear: $route.params.meetYear, meetSeason: $route.params.meetSeason, meetId: $route.params.meetId } }"
-    >
-      Back to Table
-    </router-link>
-
     <!-- Loading / Error -->
     <div v-if="config.loadingEvents">Loading events...</div>
     <div v-if="config.eventsError" style="color: red;">
