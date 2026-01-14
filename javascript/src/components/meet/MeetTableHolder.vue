@@ -1,11 +1,12 @@
 <template>
   <div class="dashboard">
-    <div class="status">
-      <h3>Event Status ({{ config.selectedGenderEventStats.numEventsScored }} / {{ config.selectedGenderEventStats.numEvents }} events scored)</h3>
-      <span>🔵 | Projection</span><br>
-      <span>🔴 | In-progress</span><br>
-      <span>🟢 | Scored</span><br>
-    </div>
+    <EventStatusChart
+      class="event-status-chart"
+      :numEvents="config.selectedGenderEventStats.numEvents"
+      :numEventsScored="config.selectedGenderEventStats.numEventsScored"
+      :numEventsProjected="config.selectedGenderEventStats.numEventsProjected"
+      :numEventsInProgress="config.selectedGenderEventStats.numEventsInProgress"
+    />
 
     <GenderTabs />
 
@@ -37,6 +38,7 @@ import { useRoute } from 'vue-router'
 
 import MeetTable from '@/components/meet/MeetTable.vue'
 import GenderTabs from '@/components/GenderTabs.vue'
+import EventStatusChart from '@/components/charts/EventStatusChart.vue'
 
 const config = useConfigStore()
 const auth = useAuthStore()
@@ -54,32 +56,6 @@ const settingsLink = {
 </script>
 
 <style scoped>
-.tabs {
-  display: flex;
-  justify-content: center;
-  margin: 16px 0;
-  gap: 10px;
-}
-
-.tabs button {
-  background: none;
-  border: none;
-  font-size: 1rem;
-  padding: 10px 20px;
-  cursor: pointer;
-  color: #666;
-  position: relative;
-  transition: color 0.2s;
-}
-
-.tabs button:hover {
-  color: #000;
-}
-
-.tabs button.active {
-  color: #000;
-  font-weight: 600;
-}
 
 .tabs button.active::after {
   content: '';

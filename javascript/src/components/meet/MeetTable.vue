@@ -1,80 +1,117 @@
 <template>
-  <div class="projections-table">
-    <div class="results-table-wrapper">
-      <div class="table-scroll">
-        <table class="results-table">
-          <colgroup>
-            <col
+  <div class="results-table-wrapper">
+    <div class="tooltip-toggle">
+      <label>
+        <input type="checkbox" v-model="showHover" />
+        Show hover tooltips
+      </label>
+    </div>
+
+    <div class="table-scroll">
+      <table class="results-table">
+        <colgroup>
+          <col
+            v-for="col in columnDefs"
+            :key="col.field"
+            :style="getColStyle(col)"
+          />
+        </colgroup>
+
+        <thead>
+          <tr>
+            <th
+              v-for="(col, index) in columnDefs"
+              :key="col.field"
+              ref="headerCells"
+              @click="onSort(col)"
+              :class="[
+                { sortable: col.sortable !== false, active: isSortFieldActive(col) },
+                stickyClass(col),
+                getEventHeaderClass(col)
+              ]"
+              :style="stickyStyle(col)"
+            >
+              <div class="cell-inner">
+                {{ col.headerName }}
+                <span v-if="sortField === col.field">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr v-for="row in sortedRows" :key="row._id">
+            <td
               v-for="col in columnDefs"
               :key="col.field"
-              :style="getColStyle(col)"
-            />
-          </colgroup>
+              :class="stickyClass(col)"
+              :style="stickyStyle(col)"
+            >
+              <!-- MAIN CELL CONTENT -->
+              <div class="cell-inner">
+                <template v-if="col.field === 'logo'">
+                  <img
+                    v-if="row.team_abbr"
+                    :src="getLogoUrl(row)"
+                    :alt="row.team + ' logo'"
+                    class="team-logo"
+                    loading="lazy"
+                    @error="e => (e.target.style.display = 'none')"
+                  />
+                </template>
 
-          <thead>
-            <tr>
-              <th
-                v-for="col in columnDefs"
-                :key="col.field"
-                @click="onSort(col)"
-                :class="[
-                  { sortable: col.sortable !== false, active: sortField === col.field },
-                  stickyClass(col)
-                ]"
-                :style="stickyStyle(col)"
-              >
-                <div class="cell-inner">
-                  {{ col.headerName }}
-                  <span v-if="sortField === col.field">
-                    {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                <template v-else>
+                  <span
+                    v-if="isEventCell(row, col.field)"
+                    class="event-cell"
+                  >
+                    {{ formatNumber(row[col.field].event_pts) }}
                   </span>
-                </div>
-              </th>
-            </tr>
-          </thead>
 
-          <tbody>
-            <tr v-for="row in sortedRows" :key="row._id">
-              <td
-                v-for="col in columnDefs"
-                :key="col.field"
-                :class="stickyClass(col)"
-                :style="stickyStyle(col)"
-              >
-                <div class="cell-inner">
-                  <template v-if="col.field === 'logo'">
-                    <img
-                      v-if="row.team_abbr"
-                      :src="getLogoUrl(row)"
-                      :alt="row.team + ' logo'"
-                      class="team-logo"
-                      loading="lazy"
-                      @error="e => e.target.style.display = 'none'"
-                    />
-                  </template>
-
-                  <template v-else>
+                  <span v-else>
                     {{ formatNumber(row[col.field]) }}
-                  </template>
+                  </span>
+                </template>
+              </div>
+
+              <!-- TOOLTIP -->
+              <div
+                v-if="isEventCell(row, col.field) && showHover"
+                class="event-tooltip"
+              >
+                <div class="tooltip-header">
+                  <span>Athlete</span>
+                  <span>Score</span>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+
+                <template v-if="row[col.field].scorers?.length">
+                  <div
+                    v-for="(scorer, idx) in row[col.field].scorers"
+                    :key="idx"
+                    class="tooltip-row"
+                  >
+                    <span class="tooltip-name">{{ scorer.athlete_name }}</span>
+                    <span class="tooltip-score">{{ formatNumber(scorer.score) }}</span>
+                  </div>
+                </template>
+
+                <div v-else class="tooltip-empty">
+                  No participating athletes
+                </div>
+              </div>
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-
-const LOGO_BASE_URL = 'https://storage.googleapis.com/projections-data/logos/NCAA'
-
-function getLogoUrl(row) {
-  if (!row.team_abbr) return null
-  return `${LOGO_BASE_URL}/${row.team_abbr}.png`
-}
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 
 const props = defineProps({
   title: String,
@@ -87,18 +124,21 @@ const props = defineProps({
 // ----------------------
 const sortField = ref(null)
 const sortDirection = ref('desc')
+const showHover = ref(true)
 
 function onSort(col) {
   if (col.sortable === false) return
 
-  if (sortField.value === col.field) {
+  const sortKey = col.meta?.isEventColumn ? `${col.field}.event_pts` : col.field
+
+  if (sortField.value === sortKey) {
     if (sortDirection.value === 'desc') sortDirection.value = 'asc'
     else if (sortDirection.value === 'asc') {
       sortDirection.value = null
       sortField.value = null
     }
   } else {
-    sortField.value = col.field
+    sortField.value = sortKey
     sortDirection.value = 'desc'
   }
 }
@@ -111,8 +151,8 @@ const sortedRows = computed(() => {
   }
 
   return [...props.rowData].sort((a, b) => {
-    const aVal = a[sortField.value]
-    const bVal = b[sortField.value]
+    const aVal = getSortValue(a, sortField.value)
+    const bVal = getSortValue(b, sortField.value)
 
     const aNum = parseFloat(aVal)
     const bNum = parseFloat(bVal)
@@ -127,72 +167,116 @@ const sortedRows = computed(() => {
   })
 })
 
-// ----------------------
-// Column sizing
-// ----------------------
-function getColStyle(col) {
-  if (col.field === 'rank') return { width: '24px'}
-  if (col.field === 'logo') return { width: '24px' }
-  if (col.field === 'team') return { width: '170px'}
-  if (col.field === 'points') return { width: '40px' }
-  return { width: '120px' }
+// helper to get value from nested keys like "19.event_pts"
+function getSortValue(row, key) {
+  if (!key.includes('.')) return row[key]
+  return key.split('.').reduce((obj, k) => (obj ? obj[k] : undefined), row)
 }
 
-// ----------------------
-// Sticky helpers
-// ----------------------
-function stickyClass(col) {
-  return col.sticky ? 'sticky' : ''
+const LOGO_BASE_URL = 'https://storage.googleapis.com/projections-data/logos/NCAA'
+
+function getLogoUrl(row) {
+  if (!row.team_abbr) return null
+  return `${LOGO_BASE_URL}/${row.team_abbr}.png`
 }
 
-const CELL_PADDING_LEFT = 8
-const CELL_PADDING_RIGHT = 8
-
-// Dynamically calculate left offset of sticky column
-function stickyStyle(col) {
-  if (!col.sticky) return {}
-
-  let left = 0
-
-  for (const c of props.columnDefs) {
-    if (c === col) break
-
-    if (c.sticky) {
-      const colWidth = getColStyle(c).width
-        ? parseInt(getColStyle(c).width)
-        : 120
-
-      // width + left padding of that column
-      left += colWidth + CELL_PADDING_LEFT + CELL_PADDING_RIGHT
-    }
-  }
-
-  return {
-    position: 'sticky',
-    left: `${left}px`,
-    background: '#f8f8f8',
-  }
+function isSortFieldActive(col) {
+  const sortKey = col.meta?.isEventColumn ? `${col.field}.event_pts` : col.field
+  return sortField.value === sortKey
 }
 
-// ----------------------
-// Formatting
-// ----------------------
+function isEventCell(row, field) {
+  return (
+    row[field] &&
+    typeof row[field] === 'object' &&
+    'event_pts' in row[field]
+  )
+}
+
+function getEventHeaderClass(col) {
+  if (!col.meta?.isEventColumn) return ''
+  return col.meta.status ? `status-${col.meta.status}` : ''
+}
+
 function formatNumber(value) {
   const num = parseFloat(value)
   if (isNaN(num)) return value
   return Number.isInteger(num) ? num : num.toFixed(2)
 }
+
+// ----------------------
+// Sticky Columns (Dynamic Widths)
+// ----------------------
+const headerCells = ref([])
+const stickyOffsets = ref({})
+
+function stickyClass(col) {
+  return col.sticky ? 'sticky' : ''
+}
+
+function stickyStyle(col) {
+  if (!col.sticky) return {}
+  return {
+    position: 'sticky',
+    left: `${stickyOffsets.value[col.field] || 0}px`,
+  }
+}
+
+function calculateStickyOffsets() {
+  const offsets = {}
+  let left = 0
+
+  props.columnDefs.forEach((col, index) => {
+    if (!col.sticky) return
+
+    offsets[col.field] = left
+
+    const el = headerCells.value[index]
+    if (el) left += el.offsetWidth
+  })
+
+  stickyOffsets.value = offsets
+}
+
+onMounted(async () => {
+  await nextTick()
+  calculateStickyOffsets()
+  window.addEventListener('resize', calculateStickyOffsets)
+})
+
+watch(
+  () => props.columnDefs,
+  async () => {
+    await nextTick()
+    calculateStickyOffsets()
+  },
+  { deep: true }
+)
+
+// ----------------------
+// Optional: Column Styles
+// ----------------------
+function getColStyle(col) {
+  if (col.field === 'logo') return { minWidth: '40px' }
+  return {}
+}
 </script>
 
 <style scoped>
 .results-table-wrapper {
-  width: 100vw;
+  width: calc(100vw - 16px);
+  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 .table-scroll {
   width: 100%;
-  overflow-x: auto;
+  max-height: calc(100vh - 90px - 100px - 80px);
+  overflow: auto;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
 }
+
 
 .results-table {
   border-collapse: collapse;
@@ -201,23 +285,16 @@ function formatNumber(value) {
   font-size: 0.95rem;
 }
 
-/* Base cell stacking */
 th,
 td {
   position: relative;
-  z-index: 1;
 }
 
-/* Sticky columns */
 th.sticky,
 td.sticky {
-  position: sticky;
-  left: 0;
   z-index: 3;
-  background: #f8f8f8;
 }
 
-/* Header sticky cells above body sticky cells */
 thead th.sticky {
   z-index: 4;
 }
@@ -226,7 +303,6 @@ thead th.sticky {
   padding: 8px 10px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 thead th {
@@ -236,26 +312,106 @@ thead th {
   text-align: left;
 }
 
-/* Rows - alternating background */
+thead th {
+  position: sticky;
+  top: 0;                   /* stick to top of the scroll container */
+  z-index: 1;               /* higher than other cells to overlap */
+}
+
+th.status-scored, th.status-official {
+  background-color: #63BE7B;
+  color: #1D6F42;
+}
+
+th.status-projection {
+  background-color: #e5f7ff;
+  color: #007ac6;
+}
+
+/* Rows */
 tbody tr:nth-of-type(odd) {
   background-color: #ffffff;
 }
 
 tbody tr:nth-of-type(even) {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: #f2f2f2;
 }
 
-/* Hover and active row */
-tbody tr:hover,
-tbody tr.active {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+tr:nth-child(odd) td.sticky {
+  background-color: #ffffff;
 }
 
-@media (max-width: 768px) {
-  .cell-inner {
-    padding: 6px 8px;
-    font-size: 0.9rem;
-  }
+tr:nth-child(even) td.sticky {
+  background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+  background-color: #dcdcdc;
+}
+
+.event-tooltip {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+
+  margin-top: 6px;
+  padding: 8px 10px;
+  min-width: 200px;
+
+  border: 1px solid #ccc;
+  border-radius: 4px;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+
+  background-color: #ffffff;
+}
+
+td:hover .event-tooltip {
+  display: block;
+}
+
+.tooltip-toggle { 
+  height: 20px;
+}
+.tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #666;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  padding: 2px 0;
+}
+
+.tooltip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tooltip-score {
+  font-weight: 600;
+}
+
+.tooltip-empty {
+  font-size: 0.8rem;
+  color: #777;
+  font-style: italic;
+  padding: 4px 0;
 }
 
 .team-logo {

@@ -55,10 +55,10 @@ function handleLogout() {
   align-items: center;
   justify-content: space-between; /* left group + right group */
   gap: 15px;
-  margin-bottom: 20px;
   background-color: #062134;
-  padding: 1em;
+  padding: 0 16px;
   color: white;
+  height: 90px;
 }
 
 /* left group: logo + meet info */

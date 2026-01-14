@@ -1,12 +1,11 @@
 <template>
   <div>
-    <!-- Header -->
+    <RestrictOrientation />
     <MeetHeader
       v-if="isMeetRoute"
       :meetId="currentMeetId"
     />
     <GenericHeader v-else />
-
     <!-- Main content -->
     <router-view v-if="!isMeetRoute || config.meets.length" :key="$route.params.meetId" />
     <div v-else>Loading meets...</div>
@@ -19,6 +18,7 @@ import { useRoute } from 'vue-router'
 import { useConfigStore } from '@/stores/config.store'
 import MeetHeader from '@/components/meet/MeetHeader.vue'
 import GenericHeader from '@/components/GenericHeader.vue'
+import RestrictOrientation from '@/components/RestrictOrientation.vue'
 
 const config = useConfigStore()
 const route = useRoute()

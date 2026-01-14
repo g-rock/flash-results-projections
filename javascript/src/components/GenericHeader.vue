@@ -32,7 +32,6 @@ function handleLogout() {
   align-items: center;
   justify-content: space-between;
   gap: 15px;
-  margin-bottom: 20px;
   background-color: #062134;
   color: white;
   padding: 1em;

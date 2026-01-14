@@ -88,15 +88,8 @@ export const useConfigStore = defineStore('config', {
           { headerName: 'Rk', field: 'rank', sticky: true },
           { headerName: '', field: 'logo', sticky: true, sortable: false },
           { headerName: 'Team', field: 'team', sticky: true },
-          { headerName: 'Pts', field: 'points', sticky: true },
+          { headerName: 'Pts', field: 'total_pts', sticky: true },
         ];
-
-        const eventIndicator = {
-          'projection': '🔵',
-          'in-progress': '🔴',
-          'official': '🟢',
-          'scored': '🟢'
-        };
 
         // --- Fetch events for each gender ---
         for (const gender of this.genders) {
@@ -118,9 +111,12 @@ export const useConfigStore = defineStore('config', {
           const eventColumns = this.eventsData[gender].map(event => {
             const statusKey = this.eventStatusKeys.find(key => key in event);
             return {
-              headerName: `${event.event_name} ${eventIndicator[statusKey] || ''}`,
+              headerName: event.event_name,
               field: event.id,
-              meta: { isEventColumn: true },
+              meta: {
+                isEventColumn: true,
+                status: statusKey
+              },
             };
           });
 
@@ -222,33 +218,58 @@ export const useConfigStore = defineStore('config', {
         const statusKey = state.eventStatusKeys.find(key => key in event)
         if (!statusKey) return
 
-        const results = event[statusKey]['event_results']
+        const results = event[statusKey].event_results
         const ascending = event.sort_ascending
         const scoredResults = state.rankAndScoreEvent(results, ascending)
-        
+
         scoredResults.forEach(p => {
           const team = p.team_name
           const team_abbr = p.team_abbr
           const score = p.score || 0
-          if (!teamMap[team]) teamMap[team] = { team, team_abbr }
-          teamMap[team][eventId] = (teamMap[team][eventId] || 0) + score
+          const athlete_name = p.athlete_name
+
+          if (!teamMap[team]) {
+            teamMap[team] = { team, team_abbr }
+          }
+
+          if (!teamMap[team][eventId]) {
+            teamMap[team][eventId] = {
+              event_pts: 0,
+              scorers: []
+            }
+          }
+
+          teamMap[team][eventId].event_pts += score
+          teamMap[team][eventId].scorers.push({
+            athlete_name,
+            score
+          })
         })
       })
 
-      // Fill missing event scores with 0 and sum total points
+      // Fill missing events + compute total points
       Object.values(teamMap).forEach(team => {
         allEventIds.forEach(eventId => {
-          if (team[eventId] === undefined) team[eventId] = 0
+          if (!team[eventId]) {
+            team[eventId] = {
+              event_pts: 0,
+              scorers: []
+            }
+          }
         })
 
-        team.points = allEventIds.reduce((sum, eventId) => sum + (team[eventId] || 0), 0)
+        team.total_pts = allEventIds.reduce(
+          (sum, eventId) => sum + team[eventId].event_pts,
+          0
+        )
       })
 
       // Convert to array and sort by points descending
-      const teamsArray = Object.values(teamMap)
-        .sort((a, b) => (b.points || 0) - (a.points || 0))
+      const teamsArray = Object.values(teamMap).sort(
+        (a, b) => b.total_pts - a.total_pts
+      )
 
-      // Assign rank based on points
+      // Assign ranks
       teamsArray.forEach((team, idx) => {
         team.rank = idx + 1
       })
@@ -265,10 +286,12 @@ export const useConfigStore = defineStore('config', {
       const events = state.eventsData[state.selectedGender] || []
 
       const numEvents = events.length
+      const numEventsInProgress = events.filter(event => 'in-progress' in event).length
       const numEventsScored = events.filter(event => 'scored' in event).length
 
       return {
         numEvents,
+        numEventsInProgress,
         numEventsScored
       }
     }

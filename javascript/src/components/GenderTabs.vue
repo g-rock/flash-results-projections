@@ -24,9 +24,9 @@ const config = useConfigStore()
 
 <style scoped>
 .tabs {
+  height: 40px;
   display: flex;
   justify-content: center;
-  margin: 16px 0;
   gap: 10px;
 }
 
