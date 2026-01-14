@@ -46,7 +46,6 @@ function handleLogout() {
 </script>
 
 <style scoped>
-/* ===== Header layout ===== */
 .header-text {
   display: flex;
   align-items: center;
@@ -55,6 +54,7 @@ function handleLogout() {
   background-color: #062134;
   color: white;
   padding: 0 16px;
+  height: 90px;
 }
 
 .header-left {
