@@ -55,21 +55,16 @@
         <tbody>
           <tr v-for="row in sortedRows" :key="row._id">
             <td
-              v-for="col in columnDefs"
-              :key="col.field"
-              :class="[
-                stickyClass(col),
-                { 
+                v-for="col in columnDefs"
+                :key="col.field"
+                :class="[stickyClass(col), { 
                   'active-event-cell': activeEventCell.value?.rowId === row._id && activeEventCell.value?.field === col.field
-                }
-              ]"
-              :style="stickyStyle(col)"
-              @mouseenter="isEventCell(row, col.field) ? showEventTooltip($event, row, col) : null"
-              @mouseleave="hideEventTooltip"
-              @click="isEventCell(row, col.field) ? toggleEventTooltip($event, row, col) : null"
-            >
-
-
+                }]"
+                :style="stickyStyle(col)"
+                @mouseenter="!isTouchDevice && isEventCell(row, col.field) ? showEventTooltip($event, row, col) : null"
+                @mouseleave="!isTouchDevice && hideEventTooltip"
+                @click="isEventCell(row, col.field) ? toggleEventTooltip($event, row, col) : null"
+              >
               <div class="cell-inner">
                 <template v-if="col.field === 'logo'">
                   <img
@@ -126,7 +121,7 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
-
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
 const props = defineProps({
   title: String,
   rowData: { type: Array, default: () => [] },
