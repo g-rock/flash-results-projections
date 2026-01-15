@@ -6,6 +6,10 @@
         <input type="checkbox" v-model="showHover" />
         Show tooltips
       </label>
+      <label style="margin-left: 12px;">
+        <input type="checkbox" v-model="showTeamAbbr" />
+        Show team abbr
+      </label>
     </div>
 
     <div class="table-scroll" ref="tableScrollRef">
@@ -57,7 +61,14 @@
             <td
               v-for="col in columnDefs"
               :key="col.field"
-              :class="{ 'active-event-cell': activeEventCell.rowId === index && activeEventCell.field === col.field }"
+              :class="[
+                stickyClass(col),
+                {
+                  'active-event-cell':
+                    activeEventCell.rowId === index &&
+                    activeEventCell.field === col.field
+                }
+              ]"
               :style="stickyStyle(col)"
               @mouseenter="!isTouchDevice && isEventCell(row, col.field) ? showEventTooltip($event, row, col, index) : null"
               @mouseleave="!isTouchDevice && hideEventTooltip"
@@ -65,16 +76,24 @@
             >
               <div class="cell-inner">
                 <template v-if="col.field === 'logo'">
-                  <img
-                    v-if="row.team_abbr"
-                    :src="getLogoUrl(row)"
-                    :alt="row.team + ' logo'"
-                    class="team-logo"
-                    loading="lazy"
-                    @error="e => (e.target.style.display = 'none')"
-                  />
-                </template>
+                  <div class="logo-cell">
+                    <img
+                      v-if="row.team_abbr"
+                      :src="getLogoUrl(row)"
+                      :alt="row.team + ' logo'"
+                      class="team-logo"
+                      loading="lazy"
+                      @error="e => (e.target.style.display = 'none')"
+                    />
 
+                    <span
+                      v-if="showTeamAbbr && row.team_abbr"
+                      class="team-abbr"
+                    >
+                      {{ row.team_abbr }}
+                    </span>
+                  </div>
+                </template>
                 <template v-else>
                   <span v-if="isEventCell(row, col.field)" class="event-cell">
                     {{ formatNumber(row[col.field].event_pts) }}
@@ -129,6 +148,7 @@ const props = defineProps({
 const sortField = ref(null)
 const sortDirection = ref('desc')
 const showHover = ref(true)
+const showTeamAbbr = ref(true)
 const activeHeaderTooltip = ref(null)
 const activeEventCell = ref({ rowId: null, field: null })
 const floatingEventTooltip = ref({ show: false, top: '0px', left: '0px', scorers: [] })
@@ -248,8 +268,6 @@ function toggleEventTooltip(event, row, col, rowIndex) {
   if (!showHover.value) return;
 
   hideHeaderTooltip();
-  console.log(rowIndex); // replaced row._id
-  console.log(col);
 
   const isSameCell =
     activeEventCell.value.rowId === rowIndex &&
@@ -386,6 +404,11 @@ watch(showHover, (val) => {
   hideHeaderTooltip()
 })
 
+watch(showTeamAbbr, async () => {
+  await nextTick()
+  calculateStickyOffsets()
+})
+
 function getColStyle(col) {
   if (col.field === 'logo') return { minWidth: '40px' }
   return {}
@@ -517,6 +540,18 @@ tr:nth-child(even) td.sticky { background-color: #f2f2f2; }
   max-width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.logo-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.team-abbr {
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 @media (max-width: 768px) {

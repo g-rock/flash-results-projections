@@ -87,8 +87,7 @@ export const useConfigStore = defineStore('config', {
         // --- Default columns (common to all genders) ---
         const defaultColumns = [
           { headerName: 'Rk', field: 'rank', sticky: true, meta: { fullHeaderName: 'Rank' } },
-          { headerName: '', field: 'logo', sticky: true, sortable: false, meta: { fullHeaderName: 'Team Logo' } },
-          { headerName: 'Team', field: 'team_abbr', sticky: true, meta: { fullHeaderName: 'Team Abbreviation' }},
+          { headerName: 'Team', field: 'logo', sticky: true, sortable: false, meta: { fullHeaderName: 'Team' } },
           { headerName: 'Pts', field: 'total_pts', sticky: true, meta: { fullHeaderName: 'Total Points' }},
         ];
 
