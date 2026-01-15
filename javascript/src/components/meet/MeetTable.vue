@@ -53,18 +53,16 @@
         </thead>
 
         <tbody>
-          <tr v-for="row in sortedRows" :key="row._id">
+          <tr v-for="(row, index) in sortedRows" :key="index">
             <td
-                v-for="col in columnDefs"
-                :key="col.field"
-                :class="[stickyClass(col), { 
-                  'active-event-cell': activeEventCell.value?.rowId === row._id && activeEventCell.value?.field === col.field
-                }]"
-                :style="stickyStyle(col)"
-                @mouseenter="!isTouchDevice && isEventCell(row, col.field) ? showEventTooltip($event, row, col) : null"
-                @mouseleave="!isTouchDevice && hideEventTooltip"
-                @click="isEventCell(row, col.field) ? toggleEventTooltip($event, row, col) : null"
-              >
+              v-for="col in columnDefs"
+              :key="col.field"
+              :class="{ 'active-event-cell': activeEventCell.rowId === index && activeEventCell.field === col.field }"
+              :style="stickyStyle(col)"
+              @mouseenter="!isTouchDevice && isEventCell(row, col.field) ? showEventTooltip($event, row, col, index) : null"
+              @mouseleave="!isTouchDevice && hideEventTooltip"
+              @click="isEventCell(row, col.field) ? toggleEventTooltip($event, row, col, index) : null"
+            >
               <div class="cell-inner">
                 <template v-if="col.field === 'logo'">
                   <img
@@ -246,27 +244,28 @@ function showEventTooltip(event, row, col) {
 }
 
 
-function toggleEventTooltip(event, row, col) {
-  if (!showHover.value) return
+function toggleEventTooltip(event, row, col, rowIndex) {
+  if (!showHover.value) return;
 
-  hideHeaderTooltip()
+  hideHeaderTooltip();
+  console.log(rowIndex); // replaced row._id
+  console.log(col);
 
-  const currentCellScorers = row[col.field].scorers || []
+  const isSameCell =
+    activeEventCell.value.rowId === rowIndex &&
+    activeEventCell.value.field === col.field;
 
-  if (floatingEventTooltip.value.show && currentCellScorers) {
-    // Hide tooltip if clicking the same cell again
-    hideEventTooltip()
-    activeEventCell.value = { rowId: null, field: null } // reset highlight
-    return
+  if (floatingEventTooltip.value.show && isSameCell) {
+    // Hide tooltip and remove highlight if tapping same cell
+    hideEventTooltip();
+    activeEventCell.value = { rowId: null, field: null };
+  } else {
+    // Show tooltip
+    showEventTooltip(event, row, col, rowIndex);
+    // Highlight tapped cell
+    activeEventCell.value = { rowId: rowIndex, field: col.field } 
   }
-
-  // Show tooltip
-  showEventTooltip(event, row, col)
-
-  // Highlight clicked cell
-  activeEventCell.value = { rowId: row._id, field: col.field }
 }
-
 
 
 function hideEventTooltip() {
@@ -453,7 +452,12 @@ tbody tr:nth-of-type(odd) { background-color: #fff; }
 tbody tr:nth-of-type(even) { background-color: #f2f2f2; }
 tr:nth-child(odd) td.sticky { background-color: #fff; }
 tr:nth-child(even) td.sticky { background-color: #f2f2f2; }
-tbody tr:hover { background-color: #dcdcdc; }
+/* Only apply hover for non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+  tbody tr:hover {
+    background-color: #dcdcdc;
+  }
+}
 
 /* Header tooltip (inside table, reverted) */
 .floating-header-tooltip {
@@ -518,9 +522,10 @@ tbody tr:hover { background-color: #dcdcdc; }
 @media (max-width: 768px) {
   .results-table-wrapper { width: 100vw; padding: 0; }
   .table-scroll { max-height: calc(100vh - 150px); }
-  td.active-event-cell {
-    background-color: rgba(0, 123, 255, 0.1); /* subtle blue highlight */
+}
+
+td.active-event-cell {
+    background-color: rgba(0, 123, 255, .2); /* subtle blue highlight */
     transition: background-color 0.2s ease;
   }
-}
 </style>
