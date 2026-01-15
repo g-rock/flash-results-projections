@@ -113,7 +113,7 @@ function handleLogout() {
 }
 
 /* ===== Mobile ===== */
-@media (max-width: 1000px) {
+@media (max-width: 768px) {
   .header-title {
     font-size: 1rem;
     line-height: 1.2;

@@ -82,19 +82,6 @@ const auth = useAuthStore()
   max-width: 33%;
 }
 
-/* ===== Mobile adjustments ===== */
-@media (max-width: 1000px) {
-  .top-row {
-    gap: 10px;
-    padding: 0;
-  }
-
-  .event-status-chart {
-    min-width: 50%;
-  }
-}
-
-/* Optional existing styles */
 .meet-settings-link {
   margin: 12px 0;
 }
@@ -105,6 +92,26 @@ const auth = useAuthStore()
 }
 .meet-settings-link a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .top-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 0;
+  }
+
+  .top-row :deep(.tabs) {
+    justify-content: center;
+  }
+
+  .event-status-chart {
+    max-width: 100%;
+    max-height: 75px;
+    width: 100%;
+    min-width: unset;
+  }
 }
 
 </style>

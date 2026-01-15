@@ -9,7 +9,22 @@
       <div class="meet-info">
         <h1 class="meet-name">{{ meet?.name || 'Loading meet...' }}</h1>
         <div class="meet-details">
-          <span>{{ meet?.location || '' }} | {{ meet?.date || '' }}</span>
+          <span>
+            {{ meet?.location || '' }} | {{ meet?.date || '' }}
+
+            <template v-if="auth.user && config?.meetDocumentId">
+              <span class="meet-db-id">
+                | {{ config.meetDocumentId }}
+                <button
+                  class="copy-btn"
+                  title="Copy meet document ID"
+                  @click="copyMeetId"
+                >
+                  📋
+                </button>
+              </span>
+            </template>
+          </span>
         </div>
       </div>
     </div>
@@ -45,10 +60,6 @@
           Logout
         </a>
       </div>
-
-      <!-- <div v-if="auth.user" class="meet-db-id">
-        Meet Database ID: {{ config?.meetDocumentId || '' }}
-      </div> -->
     </div>
   </header>
 </template>
@@ -102,6 +113,11 @@ const meet = computed(() => {
   if (!props.meetId || !config.meets.length) return null
   return config.meets.find(m => m.id === props.meetId) || null
 })
+
+function copyMeetId() {
+  if (!config?.meetDocumentId) return
+  navigator.clipboard.writeText(config.meetDocumentId)
+}
 
 function handleLogout() {
   auth.logout?.()
@@ -207,10 +223,25 @@ function handleLogout() {
 .meet-db-id {
   font-size: 0.85rem;
   color: #ccc;
-  text-align: right;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
-@media (max-width: 1000px) {
+.copy-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+.copy-btn:hover {
+  color: #fff;
+}
+
+@media (max-width: 768px) {
   .links {
     display: none;
   }
@@ -242,6 +273,9 @@ function handleLogout() {
   }
   .header-text {
     height: 70px;
+  }
+  .meet-db-id {
+    display: none;
   }
 }
 </style>

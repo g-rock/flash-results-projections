@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { collection, doc, getDocs, collectionGroup, updateDoc } from 'firebase/firestore'
+import eventMap from '@/event_map.json'
 import { db } from '../firebase'
 
 export const useConfigStore = defineStore('config', {
@@ -85,10 +86,10 @@ export const useConfigStore = defineStore('config', {
       try {
         // --- Default columns (common to all genders) ---
         const defaultColumns = [
-          { headerName: 'Rk', field: 'rank', sticky: true },
-          { headerName: '', field: 'logo', sticky: true, sortable: false },
-          { headerName: 'Team', field: 'team', sticky: true },
-          { headerName: 'Pts', field: 'total_pts', sticky: true },
+          { headerName: 'Rk', field: 'rank', sticky: true, meta: { fullHeaderName: 'Rank' } },
+          { headerName: '', field: 'logo', sticky: true, sortable: false, meta: { fullHeaderName: 'Team Logo' } },
+          { headerName: 'Team', field: 'team_abbr', sticky: true, meta: { fullHeaderName: 'Team Abbreviation' }},
+          { headerName: 'Pts', field: 'total_pts', sticky: true, meta: { fullHeaderName: 'Total Points' }},
         ];
 
         // --- Fetch events for each gender ---
@@ -109,16 +110,21 @@ export const useConfigStore = defineStore('config', {
 
           // Build columns for this gender
           const eventColumns = this.eventsData[gender].map(event => {
-            const statusKey = this.eventStatusKeys.find(key => key in event);
+            const statusKey = this.eventStatusKeys.find(key => key in event)
+
+            const eventName = event.event_name
+
             return {
-              headerName: event.event_name,
+              headerName: eventMap[eventName] || event.event_name || eventName,
               field: event.id,
               meta: {
+                fullHeaderName: eventName,
                 isEventColumn: true,
                 status: statusKey
-              },
-            };
-          });
+              }
+            }
+          })
+
 
           // Store pre-built columnDefs per gender
           this.columnDefs[gender] = [...defaultColumns, ...eventColumns];

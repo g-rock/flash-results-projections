@@ -20,7 +20,7 @@
               v-for="(col, index) in columnDefs"
               :key="col.field"
               ref="headerCells"
-              @click="onSort(col); debouncedFlashHeaderTooltip(col, 1000)"
+              @click="onSort(col)"
               :class="[
                 { sortable: col.sortable !== false, active: isSortFieldActive(col) },
                 stickyClass(col),
@@ -30,23 +30,13 @@
             >
               <div
                 class="cell-inner header-cell"
-                @mouseenter="showHeaderTooltip($event, col)"
-                @mouseleave="hideHeaderTooltip"
+                @mouseenter="activeHeaderTooltip = col"
+                @mouseleave="activeHeaderTooltip = null"
               >
                 {{ col.headerName }}
                 <span v-if="col.sortable !== false" class="sort-triangle">
                   {{ isSortFieldActive(col) ? (sortDirection === 'asc' ? '▲' : '▼') : '' }}
                 </span>
-
-                <!-- Tooltip -->
-                <div
-                  v-if="activeHeaderTooltip === col.field && showHover"
-                  ref="headerTooltip"
-                  class="header-tooltip"
-                  :style="headerTooltipStyle"
-                >
-                  {{ getFullHeaderName(col) }}
-                </div>
               </div>
             </th>
           </tr>
@@ -57,19 +47,11 @@
             <td
               v-for="col in columnDefs"
               :key="col.field"
-              :class="[
-                stickyClass(col),
-                { 
-                  'active-event-cell': activeEventCell.value?.rowId === row._id && activeEventCell.value?.field === col.field
-                }
-              ]"
+              :class="stickyClass(col)"
               :style="stickyStyle(col)"
               @mouseenter="isEventCell(row, col.field) ? showEventTooltip($event, row, col) : null"
               @mouseleave="hideEventTooltip"
-              @click="isEventCell(row, col.field) ? toggleEventTooltip($event, row, col) : null"
             >
-
-
               <div class="cell-inner">
                 <template v-if="col.field === 'logo'">
                   <img
@@ -121,6 +103,15 @@
 
       <div v-else class="tooltip-empty">No participating athletes</div>
     </div>
+
+    <!-- Floating Header Tooltip -->
+    <div
+      v-if="activeHeaderTooltip && showHover"
+      class="floating-header-tooltip"
+      :style="{ top: headerTooltipPosition.top, left: headerTooltipPosition.left }"
+    >
+      {{ getFullHeaderName(activeHeaderTooltip) }}
+    </div>
   </div>
 </template>
 
@@ -137,7 +128,6 @@ const sortField = ref(null)
 const sortDirection = ref('desc')
 const showHover = ref(true)
 const activeHeaderTooltip = ref(null)
-const activeEventCell = ref({ rowId: null, field: null })
 const floatingEventTooltip = ref({ show: false, top: '0px', left: '0px', scorers: [] })
 const tableScrollRef = ref(null)
 const headerCells = ref([])
@@ -146,53 +136,37 @@ const stickyOffsets = ref({})
 const headerTooltip = ref(null)
 const headerTooltipStyle = ref({ left: '0px', top: '100%' })
 
-// ----------------------
-// Header tooltip
-// ----------------------
 function showHeaderTooltip(event, col) {
   activeHeaderTooltip.value = col.field
-}
+  nextTick(() => {
+    if (!headerTooltip.value) return
 
-function debounce(fn, delay = 1000) {
-  let timer
-  return (...args) => {
-    if (timer) clearTimeout(timer)
-    timer = setTimeout(() => fn(...args), delay)
-  }
-}
+    const tableRect = event.currentTarget.closest('.table-scroll').getBoundingClientRect()
+    const tooltipRect = headerTooltip.value.getBoundingClientRect()
+    const cellRect = event.currentTarget.getBoundingClientRect()
 
-const debouncedFlashHeaderTooltip = debounce((col, duration = 1000) => {
-  if (!showHover.value) return
-  activeHeaderTooltip.value = col.field
-  setTimeout(() => {
-    if (activeHeaderTooltip.value === col.field) {
-      activeHeaderTooltip.value = null
+    let left = 0
+
+    // If tooltip overflows right, shift left
+    if (cellRect.left + tooltipRect.width > tableRect.right) {
+      left = tableRect.right - cellRect.left - tooltipRect.width
     }
-  }, duration)
-}, 1000)
+
+    headerTooltipStyle.value = {
+      top: `${cellRect.height}px`,
+      left: `${left}px`
+    }
+  })
+}
 
 function hideHeaderTooltip() {
   activeHeaderTooltip.value = null
-}
-
-function toggleHeaderTooltip(col) {
-  if (!showHover.value) return
-  hideEventTooltip()
-  if (activeHeaderTooltip.value === col.field) {
-    activeHeaderTooltip.value = null
-  } else {
-    activeHeaderTooltip.value = col.field
-  }
 }
 
 // ----------------------
 // Sorting
 // ----------------------
 function onSort(col) {
-  // Always hide other tooltips
-  hideEventTooltip()
-  activeHeaderTooltip.value = col.field
-
   if (col.sortable === false) return
   const sortKey = col.meta?.isEventColumn ? `${col.field}.event_pts` : col.field
   if (sortField.value === sortKey) {
@@ -207,7 +181,6 @@ function onSort(col) {
   }
 }
 
-
 // ----------------------
 // Event tooltip
 // ----------------------
@@ -217,73 +190,24 @@ function showEventTooltip(event, row, col) {
   const cellRect = event.currentTarget.getBoundingClientRect()
   const tooltipWidth = 220
   const viewportWidth = window.innerWidth
-  const viewportHeight = window.innerHeight
 
-  // Horizontal position
   let left = cellRect.left
   if (left + tooltipWidth > viewportWidth) left = cellRect.right - tooltipWidth
   if (left < 0) left = 0
 
-  // Temporarily render tooltip offscreen to measure height
   floatingEventTooltip.value = {
     show: true,
-    top: `0px`,
-    left: `0px`,
+    top: `${cellRect.bottom + 4}px`,
+    left: `${left}px`,
     scorers: row[col.field].scorers || []
   }
-
-  nextTick(() => {
-    const tooltipEl = document.querySelector('.event-tooltip')
-    if (!tooltipEl) return
-
-    const tooltipHeight = tooltipEl.offsetHeight
-    let top = cellRect.bottom + 4 // default below cell
-
-    // Flip above if it would overflow bottom
-    if (cellRect.bottom + tooltipHeight > viewportHeight) {
-      top = cellRect.top - tooltipHeight - 4
-      if (top < 0) top = 4 // clamp to top of viewport
-    }
-
-    floatingEventTooltip.value.top = `${top}px`
-    floatingEventTooltip.value.left = `${left}px`
-  })
 }
-
-
-function toggleEventTooltip(event, row, col) {
-  if (!showHover.value) return
-
-  hideHeaderTooltip()
-
-  const currentCellScorers = row[col.field].scorers || []
-
-  if (floatingEventTooltip.value.show && currentCellScorers) {
-    // Hide tooltip if clicking the same cell again
-    hideEventTooltip()
-    activeEventCell.value = { rowId: null, field: null } // reset highlight
-    return
-  }
-
-  // Show tooltip
-  showEventTooltip(event, row, col)
-
-  // Highlight clicked cell
-  activeEventCell.value = { rowId: row._id, field: col.field }
-}
-
-
 
 function hideEventTooltip() {
   floatingEventTooltip.value.show = false
 }
 
-// ----------------------
-// Header tooltip helpers
-// ----------------------
-function getFullHeaderName(col) {
-  return col.meta?.fullHeaderName || col.headerName 
-}
+function getFullHeaderName(col) { return col.meta?.fullHeaderName || col.headerName }
 
 // ----------------------
 // Rows & sorting
@@ -386,11 +310,6 @@ watch(
   },
   { deep: true }
 )
-
-watch(showHover, (val) => {
-  hideEventTooltip()
-  hideHeaderTooltip()
-})
 
 function getColStyle(col) {
   if (col.field === 'logo') return { minWidth: '40px' }
@@ -501,31 +420,9 @@ tbody tr:hover { background-color: #dcdcdc; }
 .tooltip-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tooltip-score { font-weight: 600; }
 .tooltip-empty { font-size: 0.8rem; color: #777; font-style: italic; padding: 4px 0; }
-.header-tooltip {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 4px;
-  background: #ffffff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 6px 10px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  white-space: nowrap;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 @media (max-width: 768px) {
   .results-table-wrapper { width: 100vw; padding: 0; }
   .table-scroll { max-height: calc(100vh - 150px); }
-  td.active-event-cell {
-    background-color: rgba(0, 123, 255, 0.1); /* subtle blue highlight */
-    transition: background-color 0.2s ease;
-  }
 }
 </style>

@@ -109,7 +109,7 @@ export default {
   padding-left: 15px;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 768px) {
   .event-status-chart-wrapper {
     height: 60px;
     width: 100%;
