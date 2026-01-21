@@ -41,26 +41,44 @@ def process_event(file_path: str):
       f"meet_year='{metadata.get('meet_year')}' will not be processed. "
     )
 
-    if metadata.get('event_status') in ['complete', 'official', 'scored']:
-      # Score the data
-      db = get_firestore_client()
-      event_ref = meet_doc_ref.collection(metadata.get('event_gender')).document(metadata.get('event_num'))
-      cleaned_data = clean_event(df, event_ref)
-      event_ref.set({
-          metadata.get('event_status'): {
-              'event_results': cleaned_data.get(metadata.get('event_gender')).get(metadata.get('event_num')),
-              'event_round': metadata.get('event_round')
-          }
-      }, merge=True)
-    else:
+    VALID_STATUSES = {'complete', 'official', 'scored', 'in-progress'}
+    status = metadata.get('event_status')
+    if status not in VALID_STATUSES:
       raise ValueError(
-        f"Round status '{metadata.get('event_status')}' for event_name='{metadata.get('event_name')}', "
+        f"Round status '{status}' for event_name='{metadata.get('event_name')}', "
         f"meet_id='{metadata.get('meet_id')}', meet_season='{metadata.get('meet_season')}', "
         f"meet_year='{metadata.get('meet_year')}' will not be processed. "
-        "Only 'complete', 'official', 'scored' statuses are allowed."
+        "Only 'complete', 'official', 'scored', 'in-progress' statuses are allowed."
+      )
+    
+    event_ref = (
+      meet_doc_ref
+      .collection(metadata.get('event_gender'))
+      .document(metadata.get('event_num'))
+    )
+    if status == 'in-progress':
+      event_ref.set(
+        {
+          'in_progress': True
+        },
+        merge=True
+      )
+    
+    else:
+      cleaned_data = clean_event(df, event_ref)
+      event_ref.set(
+        {
+          status: {
+            'event_results': cleaned_data
+              .get(metadata.get('event_gender'))
+              .get(metadata.get('event_num')),
+            'event_round': metadata.get('event_round')
+          },
+          'in_progress': False
+        },
+        merge=True
       )
 
-        
     return metadata
 
 def parse_event_metadata(input_dir: str, input_filename: str):

@@ -12,7 +12,7 @@
       </label>
     </div>
 
-    <div class="table-scroll" ref="tableScrollRef">
+    <div class="table-scroll" ref="tableScrollRef" @mouseleave="onTableMouseLeave">
       <table class="results-table">
         <colgroup>
           <col v-for="col in columnDefs" :key="col.field" :style="getColStyle(col)" />
@@ -164,6 +164,13 @@ const headerTooltipStyle = ref({ left: '0px', top: '100%' })
 // ----------------------
 function showHeaderTooltip(event, col) {
   activeHeaderTooltip.value = col.field
+}
+
+function onTableMouseLeave() {
+  if (isTouchDevice) return
+
+  hideEventTooltip()
+  activeEventCell.value = { rowId: null, field: null }
 }
 
 function debounce(fn, delay = 1000) {
@@ -464,6 +471,7 @@ thead th {
 }
 
 th.status-scored, th.status-official { background-color: #63BE7B; color: #1D6F42; }
+th.status-in-progress { background-color: #FFFF99; color: #ad9100;}
 th.status-projection { background-color: #e5f7ff; color: #007ac6; }
 
 /* Sort triangle */

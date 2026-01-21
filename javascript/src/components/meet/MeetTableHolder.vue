@@ -108,7 +108,7 @@ const auth = useAuthStore()
 
   .event-status-chart {
     max-width: 100%;
-    max-height: 75px;
+    max-height: 100px;
     width: 100%;
     min-width: unset;
   }

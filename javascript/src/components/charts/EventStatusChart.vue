@@ -28,19 +28,34 @@ export default {
   props: {
     numEvents: { type: Number, required: true },
     numEventsScored: { type: Number, required: true },
+    numEventsInProgress: { type: Number, required: true }
   },
   computed: {
     chartData() {
+      const total = this.numEvents
+      const scored = this.numEventsScored
+      const inProgress = this.numEventsInProgress
+      const projected = Math.max(total - scored - inProgress, 0)
+
       return {
         labels: ['Events'],
         datasets: [
-          { label: 'Scored', data: [this.numEventsScored], backgroundColor: '#63BE7B' },
-          { 
-            label: 'Projected', 
-            data: [Math.max(this.numEvents - this.numEventsScored, 0)], 
-            backgroundColor: '#e5f7ff' 
+          {
+            label: 'Scored',
+            data: [scored],
+            backgroundColor: '#63BE7B'
           },
-        ],
+          {
+            label: 'In-progress',
+            data: [inProgress],
+            backgroundColor: '#FFFF99'
+          },
+          {
+            label: 'Projected',
+            data: [projected],
+            backgroundColor: '#e5f7ff'
+          }
+        ]
       }
     },
     chartOptions() {
@@ -65,7 +80,7 @@ export default {
         },
         plugins: {
           legend: {
-            position: 'right',
+            position: 'bottom',
             onClick: null,
             maxWidth: 150
           },
@@ -104,14 +119,14 @@ export default {
 
 <style scoped>
 .event-status-chart-wrapper {
-  height: 75px;
+  height: 100px;
   width: 33%;
   padding-left: 15px;
 }
 
 @media (max-width: 768px) {
   .event-status-chart-wrapper {
-    height: 60px;
+    height: 100px;
     width: 100%;
     padding-left: 0;
   }

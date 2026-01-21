@@ -109,23 +109,27 @@ export const useConfigStore = defineStore('config', {
 
           // Build columns for this gender
           const eventColumns = this.eventsData[gender].map(event => {
-            const statusKey = this.eventStatusKeys.find(key => key in event)
-
             const eventName = event.event_name
 
+            let status = null
+
+            if (event.in_progress === true) {
+              status = 'in-progress'
+            } else {
+              status = this.eventStatusKeys.find(key => key in event)
+            }
+
             return {
-              headerName: eventMap[eventName] || event.event_name || eventName,
+              headerName: eventMap[eventName] || eventName,
               field: event.id,
               meta: {
                 fullHeaderName: eventName,
                 isEventColumn: true,
-                status: statusKey
+                status
               }
             }
           })
 
-
-          // Store pre-built columnDefs per gender
           this.columnDefs[gender] = [...defaultColumns, ...eventColumns];
         }
       } catch (err) {
@@ -291,7 +295,10 @@ export const useConfigStore = defineStore('config', {
       const events = state.eventsData[state.selectedGender] || []
 
       const numEvents = events.length
-      const numEventsInProgress = events.filter(event => 'in-progress' in event).length
+      const numEventsInProgress = events.filter(
+        event => event.in_progress === true
+      ).length
+
       const numEventsScored = events.filter(event => 'scored' in event).length
 
       return {

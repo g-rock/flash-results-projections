@@ -171,7 +171,6 @@ async def upload_event(
     try:
         # process_event now returns meet_year as well
         metadata = process_event(file_path=tmp_file_path)
-
         raw_blob_name = f"events/{metadata.get('meet_year')}/{metadata.get('meet_season')}/{metadata.get('meet_id')}/{file.filename}"
         raw_bucket = get_gcs_client().bucket(BUCKET_NAME)
         raw_bucket.blob(raw_blob_name).upload_from_filename(tmp_file_path)
