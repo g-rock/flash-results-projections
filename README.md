@@ -32,10 +32,5 @@ The python deployment takes too long in github actions so just do it locally.
 gcloud auth login
 gcloud config set project flash-results-projections
 cd python
-gcloud builds submit --tag gcr.io/flash-results-projections/flash-results-projections # Build and tag docker image
-gcloud run deploy flash-results-projections \
-  --image gcr.io/flash-results-projections/flash-results-projections \
-  --region us-central1 \
-  --platform managed \
-  --allow-unauthenticated
+./deploy.sh
 ```

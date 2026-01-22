@@ -137,59 +137,83 @@
 </template>
 
 <script setup>
+/* --------------------------------------------------
+ * Imports & environment
+ * -------------------------------------------------- */
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
-const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+
+const isTouchDevice =
+  'ontouchstart' in window || navigator.maxTouchPoints > 0
+
+/* --------------------------------------------------
+ * Props
+ * -------------------------------------------------- */
 const props = defineProps({
   title: String,
   rowData: { type: Array, default: () => [] },
   columnDefs: { type: Array, default: () => [] }
 })
 
+/* --------------------------------------------------
+ * Reactive state
+ * -------------------------------------------------- */
+// Sorting
 const sortField = ref(null)
 const sortDirection = ref('desc')
+
+// UI toggles
 const showHover = ref(true)
 const showTeamAbbr = ref(true)
+
+// Header tooltip
 const activeHeaderTooltip = ref(null)
+const headerTooltip = ref(null)
+const headerTooltipStyle = ref({ left: '0px', top: '100%' })
+
+// Event tooltip
 const activeEventCell = ref({ rowId: null, field: null })
-const floatingEventTooltip = ref({ show: false, top: '0px', left: '0px', scorers: [] })
+const floatingEventTooltip = ref({
+  show: false,
+  top: '0px',
+  left: '0px',
+  scorers: []
+})
+
+// Table / layout
 const tableScrollRef = ref(null)
 const headerCells = ref([])
 const stickyOffsets = ref({})
 
-const headerTooltip = ref(null)
-const headerTooltipStyle = ref({ left: '0px', top: '100%' })
-
-// ----------------------
-// Header tooltip
-// ----------------------
-function showHeaderTooltip(event, col) {
-  activeHeaderTooltip.value = col.field
-}
-
-function onTableMouseLeave() {
-  if (isTouchDevice) return
-
+/* --------------------------------------------------
+ * Tooltip helpers (shared)
+ * -------------------------------------------------- */
+function hideAllTooltips() {
   hideEventTooltip()
+  hideHeaderTooltip()
   activeEventCell.value = { rowId: null, field: null }
 }
 
 function debounce(fn, delay = 1000) {
   let timer
   return (...args) => {
-    if (timer) clearTimeout(timer)
+    clearTimeout(timer)
     timer = setTimeout(() => fn(...args), delay)
   }
 }
 
-const debouncedFlashHeaderTooltip = debounce((col, duration = 1000) => {
+/* --------------------------------------------------
+ * Header tooltip logic
+ * -------------------------------------------------- */
+function showHeaderTooltip(event, col) {
   if (!showHover.value) return
+
+  if (floatingEventTooltip.value.show) {
+    hideEventTooltip()
+    activeEventCell.value = { rowId: null, field: null }
+  }
+
   activeHeaderTooltip.value = col.field
-  setTimeout(() => {
-    if (activeHeaderTooltip.value === col.field) {
-      activeHeaderTooltip.value = null
-    }
-  }, duration)
-}, 1000)
+}
 
 function hideHeaderTooltip() {
   activeHeaderTooltip.value = null
@@ -197,27 +221,105 @@ function hideHeaderTooltip() {
 
 function toggleHeaderTooltip(col) {
   if (!showHover.value) return
-  hideEventTooltip()
-  if (activeHeaderTooltip.value === col.field) {
-    activeHeaderTooltip.value = null
+
+  if (floatingEventTooltip.value.show) {
+    hideEventTooltip()
+  }
+
+  activeHeaderTooltip.value =
+    activeHeaderTooltip.value === col.field ? null : col.field
+}
+
+const debouncedFlashHeaderTooltip = debounce((col, duration = 1000) => {
+  if (!showHover.value) return
+
+  activeHeaderTooltip.value = col.field
+  setTimeout(() => {
+    if (activeHeaderTooltip.value === col.field) {
+      activeHeaderTooltip.value = null
+    }
+  }, duration)
+})
+
+/* --------------------------------------------------
+ * Event tooltip logic
+ * -------------------------------------------------- */
+function showEventTooltip(event, row, col) {
+  if (!showHover.value) return
+
+  const cellRect = event.currentTarget.getBoundingClientRect()
+  const tooltipWidth = 220
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+
+  let left = cellRect.left
+  if (left + tooltipWidth > viewportWidth) {
+    left = cellRect.right - tooltipWidth
+  }
+  if (left < 0) left = 0
+
+  floatingEventTooltip.value = {
+    show: true,
+    top: '0px',
+    left: '0px',
+    scorers: row[col.field].scorers || []
+  }
+
+  nextTick(() => {
+    const tooltipEl = document.querySelector('.event-tooltip')
+    if (!tooltipEl) return
+
+    const tooltipHeight = tooltipEl.offsetHeight
+    let top = cellRect.bottom + 4
+
+    if (cellRect.bottom + tooltipHeight > viewportHeight) {
+      top = cellRect.top - tooltipHeight - 4
+      if (top < 0) top = 4
+    }
+
+    floatingEventTooltip.value.top = `${top}px`
+    floatingEventTooltip.value.left = `${left}px`
+  })
+}
+
+function toggleEventTooltip(event, row, col, rowIndex) {
+  if (!showHover.value) return
+
+  hideHeaderTooltip()
+
+  const isSameCell =
+    activeEventCell.value.rowId === rowIndex &&
+    activeEventCell.value.field === col.field
+
+  if (floatingEventTooltip.value.show && isSameCell) {
+    hideEventTooltip()
+    activeEventCell.value = { rowId: null, field: null }
   } else {
-    activeHeaderTooltip.value = col.field
+    showEventTooltip(event, row, col)
+    activeEventCell.value = { rowId: rowIndex, field: col.field }
   }
 }
 
-// ----------------------
-// Sorting
-// ----------------------
+function hideEventTooltip() {
+  floatingEventTooltip.value.show = false
+}
+
+/* --------------------------------------------------
+ * Sorting
+ * -------------------------------------------------- */
 function onSort(col) {
-  // Always hide other tooltips
   hideEventTooltip()
   activeHeaderTooltip.value = col.field
 
   if (col.sortable === false) return
-  const sortKey = col.meta?.isEventColumn ? `${col.field}.event_pts` : col.field
+
+  const sortKey = col.meta?.isEventColumn
+    ? `${col.field}.event_pts`
+    : col.field
+
   if (sortField.value === sortKey) {
     if (sortDirection.value === 'desc') sortDirection.value = 'asc'
-    else if (sortDirection.value === 'asc') {
+    else {
       sortField.value = null
       sortDirection.value = null
     }
@@ -227,86 +329,9 @@ function onSort(col) {
   }
 }
 
-
-// ----------------------
-// Event tooltip
-// ----------------------
-function showEventTooltip(event, row, col) {
-  if (!showHover.value) return
-
-  const cellRect = event.currentTarget.getBoundingClientRect()
-  const tooltipWidth = 220
-  const viewportWidth = window.innerWidth
-  const viewportHeight = window.innerHeight
-
-  // Horizontal position
-  let left = cellRect.left
-  if (left + tooltipWidth > viewportWidth) left = cellRect.right - tooltipWidth
-  if (left < 0) left = 0
-
-  // Temporarily render tooltip offscreen to measure height
-  floatingEventTooltip.value = {
-    show: true,
-    top: `0px`,
-    left: `0px`,
-    scorers: row[col.field].scorers || []
-  }
-
-  nextTick(() => {
-    const tooltipEl = document.querySelector('.event-tooltip')
-    if (!tooltipEl) return
-
-    const tooltipHeight = tooltipEl.offsetHeight
-    let top = cellRect.bottom + 4 // default below cell
-
-    // Flip above if it would overflow bottom
-    if (cellRect.bottom + tooltipHeight > viewportHeight) {
-      top = cellRect.top - tooltipHeight - 4
-      if (top < 0) top = 4 // clamp to top of viewport
-    }
-
-    floatingEventTooltip.value.top = `${top}px`
-    floatingEventTooltip.value.left = `${left}px`
-  })
-}
-
-
-function toggleEventTooltip(event, row, col, rowIndex) {
-  if (!showHover.value) return;
-
-  hideHeaderTooltip();
-
-  const isSameCell =
-    activeEventCell.value.rowId === rowIndex &&
-    activeEventCell.value.field === col.field;
-
-  if (floatingEventTooltip.value.show && isSameCell) {
-    // Hide tooltip and remove highlight if tapping same cell
-    hideEventTooltip();
-    activeEventCell.value = { rowId: null, field: null };
-  } else {
-    // Show tooltip
-    showEventTooltip(event, row, col, rowIndex);
-    // Highlight tapped cell
-    activeEventCell.value = { rowId: rowIndex, field: col.field } 
-  }
-}
-
-
-function hideEventTooltip() {
-  floatingEventTooltip.value.show = false
-}
-
-// ----------------------
-// Header tooltip helpers
-// ----------------------
-function getFullHeaderName(col) {
-  return col.meta?.fullHeaderName || col.headerName 
-}
-
-// ----------------------
-// Rows & sorting
-// ----------------------
+/* --------------------------------------------------
+ * Rows & computed data
+ * -------------------------------------------------- */
 const sortedRows = computed(() => {
   if (!props.rowData.length) return []
 
@@ -332,23 +357,18 @@ const sortedRows = computed(() => {
 })
 
 function getSortValue(row, key) {
-  if (!key.includes('.')) return row[key]
-  return key.split('.').reduce((obj, k) => (obj ? obj[k] : undefined), row)
+  return key.includes('.')
+    ? key.split('.').reduce((obj, k) => obj?.[k], row)
+    : row[key]
 }
 
-// ----------------------
-// Logos
-// ----------------------
-const LOGO_BASE_URL = 'https://storage.googleapis.com/projections-data/logos/NCAA'
-function getLogoUrl(row) {
-  return row.team_abbr ? `${LOGO_BASE_URL}/${row.team_abbr}.png` : null
-}
-
-// ----------------------
-// Helpers
-// ----------------------
+/* --------------------------------------------------
+ * Table helpers
+ * -------------------------------------------------- */
 function isSortFieldActive(col) {
-  const sortKey = col.meta?.isEventColumn ? `${col.field}.event_pts` : col.field
+  const sortKey = col.meta?.isEventColumn
+    ? `${col.field}.event_pts`
+    : col.field
   return sortField.value === sortKey
 }
 
@@ -357,8 +377,9 @@ function isEventCell(row, field) {
 }
 
 function getEventHeaderClass(col) {
-  if (!col.meta?.isEventColumn) return ''
-  return col.meta.status ? `status-${col.meta.status}` : ''
+  return col.meta?.isEventColumn && col.meta.status
+    ? `status-${col.meta.status}`
+    : ''
 }
 
 function formatNumber(value) {
@@ -367,34 +388,75 @@ function formatNumber(value) {
   return Number.isInteger(num) ? num : num.toFixed(2)
 }
 
-// ----------------------
-// Sticky columns
-// ----------------------
+function getFullHeaderName(col) {
+  return col.meta?.fullHeaderName || col.headerName
+}
+
+/* --------------------------------------------------
+ * Logos
+ * -------------------------------------------------- */
+const LOGO_BASE_URL =
+  'https://storage.googleapis.com/projections-data/logos/NCAA'
+
+function getLogoUrl(row) {
+  return row.team_abbr
+    ? `${LOGO_BASE_URL}/${row.team_abbr}.png`
+    : null
+}
+
+/* --------------------------------------------------
+ * Sticky columns
+ * -------------------------------------------------- */
 function stickyClass(col) {
   return col.sticky ? 'sticky' : ''
 }
 
 function stickyStyle(col) {
-  if (!col.sticky) return {}
-  return { position: 'sticky', left: `${stickyOffsets.value[col.field] || 0}px` }
+  return col.sticky
+    ? { position: 'sticky', left: `${stickyOffsets.value[col.field] || 0}px` }
+    : {}
 }
 
 function calculateStickyOffsets() {
   const offsets = {}
   let left = 0
+
   props.columnDefs.forEach((col, index) => {
     if (!col.sticky) return
     offsets[col.field] = left
     const el = headerCells.value[index]
     if (el) left += el.offsetWidth
   })
+
   stickyOffsets.value = offsets
+}
+
+function getColStyle(col) {
+  return col.field === 'logo' ? { minWidth: '40px' } : {}
+}
+
+/* --------------------------------------------------
+ * Events & lifecycle
+ * -------------------------------------------------- */
+function onTableMouseLeave() {
+  if (isTouchDevice) return
+  hideAllTooltips()
 }
 
 onMounted(async () => {
   await nextTick()
   calculateStickyOffsets()
   window.addEventListener('resize', calculateStickyOffsets)
+})
+
+/* --------------------------------------------------
+ * Watchers
+ * -------------------------------------------------- */
+watch(showHover, () => hideAllTooltips())
+
+watch(showTeamAbbr, async () => {
+  await nextTick()
+  calculateStickyOffsets()
 })
 
 watch(
@@ -405,21 +467,6 @@ watch(
   },
   { deep: true }
 )
-
-watch(showHover, (val) => {
-  hideEventTooltip()
-  hideHeaderTooltip()
-})
-
-watch(showTeamAbbr, async () => {
-  await nextTick()
-  calculateStickyOffsets()
-})
-
-function getColStyle(col) {
-  if (col.field === 'logo') return { minWidth: '40px' }
-  return {}
-}
 </script>
 
 <style scoped>
@@ -433,7 +480,8 @@ function getColStyle(col) {
 
 .table-scroll {
   width: 100%;
-  max-height: calc(100vh - 90px - 100px - 40px);
+  /* 90px for header, 100px for chart/tabs, 40px for checkboxes */
+  max-height: calc(100vh - 90px - 100px - 40px); 
   overflow: auto;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -564,7 +612,7 @@ tr:nth-child(even) td.sticky { background-color: #f2f2f2; }
 
 @media (max-width: 768px) {
   .results-table-wrapper { width: 100vw; padding: 0; }
-  .table-scroll { max-height: calc(100vh - 150px); }
+  .table-scroll { max-height: calc(100vh - 250px); }
 }
 
 td.active-event-cell {

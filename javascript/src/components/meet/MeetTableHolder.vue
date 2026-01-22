@@ -47,7 +47,7 @@ const auth = useAuthStore()
   content: '';
   position: absolute;
   bottom: 0;
-  left: 0;                 /* left-align underline */
+  left: 0;
   transform: none;
   height: 3px;
   width: 60%;
@@ -99,6 +99,7 @@ const auth = useAuthStore()
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
+    gap: 0;
     padding: 0;
   }
 

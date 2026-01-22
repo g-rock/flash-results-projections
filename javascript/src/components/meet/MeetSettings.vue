@@ -53,6 +53,7 @@
         <table class="sb-table">
           <thead>
             <tr>
+              <th>Rk</th>
               <th>ID</th>
               <th>Athlete Name</th>
               <th>Team</th>
@@ -66,6 +67,7 @@
           </thead>
           <tbody>
             <tr v-for="(row, index) in editableSBs" :key="row.athlete_id">
+              <td>{{ index + 1 }}</td>
               <td>{{ row.athlete_id }}</td>
               <td>{{ row.athlete_name }}</td>
               <td>{{ row.team_name }}</td>

@@ -38,7 +38,7 @@ export default {
       const projected = Math.max(total - scored - inProgress, 0)
 
       return {
-        labels: ['Events'],
+        labels: [''],
         datasets: [
           {
             label: 'Scored',
@@ -97,6 +97,15 @@ export default {
                 if (value === 0 || value === max) return value
                 return ''
               },
+            },
+            title: {
+              display: true,
+              text: 'Number of Events',
+              font: {
+                size: 12,
+                weight: '600'
+              },
+              padding: { top: -20 }
             },
             grid: {
               // Only draw grid lines for start, middle, end
