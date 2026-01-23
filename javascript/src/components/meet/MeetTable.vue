@@ -10,6 +10,10 @@
         <input type="checkbox" v-model="showTeamAbbr" />
         Show team abbr
       </label>
+      <label style="margin-left: 12px;">
+        <input type="checkbox" v-model="showFullEventName" />
+        Show full event name
+      </label>
     </div>
 
     <div class="table-scroll" ref="tableScrollRef" @mouseleave="onTableMouseLeave">
@@ -34,23 +38,11 @@
             >
               <div
                 class="cell-inner header-cell"
-                @mouseenter="showHeaderTooltip($event, col)"
-                @mouseleave="hideHeaderTooltip"
               >
-                {{ col.headerName }}
+                {{ getHeaderLabel(col) }}
                 <span v-if="col.sortable !== false" class="sort-triangle">
                   {{ isSortFieldActive(col) ? (sortDirection === 'asc' ? '▲' : '▼') : '' }}
                 </span>
-
-                <!-- Tooltip -->
-                <div
-                  v-if="activeHeaderTooltip === col.field && showHover"
-                  ref="headerTooltip"
-                  class="header-tooltip"
-                  :style="headerTooltipStyle"
-                >
-                  {{ getFullHeaderName(col) }}
-                </div>
               </div>
             </th>
           </tr>
@@ -70,8 +62,6 @@
                 }
               ]"
               :style="stickyStyle(col)"
-              @mouseenter="!isTouchDevice && isEventCell(row, col.field) ? showEventTooltip($event, row, col, index) : null"
-              @mouseleave="!isTouchDevice && hideEventTooltip"
               @click="isEventCell(row, col.field) ? toggleEventTooltip($event, row, col, index) : null"
             >
               <div class="cell-inner">
@@ -164,11 +154,7 @@ const sortDirection = ref('desc')
 // UI toggles
 const showHover = ref(true)
 const showTeamAbbr = ref(true)
-
-// Header tooltip
-const activeHeaderTooltip = ref(null)
-const headerTooltip = ref(null)
-const headerTooltipStyle = ref({ left: '0px', top: '100%' })
+const showFullEventName = ref(false)
 
 // Event tooltip
 const activeEventCell = ref({ rowId: null, field: null })
@@ -189,57 +175,8 @@ const stickyOffsets = ref({})
  * -------------------------------------------------- */
 function hideAllTooltips() {
   hideEventTooltip()
-  hideHeaderTooltip()
   activeEventCell.value = { rowId: null, field: null }
 }
-
-function debounce(fn, delay = 1000) {
-  let timer
-  return (...args) => {
-    clearTimeout(timer)
-    timer = setTimeout(() => fn(...args), delay)
-  }
-}
-
-/* --------------------------------------------------
- * Header tooltip logic
- * -------------------------------------------------- */
-function showHeaderTooltip(event, col) {
-  if (!showHover.value) return
-
-  if (floatingEventTooltip.value.show) {
-    hideEventTooltip()
-    activeEventCell.value = { rowId: null, field: null }
-  }
-
-  activeHeaderTooltip.value = col.field
-}
-
-function hideHeaderTooltip() {
-  activeHeaderTooltip.value = null
-}
-
-function toggleHeaderTooltip(col) {
-  if (!showHover.value) return
-
-  if (floatingEventTooltip.value.show) {
-    hideEventTooltip()
-  }
-
-  activeHeaderTooltip.value =
-    activeHeaderTooltip.value === col.field ? null : col.field
-}
-
-const debouncedFlashHeaderTooltip = debounce((col, duration = 1000) => {
-  if (!showHover.value) return
-
-  activeHeaderTooltip.value = col.field
-  setTimeout(() => {
-    if (activeHeaderTooltip.value === col.field) {
-      activeHeaderTooltip.value = null
-    }
-  }, duration)
-})
 
 /* --------------------------------------------------
  * Event tooltip logic
@@ -283,10 +220,6 @@ function showEventTooltip(event, row, col) {
 }
 
 function toggleEventTooltip(event, row, col, rowIndex) {
-  if (!showHover.value) return
-
-  hideHeaderTooltip()
-
   const isSameCell =
     activeEventCell.value.rowId === rowIndex &&
     activeEventCell.value.field === col.field
@@ -309,8 +242,6 @@ function hideEventTooltip() {
  * -------------------------------------------------- */
 function onSort(col) {
   hideEventTooltip()
-  activeHeaderTooltip.value = col.field
-
   if (col.sortable === false) return
 
   const sortKey = col.meta?.isEventColumn
@@ -365,6 +296,18 @@ function getSortValue(row, key) {
 /* --------------------------------------------------
  * Table helpers
  * -------------------------------------------------- */
+
+function getHeaderLabel(col) {
+  if (
+    showFullEventName.value &&
+    col.meta?.fullHeaderName
+  ) {
+    return col.meta.fullHeaderName
+  }
+
+  return col.headerName
+}
+
 function isSortFieldActive(col) {
   const sortKey = col.meta?.isEventColumn
     ? `${col.field}.event_pts`
@@ -459,6 +402,12 @@ watch(showTeamAbbr, async () => {
   calculateStickyOffsets()
 })
 
+watch(showFullEventName, async () => {
+  await nextTick()
+  calculateStickyOffsets()
+})
+
+
 watch(
   () => props.columnDefs,
   async () => {
@@ -538,20 +487,6 @@ tr:nth-child(even) td.sticky { background-color: #f2f2f2; }
   }
 }
 
-/* Header tooltip (inside table, reverted) */
-.floating-header-tooltip {
-  position: absolute;
-  z-index: 9999;
-  background: #fff;
-  border: 1px solid #ccc;
-  padding: 6px 10px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  white-space: nowrap;
-  border-radius: 4px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-}
-
 /* Event tooltip (floating) */
 .event-tooltip {
   position: fixed;
@@ -579,25 +514,6 @@ tr:nth-child(even) td.sticky { background-color: #f2f2f2; }
 .tooltip-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tooltip-score { font-weight: 600; }
 .tooltip-empty { font-size: 0.8rem; color: #777; font-style: italic; padding: 4px 0; }
-.header-tooltip {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 4px;
-  background: #ffffff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 6px 10px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  white-space: nowrap;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .logo-cell {
   display: flex;
   align-items: center;
