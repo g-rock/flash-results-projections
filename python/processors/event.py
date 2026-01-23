@@ -135,6 +135,7 @@ def parse_standard_event_metadata(meta_row):
             **partial_metadata,
             "meet_year": slugify(partial_metadata["meet_year"]),
             "meet_id": slugify(partial_metadata["meet_name"]),
+            "meet_season": slugify(partial_metadata["meet_season"])
         }
 
         # Normalize
@@ -180,6 +181,7 @@ def parse_multi_event_metadata(meta_row):
             **partial_metadata,
             "meet_year": slugify(partial_metadata["meet_year"]),
             "meet_id": slugify(partial_metadata["meet_name"]),
+            "meet_season": slugify(partial_metadata["meet_season"])
         }
 
         # Normalize
