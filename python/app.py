@@ -5,7 +5,7 @@ import configparser
 from tempfile import NamedTemporaryFile
 from pydantic import BaseModel
 from typing import Dict, Any
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import Request, FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.exceptions import NotFound
@@ -33,6 +33,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError):
+    return JSONResponse(
+        status_code=400,
+        content={"detail": str(exc)},
+    )
 
 # -----------------------------
 # Endpoints
@@ -151,27 +158,31 @@ async def upload_merged_start_list(
         os.remove(tmp_ini_path)
 
 @app.post("/upload_event")
-async def upload_event(
-    file: UploadFile = File(...)
-):
+async def upload_event(file: UploadFile = File(...)):
     """
-    Upload an event file. This endpoint will process the CSV for new score projections.
+    Upload an event CSV file. Processes the file for new score projections
+    and uploads it to GCS. Raises ValueError for invalid data.
     """
     if not file.filename.endswith(".csv"):
-        raise HTTPException(status_code=400, detail="file must be a CSV")
+        raise ValueError("file must be a CSV")
     
-    # Check for forbidden substring in filename
     if "splits" in file.filename.lower():
-        raise HTTPException(status_code=400, detail='filename cannot contain "splits"')
+        raise ValueError('filename cannot contain "splits"')
     
+    # Save file temporarily
     with NamedTemporaryFile(delete=False, suffix=".csv") as tmp_file:
         tmp_file.write(await file.read())
         tmp_file_path = tmp_file.name
     
     try:
-        # process_event now returns meet_year as well
+        # process_event may raise ValueError internally (e.g., invalid status)
         metadata = process_event(file_path=tmp_file_path)
-        raw_blob_name = f"events/{metadata.get('meet_year')}/{metadata.get('meet_season')}/{metadata.get('meet_id')}/{file.filename}"
+
+        # Upload CSV to GCS
+        raw_blob_name = (
+            f"events/{metadata.get('meet_year')}/{metadata.get('meet_season')}/"
+            f"{metadata.get('meet_id')}/{file.filename}"
+        )
         raw_bucket = get_gcs_client().bucket(BUCKET_NAME)
         raw_bucket.blob(raw_blob_name).upload_from_filename(tmp_file_path)
         print(f"✅ Uploaded raw event file to gs://{BUCKET_NAME}/{raw_blob_name}")
@@ -179,6 +190,7 @@ async def upload_event(
     finally:
         os.remove(tmp_file_path)
 
+    # Notify any subscribed clients
     await notify_clients({
         "type": "event_uploaded",
         "meet_document_id": f"{metadata.get('meet_year')}/{metadata.get('meet_season')}/{metadata.get('meet_id')}",
@@ -187,7 +199,7 @@ async def upload_event(
 
     return JSONResponse(
         content={
-            "message": f"File '{file.filename}' uploaded and processed to database successfully.",
+            "message": f"File '{file.filename}' uploaded and processed successfully.",
             "event_file": f"gs://{BUCKET_NAME}/{raw_blob_name}",
             **metadata
         }

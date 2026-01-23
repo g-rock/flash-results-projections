@@ -31,25 +31,28 @@ def process_event(file_path: str):
       raise ValueError(
           f"Meet not found for meet_id='{metadata.get('meet_id')}', "
           f"meet_season='{metadata.get('meet_season')}', "
-          f"meet_year='{metadata.get('meet_year')}'"
+          f"meet_year='{metadata.get('meet_year')}'. Check that the meet exists."
       )
     
     if metadata.get('event_round') in ['prelims']:
       raise ValueError(
       f"Event round '{metadata.get('event_round')}' for event_name='{metadata.get('event_name')}', "
       f"meet_id='{metadata.get('meet_id')}', meet_season='{metadata.get('meet_season')}', "
-      f"meet_year='{metadata.get('meet_year')}' will not be processed. "
+      f"meet_year='{metadata.get('meet_year')}' will not be processed."
     )
 
     VALID_STATUSES = {'complete', 'official', 'scored', 'in-progress'}
+
     status = metadata.get('event_status')
     if status not in VALID_STATUSES:
-      raise ValueError(
-        f"Round status '{status}' for event_name='{metadata.get('event_name')}', "
-        f"meet_id='{metadata.get('meet_id')}', meet_season='{metadata.get('meet_season')}', "
-        f"meet_year='{metadata.get('meet_year')}' will not be processed. "
-        "Only 'complete', 'official', 'scored', 'in-progress' statuses are allowed."
-      )
+        allowed = ", ".join(sorted(VALID_STATUSES))
+        raise ValueError(
+            f"Round status '{status}' for event_name='{metadata.get('event_name')}', "
+            f"meet_id='{metadata.get('meet_id')}', meet_season='{metadata.get('meet_season')}', "
+            f"meet_year='{metadata.get('meet_year')}' will not be processed. "
+            f"Allowed statuses are: {allowed}."
+        )
+
     
     event_ref = (
       meet_doc_ref
@@ -115,63 +118,90 @@ def parse_event_metadata(input_dir: str, input_filename: str):
     return metadata, data_rows
 
 def parse_standard_event_metadata(meta_row):
-    metadata = {
-        "event_num": meta_row[0].lstrip("0"),
-        "event_name": meta_row[2],
-        "event_round": meta_row[3],
-        "event_status": meta_row[4],
-        "meet_name": meta_row[8],
-        "meet_year": slugify(meta_row[10]),
-        "meet_season": slugify(meta_row[12]),
+    # Build partial metadata first (before slugify)
+    partial_metadata = {
+        "event_num": meta_row[0].lstrip("0") if len(meta_row) > 0 else None,
+        "event_name": meta_row[2] if len(meta_row) > 2 else None,
+        "event_round": meta_row[3] if len(meta_row) > 3 else None,
+        "event_status": meta_row[4] if len(meta_row) > 4 else None,
+        "meet_name": meta_row[8] if len(meta_row) > 8 else None,
+        "meet_year": meta_row[10] if len(meta_row) > 10 else None,
+        "meet_season": meta_row[12] if len(meta_row) > 12 else None,
     }
 
-    # Normalize
-    event_gender = "Men" if "Men" in metadata["event_name"] else "Women"
-    event_name = re.sub(r'\b(Men|Women)\b\s*', '', metadata["event_name"]).strip()
-    event_round, event_status = normalize_round_and_status(
-      metadata["event_round"],
-      metadata["event_status"]
-    )
+    try:
+        # Slugify base fields
+        metadata = {
+            **partial_metadata,
+            "meet_year": slugify(partial_metadata["meet_year"]),
+            "meet_id": slugify(partial_metadata["meet_name"]),
+        }
 
-    # Slugify normalized fields
-    metadata["event_gender"] = slugify(event_gender)
-    metadata["event_name"] = slugify(event_name)
-    metadata["event_round"] = slugify(event_round)
-    metadata["event_status"] = slugify(event_status)
-    metadata["meet_year"] = slugify(metadata["meet_year"])
-    metadata["meet_id"] = slugify(metadata["meet_name"])
+        # Normalize
+        event_gender = "Men" if "Men" in metadata["event_name"] else "Women"
+        event_name = re.sub(r'\b(Men|Women)\b\s*', '', metadata["event_name"]).strip()
+        event_round, event_status = normalize_round_and_status(
+            metadata["event_round"],
+            metadata["event_status"]
+        )
 
-    return metadata
+        # Slugify normalized fields
+        metadata.update({
+            "event_gender": slugify(event_gender),
+            "event_name": slugify(event_name),
+            "event_round": slugify(event_round),
+            "event_status": slugify(event_status)
+        })
+
+        return metadata
+
+    except AttributeError as e:
+        raise ValueError(
+            f"Failed to parse standard event metadata. Parsed values so far: {partial_metadata}. "
+            "Check that meet_name, meet_year, and meet_season exist and are valid strings."
+        ) from e
 
 def parse_multi_event_metadata(meta_row):
     """
     Parse metadata for multi-event CSVs, which have fewer columns.
     """
-
-    metadata = {
-        "event_num": meta_row[0].lstrip("0"),
-        "event_name": meta_row[2],
-        "event_round": meta_row[3],
-        "event_status": meta_row[4],
-        "meet_name": meta_row[6],
-        "meet_year": slugify(meta_row[8]),
-        "meet_season": slugify(meta_row[10]),
+    partial_metadata = {
+        "event_num": meta_row[0].lstrip("0") if len(meta_row) > 0 else None,
+        "event_name": meta_row[2] if len(meta_row) > 2 else None,
+        "event_round": meta_row[3] if len(meta_row) > 3 else None,
+        "event_status": meta_row[4] if len(meta_row) > 4 else None,
+        "meet_name": meta_row[6] if len(meta_row) > 6 else None,
+        "meet_year": meta_row[8] if len(meta_row) > 8 else None,
+        "meet_season": meta_row[10] if len(meta_row) > 10 else None,
     }
 
-    # Normalize 
-    event_gender = infer_gender(metadata["event_name"], metadata["meet_season"])
-    event_round, event_status = normalize_round_and_status(
-      metadata["event_round"],
-      metadata["event_status"]
-    )
+    try:
+        metadata = {
+            **partial_metadata,
+            "meet_year": slugify(partial_metadata["meet_year"]),
+            "meet_id": slugify(partial_metadata["meet_name"]),
+        }
 
-    metadata["event_gender"] = slugify(event_gender)
-    metadata["event_round"] = slugify(event_round)
-    metadata["event_status"] = slugify(event_status)
-    metadata["meet_id"] = slugify(metadata["meet_name"])
+        # Normalize
+        event_gender = infer_gender(metadata["event_name"], metadata["meet_season"])
+        event_round, event_status = normalize_round_and_status(
+            metadata["event_round"],
+            metadata["event_status"]
+        )
 
-    return metadata
+        metadata.update({
+            "event_gender": slugify(event_gender),
+            "event_round": slugify(event_round),
+            "event_status": slugify(event_status)
+        })
 
+        return metadata
+
+    except AttributeError as e:
+        raise ValueError(
+            f"Failed to parse multi-event metadata. Parsed values so far: {partial_metadata}. "
+            "Check that meet_name, meet_year, and meet_season exist and are valid strings."
+        ) from e
 def parse_standard_event_results(metadata: dict, data_rows: list):
     """
     Build results DataFrame for standard events.
