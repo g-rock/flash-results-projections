@@ -11,8 +11,8 @@
         Show team abbr
       </label>
       <label style="margin-left: 12px;">
-        <input type="checkbox" v-model="showFullEventName" />
-        Show full event name
+        <input type="checkbox" v-model="showFullColumnName" />
+        Show full column name
       </label>
     </div>
 
@@ -154,7 +154,7 @@ const sortDirection = ref('desc')
 // UI toggles
 const showHover = ref(true)
 const showTeamAbbr = ref(true)
-const showFullEventName = ref(false)
+const showFullColumnName = ref(false)
 
 // Event tooltip
 const activeEventCell = ref({ rowId: null, field: null })
@@ -299,7 +299,7 @@ function getSortValue(row, key) {
 
 function getHeaderLabel(col) {
   if (
-    showFullEventName.value &&
+    showFullColumnName.value &&
     col.meta?.fullHeaderName
   ) {
     return col.meta.fullHeaderName
@@ -402,7 +402,7 @@ watch(showTeamAbbr, async () => {
   calculateStickyOffsets()
 })
 
-watch(showFullEventName, async () => {
+watch(showFullColumnName, async () => {
   await nextTick()
   calculateStickyOffsets()
 })
