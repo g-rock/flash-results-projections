@@ -28,7 +28,7 @@
               v-for="(col, index) in columnDefs"
               :key="col.field"
               ref="headerCells"
-              @click="onSort(col); debouncedFlashHeaderTooltip(col, 1000)"
+              @click="onSort(col);"
               :class="[
                 { sortable: col.sortable !== false, active: isSortFieldActive(col) },
                 stickyClass(col),
