@@ -31,8 +31,7 @@ export default {
   computed: {
   chartData() {
     const s = this.stats || {}
-    const total = s.total || 0
-
+    console.log(s.scored)
     return {
       labels: [''],
       datasets: [
@@ -119,7 +118,7 @@ export default {
 
 <style scoped>
 .event-status-chart-wrapper {
-  height: 100px;
+  height: 200px;
   width: 33%;
   padding-left: 15px;
 }
