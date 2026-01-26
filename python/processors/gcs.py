@@ -11,7 +11,7 @@ def slugify(text: str) -> str:
     """Generate a slug from a string."""
     text = text.lower().strip()
     # Replace spaces and underscores with hyphens
-    text = re.sub(r'[\s_]+', '-', text)
+    text = re.sub(r'[\s_|]+', '-', text)
     # Remove all non-alphanumeric and non-hyphen characters
     text = re.sub(r'[^a-z0-9-]', '', text)
     return text

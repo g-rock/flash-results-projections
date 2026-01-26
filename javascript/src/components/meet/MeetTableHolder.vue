@@ -6,10 +6,7 @@
 
       <EventStatusChart
         class="event-status-chart"
-        :numEvents="config.selectedGenderEventStats.numEvents"
-        :numEventsScored="config.selectedGenderEventStats.numEventsScored"
-        :numEventsProjected="config.selectedGenderEventStats.numEventsProjected"
-        :numEventsInProgress="config.selectedGenderEventStats.numEventsInProgress"
+        :stats="config.selectedGenderEventStats"
       />
     </div>
 

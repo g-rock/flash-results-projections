@@ -26,103 +26,94 @@ export default {
   name: 'EventStatusChart',
   components: { Bar },
   props: {
-    numEvents: { type: Number, required: true },
-    numEventsScored: { type: Number, required: true },
-    numEventsInProgress: { type: Number, required: true }
+    stats: { type: Object, required: true },
   },
   computed: {
-    chartData() {
-      const total = this.numEvents
-      const scored = this.numEventsScored
-      const inProgress = this.numEventsInProgress
-      const projected = Math.max(total - scored - inProgress, 0)
+  chartData() {
+    const s = this.stats || {}
+    const total = s.total || 0
 
-      return {
-        labels: [''],
-        datasets: [
-          {
-            label: 'Scored',
-            data: [scored],
-            backgroundColor: '#63BE7B'
-          },
-          {
-            label: 'In-progress',
-            data: [inProgress],
-            backgroundColor: '#FFFF99'
-          },
-          {
-            label: 'Projected',
-            data: [projected],
-            backgroundColor: '#e5f7ff'
-          }
-        ]
-      }
-    },
-    chartOptions() {
-      const max = this.numEvents
-
-      return {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        animations: {
-          y: {
-            easing: 'easeInOutElastic',
-            from: (ctx) => {
-              if (ctx.type === 'data') {
-                if (ctx.mode === 'default' && !ctx.dropped) {
-                  ctx.dropped = true;
-                  return 0;
-                }
-              }
-            }
-          }
+    return {
+      labels: [''],
+      datasets: [
+        {
+          label: 'Scored',
+          data: [s.scored || 0],
+          backgroundColor: '#63BE7B'
         },
-        plugins: {
-          legend: {
-            position: 'bottom',
-            onClick: null,
-            maxWidth: 150
-          },
-          tooltip: { enabled: true },
+        {
+          label: 'Scored (Protest)',
+          data: [s['scored-protest'] || 0],
+          backgroundColor: '#B30000'
         },
-        scales: {
-          x: {
-            stacked: true,
-            beginAtZero: true,
-            max,
-            ticks: {
-              callback: function(value) {
-                // Only show start, end
-                if (value === 0 || value === max) return value
-                return ''
-              },
-            },
-            title: {
-              display: true,
-              text: 'Number of Events',
-              font: {
-                size: 12,
-                weight: '600'
-              },
-              padding: { top: -20 }
-            },
-            grid: {
-              // Only draw grid lines for start, middle, end
-              drawTicks: true,
-              drawOnChartArea: true,
-              color: function(context) {
-                const val = context.tick.value
-                if (val === 0 || val === max) return '#ccc'
-                return 'transparent'
-              },
-            },
-          },
-          y: { stacked: true, grid: { display: false } },
+        {
+          label: 'Scored (Under Review)',
+          data: [s['scored-under-review'] || 0],
+          backgroundColor: '#FFBF00'
         },
-      }
-    },
+        {
+          label: 'Complete',
+          data: [s.complete || 0],
+          backgroundColor: '#005b96'
+        },
+        {
+          label: 'Official',
+          data: [s.official || 0],
+          backgroundColor: '#005b96'
+        },
+        {
+          label: 'Scheduled',
+          data: [s.scheduled || 0],
+          backgroundColor: '#E5F7FF'
+        },
+        {
+          label: 'In-progress',
+          data: [s['in-progress'] || 0],
+          backgroundColor: '#FFFF99'
+        }
+      ]
+    }
   },
+  chartOptions() {
+    const max = this.stats?.total || 0
+
+    return {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          onClick: null
+        },
+        tooltip: { enabled: true }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          beginAtZero: true,
+          max,
+          ticks: {
+            callback(value) {
+              if (value === 0 || value === max) return value
+              return ''
+            }
+          },
+          title: {
+            display: true,
+            text: 'Number of Events',
+            font: { size: 12, weight: '600' }
+          }
+        },
+        y: {
+          stacked: true,
+          grid: { display: false }
+        }
+      }
+    }
+  }
+}
+
 }
 </script>
 

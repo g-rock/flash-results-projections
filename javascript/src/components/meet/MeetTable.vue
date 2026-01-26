@@ -4,15 +4,15 @@
     <div class="tooltip-toggle">
       <label>
         <input type="checkbox" v-model="showHover" />
-        Show tooltips
+        Tooltips
       </label>
       <label style="margin-left: 12px;">
         <input type="checkbox" v-model="showTeamAbbr" />
-        Show team abbr
+        Team abbr
       </label>
       <label style="margin-left: 12px;">
         <input type="checkbox" v-model="showFullColumnName" />
-        Show full column name
+        Full column name
       </label>
     </div>
 
@@ -467,9 +467,12 @@ thead th {
   z-index: 1;
 }
 
-th.status-scored, th.status-official { background-color: #63BE7B; color: #1D6F42; }
+th.status-scored { background-color: #63BE7B; color: #1D6F42; }
+th.status-complete, th.status-offical { background-color: #005b96; color: #9fd8ff; }
+th.status-scored-protest { background-color: #B30000; color: #F0F0F0; }
+th.status-scored-under-review { background-color: #FFBF00;}
 th.status-in-progress { background-color: #FFFF99; color: #ad9100;}
-th.status-projection { background-color: #e5f7ff; color: #007ac6; }
+th.status-scheduled { background-color: #e5f7ff; color: #007ac6; }
 
 /* Sort triangle */
 .sort-triangle { font-size: 0.7rem; color: #999; }

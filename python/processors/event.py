@@ -34,14 +34,14 @@ def process_event(file_path: str):
           f"meet_year='{metadata.get('meet_year')}'. Check that the meet exists."
       )
     
-    if metadata.get('event_round') in ['prelims']:
-      raise ValueError(
-      f"Event round '{metadata.get('event_round')}' for event_name='{metadata.get('event_name')}', "
-      f"meet_id='{metadata.get('meet_id')}', meet_season='{metadata.get('meet_season')}', "
-      f"meet_year='{metadata.get('meet_year')}' will not be processed."
-    )
+    # if metadata.get('event_round') in ['prelims']:
+    #   raise ValueError(
+    #   f"Event round '{metadata.get('event_round')}' for event_name='{metadata.get('event_name')}', "
+    #   f"meet_id='{metadata.get('meet_id')}', meet_season='{metadata.get('meet_season')}', "
+    #   f"meet_year='{metadata.get('meet_year')}' will not be processed."
+    # )
 
-    VALID_STATUSES = {'complete', 'official', 'scored', 'in-progress'}
+    VALID_STATUSES = {'complete', 'official', 'scored', 'in-progress', 'scored-under-review', 'scored-protest'}
 
     status = metadata.get('event_status')
     if status not in VALID_STATUSES:
@@ -52,35 +52,35 @@ def process_event(file_path: str):
             f"meet_year='{metadata.get('meet_year')}' will not be processed. "
             f"Allowed statuses are: {allowed}."
         )
-
     
     event_ref = (
       meet_doc_ref
       .collection(metadata.get('event_gender'))
       .document(metadata.get('event_num'))
     )
-    if status == 'in-progress':
-      event_ref.set(
-        {
-          'in_progress': True
-        },
-        merge=True
-      )
-    
-    else:
-      cleaned_data = clean_event(df, event_ref)
-      event_ref.set(
-        {
-          status: {
-            'event_results': cleaned_data
-              .get(metadata.get('event_gender'))
-              .get(metadata.get('event_num')),
-            'event_round': metadata.get('event_round')
-          },
-          'in_progress': False
-        },
-        merge=True
-      )
+
+    SCORING_STATUSES = {"scored", "scored-protest", "scored-under-review"}
+    NON_RESULT_STATUSES = {"scheduled", "official", "complete", "in-progress"}
+
+    update_data = {
+      "status": status
+    }
+
+    if status in SCORING_STATUSES:
+        cleaned_data = clean_event(df, event_ref)
+
+        update_data["scored"] = {
+            "event_results": cleaned_data
+                .get(metadata.get("event_gender"))
+                .get(metadata.get("event_num")),
+            "event_round": metadata.get("event_round"),
+        }
+
+    elif status in NON_RESULT_STATUSES:
+        pass
+
+    event_ref.set(update_data, merge=True)
+
 
     return metadata
 

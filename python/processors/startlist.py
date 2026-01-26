@@ -62,7 +62,7 @@ def process_merged_start_list(
                 "event_type": event_data.get('event_type'),
                 "project_points_by_sb": True, # Use Season Best to determine points up until final is scored
                 "sort_ascending": event_data.get('sort_ascending'),
-                "in_progress": False,
+                "status": 'scheduled',
                 "projection": {
                     "event_results": event_data.get('event_results'),
                     "event_round": 'prelim'
