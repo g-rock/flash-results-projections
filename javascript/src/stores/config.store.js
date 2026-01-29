@@ -17,7 +17,7 @@ export const useConfigStore = defineStore('config', {
     eventsError: null,
     selectedYear: new Date().getFullYear().toString(),
     scoringStatuses: ["scored", "scored-protest", "scored-under-review"],
-    nonScoringStatuses: ["scheduled", "official", "complete", "in-progress"]
+    nonScoringStatuses: ["projected", "scheduled", "official", "complete", "in-progress"]
   }),
 
   actions: {
@@ -300,21 +300,29 @@ export const useConfigStore = defineStore('config', {
 
       const stats = {
         'total': events.length,
-        'in-progress': 0,
         'scored': 0,
-        'scored-protest': 0,
-        'scored-under-review': 0,
-        'scheduled': 0,
-        'official': 0,
-        'complete': 0
+        'scored-pending': 0,
+        'in-progress': 0,
+        'projected': 0,
       }
 
       events.forEach(event => {
         const status = event.status
         if (!status) return
 
-        if (status in stats) {
-          stats[status]++
+        if (status === 'scored') {
+          stats.scored++
+        } else if (status === 'scored-under-review' || status === 'scored-protest') {
+          stats['scored-pending']++
+        } else if (status === 'in-progress') {
+          stats['in-progress']++
+        } else if (
+          status === 'projected' ||
+          status === 'scheduled' ||
+          status === 'official' ||
+          status === 'complete'
+        ) {
+          stats.projected++
         }
       })
 

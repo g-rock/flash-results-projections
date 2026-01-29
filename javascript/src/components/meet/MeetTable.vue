@@ -2,19 +2,30 @@
   <div class="results-table-wrapper">
     <!-- Tooltip toggle -->
     <div class="tooltip-toggle">
-      <label>
-        <input type="checkbox" v-model="showHover" />
-        Tooltips
-      </label>
-      <label style="margin-left: 12px;">
-        <input type="checkbox" v-model="showTeamAbbr" />
-        Team abbr
-      </label>
-      <label style="margin-left: 12px;">
-        <input type="checkbox" v-model="showFullColumnName" />
-        Full column name
-      </label>
+      <div class="toggle-left">
+        <label>
+          <input type="checkbox" v-model="ui.showHover" />
+          Tooltips
+        </label>
+        <label style="margin-left: 12px;">
+          <input type="checkbox" v-model="ui.showTeamAbbr" />
+          Team abbr
+        </label>
+        <label style="margin-left: 12px;">
+          <input type="checkbox" v-model="ui.showFullColumnName" />
+          Full column name
+        </label>
+      </div>
+
+      <a
+        href="#"
+        class="status-link"
+        @click.prevent="showStatusModal = true"
+      >
+        How are points allocated for each status?
+      </a>
     </div>
+
 
     <div class="table-scroll" ref="tableScrollRef" @mouseleave="onTableMouseLeave">
       <table class="results-table">
@@ -77,7 +88,7 @@
                     />
 
                     <span
-                      v-if="showTeamAbbr && row.team_abbr"
+                      v-if="ui.showTeamAbbr && row.team_abbr"
                       class="team-abbr"
                     >
                       {{ row.team_abbr }}
@@ -123,6 +134,65 @@
 
       <div v-else class="tooltip-empty">No participating athletes</div>
     </div>
+
+    <!-- Statuses Modal -->
+    <div
+      v-if="showStatusModal"
+      class="modal-backdrop"
+      @click.self="showStatusModal = false"
+    >
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Point allocation</h3>
+          <button class="modal-close" @click="showStatusModal = false">×</button>
+        </div>
+
+        <div class="modal-body">
+          <ul class="status-list">
+            <li>
+              <span class="status-name">
+                <span class="status-dot status-scored"></span>
+                Scored
+              </span>
+              <span class="status-desc">
+                Points are based on place because the event has been finalized.
+              </span>
+            </li>
+
+            <li>
+              <span class="status-name">
+                <span class="status-dot status-scored-under-review"></span>
+                Scored (Under Review)
+              </span>
+              <span class="status-desc">
+                Points are based on place but the event is currently under review by officials. It will be finalized soon.
+              </span>
+            </li>
+
+            <li>
+              <span class="status-name">
+                <span class="status-dot status-projected"></span>
+                Projected
+              </span>
+              <span class="status-desc">
+                Points are based on athlete personal best.
+              </span>
+            </li>
+
+            <li>
+              <span class="status-name">
+                <span class="status-dot status-in-progress"></span>
+                In-progress
+              </span>
+              <span class="status-desc">
+                Points are based on athlete personal best.
+              </span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
   </div>
 </template>
 
@@ -131,9 +201,13 @@
  * Imports & environment
  * -------------------------------------------------- */
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { useUIStore } from '@/stores/ui.store'
 
 const isTouchDevice =
   'ontouchstart' in window || navigator.maxTouchPoints > 0
+
+const ui = useUIStore()
+const showStatusModal = ref(false)
 
 /* --------------------------------------------------
  * Props
@@ -150,11 +224,6 @@ const props = defineProps({
 // Sorting
 const sortField = ref(null)
 const sortDirection = ref('desc')
-
-// UI toggles
-const showHover = ref(true)
-const showTeamAbbr = ref(true)
-const showFullColumnName = ref(false)
 
 // Event tooltip
 const activeEventCell = ref({ rowId: null, field: null })
@@ -182,7 +251,7 @@ function hideAllTooltips() {
  * Event tooltip logic
  * -------------------------------------------------- */
 function showEventTooltip(event, row, col) {
-  if (!showHover.value) return
+  if (!ui.showHover) return
 
   const cellRect = event.currentTarget.getBoundingClientRect()
   const tooltipWidth = 220
@@ -299,7 +368,7 @@ function getSortValue(row, key) {
 
 function getHeaderLabel(col) {
   if (
-    showFullColumnName.value &&
+    ui.showFullColumnName &&
     col.meta?.fullHeaderName
   ) {
     return col.meta.fullHeaderName
@@ -395,18 +464,26 @@ onMounted(async () => {
 /* --------------------------------------------------
  * Watchers
  * -------------------------------------------------- */
-watch(showHover, () => hideAllTooltips())
+watch(
+  () => ui.showHover,
+  () => hideAllTooltips()
+)
 
-watch(showTeamAbbr, async () => {
-  await nextTick()
-  calculateStickyOffsets()
-})
+watch(
+  () => ui.showTeamAbbr,
+  async () => {
+    await nextTick()
+    calculateStickyOffsets()
+  }
+)
 
-watch(showFullColumnName, async () => {
-  await nextTick()
-  calculateStickyOffsets()
-})
-
+watch(
+  () => ui.showFullColumnName,
+  async () => {
+    await nextTick()
+    calculateStickyOffsets()
+  }
+)
 
 watch(
   () => props.columnDefs,
@@ -416,25 +493,31 @@ watch(
   },
   { deep: true }
 )
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') showStatusModal.value = false
+})
 </script>
 
 <style scoped>
-/* Table & scroll wrapper */
+
 .results-table-wrapper {
   width: calc(100vw - 16px);
-  padding: 0 16px;
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0px 16px 16px 16px;
   margin: auto;
   box-sizing: border-box;
 }
 
 .table-scroll {
   width: 100%;
-  /* 90px for header, 100px for chart/tabs, 40px for checkboxes */
-  max-height: calc(100vh - 90px - 100px - 40px); 
+  flex: 1;
   overflow: auto;
   border: 1px solid #ccc;
   border-radius: 4px;
-  position: relative;
 }
 
 .results-table {
@@ -468,11 +551,9 @@ thead th {
 }
 
 th.status-scored { background-color: #63BE7B; color: #1D6F42; }
-th.status-complete, th.status-offical { background-color: #005b96; color: #9fd8ff; }
-th.status-scored-protest { background-color: #B30000; color: #F0F0F0; }
-th.status-scored-under-review { background-color: #FFBF00;}
+th.status-scored-protest, th.status-scored-under-review { background-color: #B30000; color: #F0F0F0; }
 th.status-in-progress { background-color: #FFFF99; color: #ad9100;}
-th.status-scheduled { background-color: #e5f7ff; color: #007ac6; }
+th.status-projected, th.status-complete, th.status-offical { background-color: #e5f7ff; color: #007ac6; }
 
 /* Sort triangle */
 .sort-triangle { font-size: 0.7rem; color: #999; }
@@ -509,7 +590,127 @@ tr:nth-child(even) td.sticky { background-color: #f2f2f2; }
 .team-logo { width: 18px; height: 18px; object-fit: contain; }
 
 /* Tooltip toggle */
-.tooltip-toggle { height: 20px; }
+.tooltip-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.toggle-left {
+  display: flex;
+  align-items: center;
+}
+
+.status-link {
+  font-size: 0.85rem;
+  color: #007ac6;
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.status-link:hover {
+  color: #005fa3;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 6px;
+  width: 90%;
+  max-width: 480px;
+  max-height: 80vh;
+  overflow: auto;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-body {
+  padding: 16px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.status-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.status-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.status-list li:last-child {
+  border-bottom: none;
+}
+
+.status-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.status-desc {
+  display: block;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+  margin-left: 38px; /* aligns with text after square */
+}
+
+/* Status square */
+.status-dot {
+  width: 30px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Match your header/chart colors */
+.status-dot.status-scored {
+  background-color: #63BE7B;
+}
+
+.status-dot.status-scored-under-review {
+  background-color: #B30000;
+}
+
+.status-dot.status-projected {
+  background-color: #E5F7FF;
+  border: 1px solid #007ac6;
+}
+
+.status-dot.status-in-progress {
+  background-color: #FFFF99;
+  border: 1px solid #ad9100;
+}
 
 /* Tooltip rows */
 .tooltip-header { display: flex; justify-content: space-between; gap: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #666; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-bottom: 6px; }
@@ -529,13 +730,26 @@ tr:nth-child(even) td.sticky { background-color: #f2f2f2; }
   font-weight: 600;
 }
 
-@media (max-width: 768px) {
-  .results-table-wrapper { width: 100vw; padding: 0; }
-  .table-scroll { max-height: calc(100vh - 250px); }
+td.active-event-cell {
+  background-color: rgba(0, 123, 255, .2); /* subtle blue highlight */
+  transition: background-color 0.2s ease;
 }
 
-td.active-event-cell {
-    background-color: rgba(0, 123, 255, .2); /* subtle blue highlight */
-    transition: background-color 0.2s ease;
+@media (max-width: 768px) {
+  .results-table-wrapper { 
+    width: 100vw; 
+    padding: 0;
+    padding-bottom: 8px; 
   }
+
+  .toggle-left {
+    display: none;
+  }
+
+  .status-link {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+}
 </style>

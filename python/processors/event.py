@@ -41,7 +41,7 @@ def process_event(file_path: str):
     #   f"meet_year='{metadata.get('meet_year')}' will not be processed."
     # )
 
-    VALID_STATUSES = {'complete', 'official', 'scored', 'in-progress', 'scored-under-review', 'scored-protest'}
+    VALID_STATUSES = {'complete', 'official', 'scored', 'in-progress', 'scored-under-review', 'scored-protest', 'scheduled'}
 
     status = metadata.get('event_status')
     if status not in VALID_STATUSES:
@@ -67,17 +67,16 @@ def process_event(file_path: str):
     }
 
     if status in SCORING_STATUSES:
-        cleaned_data = clean_event(df, event_ref)
-
-        update_data["scored"] = {
-            "event_results": cleaned_data
-                .get(metadata.get("event_gender"))
-                .get(metadata.get("event_num")),
-            "event_round": metadata.get("event_round"),
-        }
+      cleaned_data = clean_event(df, event_ref)
+      update_data["scored"] = {
+          "event_results": cleaned_data
+              .get(metadata.get("event_gender"))
+              .get(metadata.get("event_num")),
+          "event_round": metadata.get("event_round"),
+      }
 
     elif status in NON_RESULT_STATUSES:
-        pass
+      pass
 
     event_ref.set(update_data, merge=True)
 
@@ -221,7 +220,6 @@ def parse_standard_event_results(metadata: dict, data_rows: list):
         normalized_rows.append(padded_row[:len(headers)])
 
     df = pd.DataFrame(normalized_rows, columns=headers)
-
     # Add metadata columns
     df["Event Num"] = metadata["event_num"]
     df["Event Name"] = metadata["event_name"]

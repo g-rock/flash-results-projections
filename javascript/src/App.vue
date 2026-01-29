@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="dashboard-wrapper">
     <!-- <RestrictOrientation /> -->
     <MeetHeader
       v-if="isMeetRoute"
@@ -7,7 +7,7 @@
     />
     <GenericHeader v-else />
     <!-- Main content -->
-    <router-view v-if="!isMeetRoute || config.meets.length" :key="$route.params.meetId" />
+    <router-view v-if="!isMeetRoute || config.meets.length" :key="$route.params.meetId" class="route" />
     <div v-else>Loading meets...</div>
   </div>
 </template>
@@ -61,4 +61,19 @@ onMounted(async () => {
 
 </script>
 <style scoped>
+
+.dashboard-wrapper {
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.route {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
 </style>

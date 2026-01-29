@@ -51,6 +51,28 @@
           Admin
         </router-link>
 
+        <!-- Mobile-only UI toggles -->
+        <div class="mobile-toggles">
+          <button class="menu-toggle" @click="ui.showHover = !ui.showHover">
+            <span>Tooltips</span>
+            <span v-if="ui.showHover">✔</span>
+          </button>
+
+          <button class="menu-toggle" @click="ui.showTeamAbbr = !ui.showTeamAbbr">
+            <span>Team abbr</span>
+            <span v-if="ui.showTeamAbbr">✔</span>
+          </button>
+
+          <button
+            class="menu-toggle"
+            @click="ui.showFullColumnName = !ui.showFullColumnName"
+          >
+            <span>Full column name</span>
+            <span v-if="ui.showFullColumnName">✔</span>
+          </button>
+        </div>
+
+
         <a
           v-if="auth.user"
           @click="handleLogout"
@@ -69,6 +91,8 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useConfigStore } from '@/stores/config.store'
 import { useAuthStore } from '@/stores/auth.store'
+import { useUIStore } from '@/stores/ui.store'
+
 
 const props = defineProps({
   meetId: { type: String, required: true }
@@ -76,6 +100,7 @@ const props = defineProps({
 
 const config = useConfigStore()
 const auth = useAuthStore()
+const ui = useUIStore()
 const route = useRoute()
 
 const menuOpen = ref(false)
@@ -241,6 +266,30 @@ function handleLogout() {
   color: #fff;
 }
 
+.mobile-toggles {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.menu-toggle {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 0.9rem;
+  padding: 4px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  text-align: left;
+}
+
+.menu-toggle:hover {
+  opacity: 0.85;
+}
+
 @media (max-width: 768px) {
   .links {
     display: none;
@@ -248,6 +297,7 @@ function handleLogout() {
   .links.open {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     position: absolute;
     right: 0;
     top: 100%;
@@ -256,7 +306,7 @@ function handleLogout() {
     gap: 10px;
     border-radius: 4px;
     z-index: 10;
-    min-width: 120px;
+    min-width: 150px;
   }
   .hamburger {
     display: block;
@@ -276,6 +326,9 @@ function handleLogout() {
   }
   .meet-db-id {
     display: none;
+  }
+  .mobile-toggles {
+    display: flex;
   }
 }
 </style>

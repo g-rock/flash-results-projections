@@ -39,6 +39,14 @@ const auth = useAuthStore()
 </script>
 
 <style scoped>
+
+.dashboard {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
 /* Active tab underline */
 .tabs button.active::after {
   content: '';
@@ -106,7 +114,6 @@ const auth = useAuthStore()
 
   .event-status-chart {
     max-width: 100%;
-    max-height: 100px;
     width: 100%;
     min-width: unset;
   }
