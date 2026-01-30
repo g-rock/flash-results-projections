@@ -62,23 +62,29 @@ export default {
           {
             label: 'Scored',
             data: [s.scored || 0],
-            backgroundColor: '#63BE7B'
+            backgroundColor: '#63BE7B',
+            borderColor: '#1D6F42',
+            borderWidth: 1
           },
           {
-            label: 'Scored (Under Review)',
+            label: 'Scored (Under Review | Protest)',
             data: [s['scored-pending'] || 0],
             backgroundColor: '#B30000'
           },
           {
-            label: 'Projected',
-            data: [s.projected || 0],
-            backgroundColor: '#E5F7FF'
-          },
-          {
             label: 'In-progress',
             data: [s['in-progress'] || 0],
-            backgroundColor: '#FFFF99'
-          }
+            backgroundColor: '#FFFF99',
+            borderColor: '#BDBD00',
+            borderWidth: 1
+          },
+          {
+            label: 'Projected',
+            data: [s.projected || 0],
+            backgroundColor: '#E5F7FF',
+            borderColor: '#007ac6',
+            borderWidth: 1
+          },
         ]
       }
     },

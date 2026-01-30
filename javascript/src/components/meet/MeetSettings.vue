@@ -21,7 +21,6 @@
           <tr>
             <th>Event ID</th>
             <th>Event Name</th>
-            <th>Project Points By SB</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -29,12 +28,6 @@
           <tr v-for="event in config.selectedGenderEventData" :key="event.id">
             <td>{{ event.id }}</td>
             <td>{{ event.event_name }}</td>
-            <td>
-              <select v-model="event.project_points_by_sb" @change="updateProjectPoints(event)">
-                <option :value="true">Yes</option>
-                <option :value="false">No</option>
-              </select>
-            </td>
             <td>
               <button class="btn" @click="toggleSeasonBest(event.id)">Update Season Best</button>
             </td>
@@ -233,10 +226,6 @@ function commitSB(index) {
 
 function toggleSeasonBest(eventId) {
   state.activeEventId = state.activeEventId === eventId ? null : eventId
-}
-
-function updateProjectPoints(event) {
-  config.updateEventDoc(event.id, { project_points_by_sb: event.project_points_by_sb })
 }
 
 function saveSeasonBest(event) {

@@ -42,8 +42,19 @@ def process_event(file_path: str):
     # )
 
     VALID_STATUSES = {'complete', 'official', 'scored', 'in-progress', 'scored-under-review', 'scored-protest', 'scheduled'}
-
+    SCORING_STATUSES = {"scored", "scored-protest", "scored-under-review"}
+    NON_RESULT_STATUSES = {"scheduled", "official", "complete", "in-progress"}
+    
     status = metadata.get('event_status')
+    event_round = metadata.get('event_round')
+    
+    # Treat prelims with scored-review statuses as in-progress
+    if (
+        event_round == "prelims"
+        and status in {"scored-protest", "scored-under-review"}
+    ):
+      status = "in-progress"
+
     if status not in VALID_STATUSES:
         allowed = ", ".join(sorted(VALID_STATUSES))
         raise ValueError(
@@ -58,9 +69,6 @@ def process_event(file_path: str):
       .collection(metadata.get('event_gender'))
       .document(metadata.get('event_num'))
     )
-
-    SCORING_STATUSES = {"scored", "scored-protest", "scored-under-review"}
-    NON_RESULT_STATUSES = {"scheduled", "official", "complete", "in-progress"}
 
     update_data = {
       "status": status
@@ -79,7 +87,6 @@ def process_event(file_path: str):
       pass
 
     event_ref.set(update_data, merge=True)
-
 
     return metadata
 

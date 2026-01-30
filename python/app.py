@@ -211,7 +211,7 @@ class UpdateEventRequest(BaseModel):
     eventId: str
     updates: Dict[str, Any]
 
-@app.post("/update_event")
+@app.post("/update_event", include_in_schema=False)
 async def update_event(req: UpdateEventRequest):
     """
     Update any fields on a specific event document within a meet and gender.
@@ -301,7 +301,7 @@ async def notify_clients(payload: dict):
     for queue in subscribers:
         await queue.put(payload)
 
-@app.get("/stream")
+@app.get("/stream", include_in_schema=False)
 async def stream():
     """SSE endpoint that streams JSON updates."""
     queue = asyncio.Queue()
