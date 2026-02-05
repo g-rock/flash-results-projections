@@ -34,21 +34,25 @@ def process_event(file_path: str):
           f"meet_year='{metadata.get('meet_year')}'. Check that the meet exists."
       )
     
-    # if metadata.get('event_round') in ['prelims']:
-    #   raise ValueError(
-    #   f"Event round '{metadata.get('event_round')}' for event_name='{metadata.get('event_name')}', "
-    #   f"meet_id='{metadata.get('meet_id')}', meet_season='{metadata.get('meet_season')}', "
-    #   f"meet_year='{metadata.get('meet_year')}' will not be processed."
-    # )
+    VALID_STATUSES = {
+      'scored',
+      'scored-protest',
+      'scored-under-review',
+      'official',
+      'complete',
+      'protest',
+      'under-review',
+      'scheduled',
+      'in-progress',
+    }
 
-    VALID_STATUSES = {'complete', 'official', 'scored', 'in-progress', 'scored-under-review', 'scored-protest', 'scheduled'}
     SCORING_STATUSES = {"scored", "scored-protest", "scored-under-review"}
-    NON_RESULT_STATUSES = {"scheduled", "official", "complete", "in-progress"}
+    INTERIM_STATUSES = {"official", "complete", "protest", "under-review"}
+    NON_RESULT_STATUSES = {"scheduled", "in-progress"}
     
     status = metadata.get('event_status')
     event_round = metadata.get('event_round')
     
-    # Treat prelims with scored-review statuses as in-progress
     if (
         event_round == "prelims"
         and status in {"scored-protest", "scored-under-review"}
@@ -73,6 +77,15 @@ def process_event(file_path: str):
     update_data = {
       "status": status
     }
+
+    if status in INTERIM_STATUSES and (event_round == "prelims" or event_round == "semifinal"):
+      cleaned_data = clean_event(df, event_ref)
+      update_data[event_round] = {
+          "event_results": cleaned_data
+              .get(metadata.get("event_gender"))
+              .get(metadata.get("event_num")),
+          "event_round": event_round,
+      }
 
     if status in SCORING_STATUSES:
       cleaned_data = clean_event(df, event_ref)
@@ -210,6 +223,7 @@ def parse_multi_event_metadata(meta_row):
             f"Failed to parse multi-event metadata. Parsed values so far: {partial_metadata}. "
             "Check that meet_name, meet_year, and meet_season exist and are valid strings."
         ) from e
+
 def parse_standard_event_results(metadata: dict, data_rows: list):
     """
     Build results DataFrame for standard events.
@@ -284,17 +298,26 @@ def parse_multi_event_results(metadata: dict, data_rows: list):
     return df
 
 def normalize_round_and_status(event_round: str, event_status: str):
+    round_name = event_round
+    status_name = event_status
+
     # --- Normalize round ---
-    if event_round and "final" in event_round.lower():
-        round_name = "final"
-    else:
-        round_name = event_round
+    if event_round:
+        r = event_round.lower()
+
+        if "pre" in r:
+            round_name = "prelim"
+        elif "semi" in r:
+            round_name = "semifinal"
+        elif "final" in r:
+            round_name = "final"
 
     # --- Normalize status ---
-    if event_status and "progress" in event_status.lower():
-        status_name = "in-progress"
-    else:
-        status_name = event_status
+    if event_status:
+        s = event_status.lower()
+
+        if "progress" in s:
+            status_name = "in-progress"
 
     return round_name, status_name
 

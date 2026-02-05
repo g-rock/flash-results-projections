@@ -501,8 +501,8 @@ thead th {
 
 th.status-scored { background-color: #63BE7B; color: #1D6F42; }
 th.status-scored-protest, th.status-scored-under-review { background-color: #B30000; color: #F0F0F0; }
-th.status-in-progress { background-color: #FFFF99; color: #ad9100;}
-th.status-projected, th.status-complete, th.status-offical { background-color: #e5f7ff; color: #007ac6; }
+th.status-in-progress, th.status-complete, th.status-official, th.status-protest, th.status-under-review { background-color: #FFFF99; color: #ad9100;}
+th.status-projected, th.status-scheduled { background-color: #e5f7ff; color: #007ac6; }
 
 /* Sort triangle */
 .sort-triangle { font-size: 0.7rem; color: #999; }

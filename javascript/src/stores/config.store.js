@@ -1,7 +1,42 @@
 import { defineStore } from 'pinia'
+import { toRaw } from 'vue'
 import { collection, doc, getDocs, collectionGroup, updateDoc } from 'firebase/firestore'
 import eventMap from '@/event_map.json'
 import { db } from '../firebase'
+
+const getEventResults = (event) => {
+  const rawEvent = { ...toRaw(event) }
+  const status = rawEvent.status
+
+  console.log(status)
+
+  if (
+    status === 'scored' ||
+    status === 'scored-protest' ||
+    status === 'scored-under-review'
+  ) {
+    return rawEvent.scored?.event_results ?? []
+  }
+
+  if (
+    status === 'official' ||
+    status === 'complete' ||
+    status === 'protest' ||
+    status === 'under-review' ||
+    status === 'in-progress' ||
+    status === 'projected' ||
+    status === 'scheduled'
+  ) {
+    return (
+      rawEvent.semifinal?.event_results ??
+      rawEvent.prelim?.event_results ??
+      rawEvent.projection?.event_results ??
+      []
+    )
+  }
+
+  return []
+}
 
 export const useConfigStore = defineStore('config', {
   state: () => ({
@@ -155,11 +190,12 @@ export const useConfigStore = defineStore('config', {
         console.error("Failed to update event doc:", err);
       }
     },
-    rankAndScoreEvent(results, ascending = true) {
+    rankAndScoreEvent(results, ascending = true, isFinal) {
       const POINTS_SYSTEM = { 1: 10, 2: 8, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1 }
       if (!results || results.length === 0) return []
 
-      const sortField = 'seed_numeric' in results[0] ? 'seed_numeric' : 'sb_numeric'
+      const sortField = isFinal ? 'seed_numeric' : 'sb_numeric'
+
       // Sort results
       const sortedResults = [...results].sort((a, b) => {
         if (ascending) return (a[sortField] || Infinity) - (b[sortField] || Infinity)
@@ -219,18 +255,15 @@ export const useConfigStore = defineStore('config', {
 
       eventsForGender.forEach(event => {
         const eventId = event.id
-        const eventStatus = event.status
         const ascending = event.sort_ascending
 
-        const isScored = state.scoringStatuses.includes(eventStatus)
 
-        const results = isScored
-          ? event.scored?.event_results ?? []
-          : event.projection?.event_results ?? []
-
+        const results = getEventResults(event)
         if (!results.length) return
 
-        const scoredResults = state.rankAndScoreEvent(results, ascending)
+        const isFinal = !!event.scored
+
+        const scoredResults = state.rankAndScoreEvent(results, ascending, isFinal)
 
         scoredResults.forEach(p => {
           const team = p.team_name
