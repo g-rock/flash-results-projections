@@ -11,96 +11,117 @@ def process_event(file_path: str):
     """
     print(f"Processing file: {file_path}")
 
-    # Parse the CSV
-    metadata, raw_rows = parse_event_metadata(os.path.dirname(file_path), os.path.basename(file_path))
-    if metadata.get('event_type') == 'standard':
-      df = parse_standard_event_results(metadata, raw_rows)
-    else:
-      df = parse_multi_event_results(metadata, raw_rows)
-
-    db = get_firestore_client()
-    meet_doc_ref = (
-      db.collection("meets")
-        .document(metadata.get("meet_year"))
-        .collection(metadata.get("meet_season"))
-        .document(metadata.get("meet_id"))
+    # --- Parse CSV ---
+    metadata, raw_rows = parse_event_metadata(
+        os.path.dirname(file_path),
+        os.path.basename(file_path)
     )
 
-    # Check if meet exists
+    event_type = metadata.get("event_type")
+
+    if event_type == "standard":
+        df = parse_standard_event_results(metadata, raw_rows)
+    else:
+        df = parse_multi_event_results(metadata, raw_rows)
+
+    # --- Firestore refs ---
+    db = get_firestore_client()
+    meet_doc_ref = (
+        db.collection("meets")
+          .document(metadata.get("meet_year"))
+          .collection(metadata.get("meet_season"))
+          .document(metadata.get("meet_id"))
+    )
+
     if not meet_doc_ref.get().exists:
-      raise ValueError(
-          f"Meet not found for meet_id='{metadata.get('meet_id')}', "
-          f"meet_season='{metadata.get('meet_season')}', "
-          f"meet_year='{metadata.get('meet_year')}'. Check that the meet exists."
-      )
-    
+        raise ValueError(
+            f"Meet not found for meet_id='{metadata.get('meet_id')}', "
+            f"meet_season='{metadata.get('meet_season')}', "
+            f"meet_year='{metadata.get('meet_year')}'."
+        )
+
+    event_ref = (
+        meet_doc_ref
+        .collection(metadata.get("event_gender"))
+        .document(metadata.get("event_num"))
+    )
+
+    # --- Status rules ---
     VALID_STATUSES = {
-      'scored',
-      'scored-protest',
-      'scored-under-review',
-      'official',
-      'complete',
-      'protest',
-      'under-review',
-      'scheduled',
-      'in-progress',
+        "scored",
+        "scored-protest",
+        "scored-under-review",
+        "official",
+        "complete",
+        "protest",
+        "under-review",
+        "scheduled",
+        "standings",
+        "in-progress",
     }
 
     SCORING_STATUSES = {"scored", "scored-protest", "scored-under-review"}
     INTERIM_STATUSES = {"official", "complete", "protest", "under-review"}
-    NON_RESULT_STATUSES = {"scheduled", "in-progress"}
-    
-    status = metadata.get('event_status')
-    event_round = metadata.get('event_round')
-    
+    NON_RESULT_STATUSES = {"scheduled", "standings", "in-progress"}
+
+    status = metadata.get("event_status")
+    event_round = metadata.get("event_round")
+
+    # --- Prelims edge case ---
     if (
         event_round == "prelims"
         and status in {"scored-protest", "scored-under-review"}
     ):
-      status = "in-progress"
+        status = "in-progress"
 
+    # --- Validate status ---
     if status not in VALID_STATUSES:
         allowed = ", ".join(sorted(VALID_STATUSES))
         raise ValueError(
             f"Round status '{status}' for event_name='{metadata.get('event_name')}', "
             f"meet_id='{metadata.get('meet_id')}', meet_season='{metadata.get('meet_season')}', "
-            f"meet_year='{metadata.get('meet_year')}' will not be processed. "
+            f"meet_year='{metadata.get('meet_year')}'. "
             f"Allowed statuses are: {allowed}."
         )
-    
-    event_ref = (
-      meet_doc_ref
-      .collection(metadata.get('event_gender'))
-      .document(metadata.get('event_num'))
-    )
 
-    update_data = {
-      "status": status
-    }
+    # --- Multi-event-only guard ---
+    if status == "standings" and event_type != "multi":
+        raise ValueError(
+            f"'standings' status is only valid for multi events. "
+            f"event_name='{metadata.get('event_name')}', "
+            f"meet_id='{metadata.get('meet_id')}'."
+        )
 
-    if status in INTERIM_STATUSES and (event_round == "prelims" or event_round == "semifinal"):
-      cleaned_data = clean_event(df, event_ref)
-      update_data[event_round] = {
-          "event_results": cleaned_data
-              .get(metadata.get("event_gender"))
-              .get(metadata.get("event_num")),
-          "event_round": event_round,
-      }
+    # --- Build update payload ---
+    update_data = {"status": status}
 
-    if status in SCORING_STATUSES:
-      cleaned_data = clean_event(df, event_ref)
-      update_data["scored"] = {
-          "event_results": cleaned_data
-              .get(metadata.get("event_gender"))
-              .get(metadata.get("event_num")),
-          "event_round": metadata.get("event_round"),
-      }
+    if (
+        status in INTERIM_STATUSES
+        and event_round in {"prelims", "semifinal"}
+    ):
+        cleaned_data = clean_event(df, event_ref)
+        update_data[event_round] = {
+            "event_results": (
+                cleaned_data
+                .get(metadata.get("event_gender"))
+                .get(metadata.get("event_num"))
+            ),
+            "event_round": event_round,
+        }
 
-    elif status in NON_RESULT_STATUSES:
-      pass
+    elif status in SCORING_STATUSES:
+        cleaned_data = clean_event(df, event_ref)
+        update_data["scored"] = {
+            "event_results": (
+                cleaned_data
+                .get(metadata.get("event_gender"))
+                .get(metadata.get("event_num"))
+            ),
+            "event_round": event_round,
+        }
+
 
     event_ref.set(update_data, merge=True)
-
     return metadata
 
 def parse_event_metadata(input_dir: str, input_filename: str):

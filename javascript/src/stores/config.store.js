@@ -25,7 +25,8 @@ const getEventResults = (event) => {
     status === 'under-review' ||
     status === 'in-progress' ||
     status === 'projected' ||
-    status === 'scheduled'
+    status === 'scheduled' ||
+    status === 'standings'
   ) {
     return (
       rawEvent.semifinal?.event_results ??
